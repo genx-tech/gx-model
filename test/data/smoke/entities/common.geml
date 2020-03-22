@@ -1,0 +1,32 @@
+type
+  email : text maxLength(200) |~isEmail |>lowerCase
+  name : text maxLength(200)
+  url : text maxLength(2000) |~isURL
+  path : text maxLength(2000) |~isURL({allow_protocol_relative_urls: true})
+  uuid : text maxLength(36) fixedLength |~isUUID |=generator('uuid')
+  ip : text maxLength(40) |~isIP
+  phone : text maxLength(20) |~isPhone |>normalizePhone('+61')
+  code : text maxLength(100)
+  money : number
+  desc : text optional   
+
+entity dictionary            
+  with 
+    logicalDeletion
+    
+  has 
+    code
+    name
+    desc 
+
+  key code
+  
+  index
+    name is unique
+
+entity timebound
+  has
+    startDate : datetime default(@@now) 
+    endDate : datetime optional
+    isValid : boolean  
+        

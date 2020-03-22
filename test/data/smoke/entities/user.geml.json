@@ -1,0 +1,213 @@
+{
+    "namespace": [
+        "/Users/rockieguo/Documents/GitHub/genx-suite/packages/model/test/data/smoke/entities/common.geml"
+    ],
+    "type": {
+        "password": {
+            "type": "text",
+            "maxLength": [
+                200
+            ]
+        },
+        "userStatus": {
+            "type": "enum",
+            "values": [
+                "inactive",
+                "active",
+                "disabled",
+                "forbidden"
+            ]
+        }
+    },
+    "constant": {
+        "ADMIN_ID": 1,
+        "USER_ID": 10000
+    },
+    "entity": {
+        "user": {
+            "comment": "User Credential",
+            "mixins": [
+                "CustomUser"
+            ],
+            "features": [
+                {
+                    "name": "autoId",
+                    "args": [
+                        {
+                            "startFrom": 10000
+                        }
+                    ]
+                },
+                "createTimestamp",
+                "updateTimestamp",
+                "logicalDeletion",
+                {
+                    "name": "stateTracking",
+                    "args": [
+                        "status"
+                    ]
+                },
+                {
+                    "name": "atLeastOneNotNull",
+                    "args": [
+                        [
+                            "email",
+                            "mobile"
+                        ]
+                    ]
+                }
+            ],
+            "fields": {
+                "email": {
+                    "name": "email",
+                    "type": "email",
+                    "comment": "User Email"
+                },
+                "mobile": {
+                    "name": "mobile",
+                    "type": "phone",
+                    "comment": "User Mobile"
+                },
+                "password": {
+                    "name": "password",
+                    "type": "password",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "enforceStrongPassword"
+                        },
+                        {
+                            "oolType": "Processor",
+                            "name": "hashPassword",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.passwordSalt"
+                                }
+                            ]
+                        }
+                    ],
+                    "comment": "User Password"
+                },
+                "passwordSalt": {
+                    "name": "passwordSalt",
+                    "type": "text",
+                    "fixedLength": [
+                        8
+                    ],
+                    "auto": true,
+                    "comment": "User Password Salt"
+                },
+                "locale": {
+                    "name": "locale",
+                    "type": "text",
+                    "default": [
+                        "en_AU"
+                    ],
+                    "comment": "User Locale"
+                },
+                "isEmailVerified": {
+                    "name": "isEmailVerified",
+                    "type": "boolean",
+                    "writeOnce": true,
+                    "optional": true
+                },
+                "emailVerifiedTime": {
+                    "name": "emailVerifiedTime",
+                    "type": "datetime",
+                    "writeOnce": true,
+                    "optional": true
+                },
+                "isMobileVerified": {
+                    "name": "isMobileVerified",
+                    "type": "boolean",
+                    "writeOnce": true,
+                    "optional": true
+                },
+                "mobileVerifiedTime": {
+                    "name": "mobileVerifiedTime",
+                    "type": "datetime",
+                    "writeOnce": true,
+                    "optional": true
+                },
+                "status": {
+                    "name": "status",
+                    "type": "userStatus",
+                    "default": [
+                        "inactive"
+                    ],
+                    "comment": "User Status"
+                },
+                "tag": {
+                    "name": "tag",
+                    "type": "array",
+                    "optional": true
+                }
+            },
+            "indexes": [
+                {
+                    "fields": "email",
+                    "unique": true
+                },
+                {
+                    "fields": "mobile",
+                    "unique": true
+                }
+            ],
+            "data": [
+                {
+                    "runtimeEnv": "production",
+                    "records": [
+                        {
+                            "id": {
+                                "oolType": "ConstReference",
+                                "name": "ADMIN_ID"
+                            },
+                            "email": "admin@email.com",
+                            "mobile": "0412345678",
+                            "password": "60E616f7834C",
+                            "isEmailVerified": true,
+                            "isMobileVerified": true,
+                            "status": "active"
+                        }
+                    ]
+                },
+                {
+                    "runtimeEnv": "development",
+                    "records": [
+                        {
+                            "id": {
+                                "oolType": "ConstReference",
+                                "name": "ADMIN_ID"
+                            },
+                            "email": "admin@email.com",
+                            "mobile": "0412345678",
+                            "password": "test",
+                            "isEmailVerified": true,
+                            "isMobileVerified": true,
+                            "status": "active"
+                        }
+                    ]
+                },
+                {
+                    "records": [
+                        {
+                            "id": {
+                                "oolType": "ConstReference",
+                                "name": "USER_ID"
+                            },
+                            "email": "user@email.com",
+                            "mobile": "0412345679",
+                            "password": "test",
+                            "isEmailVerified": false,
+                            "isMobileVerified": false,
+                            "status": "inactive"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "id": "./entities/user.geml",
+    "name": "user"
+}

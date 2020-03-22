@@ -1,0 +1,18 @@
+{
+    "namespace": [
+        "entities/**",
+        "views/**"
+    ],
+    "schema": {
+        "sample": {
+            "entities": [
+                {
+                    "entity": "user"
+                }
+            ],
+            "views": [
+                "userProfile"
+            ]
+        }
+    }
+}

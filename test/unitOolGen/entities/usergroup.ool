@@ -1,0 +1,12 @@
+entity usergroup
+  -- "Usergroup"
+
+  associations
+    refersTo 'group' as 'groupid'
+    refersTo 'user' as 'userid'
+
+  key [ userid, groupid ]
+
+  index
+    [groupid]
+    [userid]

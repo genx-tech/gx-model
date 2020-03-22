@@ -1,0 +1,173 @@
+{
+    "type": {
+        "email": {
+            "type": "text",
+            "maxLength": [
+                200
+            ],
+            "modifiers": [
+                {
+                    "oolType": "Validator",
+                    "name": "isEmail"
+                },
+                {
+                    "oolType": "Processor",
+                    "name": "lowerCase"
+                }
+            ]
+        },
+        "name": {
+            "type": "text",
+            "maxLength": [
+                200
+            ]
+        },
+        "url": {
+            "type": "text",
+            "maxLength": [
+                2000
+            ],
+            "modifiers": [
+                {
+                    "oolType": "Validator",
+                    "name": "isURL"
+                }
+            ]
+        },
+        "path": {
+            "type": "text",
+            "maxLength": [
+                2000
+            ],
+            "modifiers": [
+                {
+                    "oolType": "Validator",
+                    "name": "isURL",
+                    "args": [
+                        {
+                            "allow_protocol_relative_urls": true
+                        }
+                    ]
+                }
+            ]
+        },
+        "uuid": {
+            "type": "text",
+            "maxLength": [
+                36
+            ],
+            "fixedLength": true,
+            "modifiers": [
+                {
+                    "oolType": "Validator",
+                    "name": "isUUID"
+                },
+                {
+                    "oolType": "Activator",
+                    "name": "generator",
+                    "args": [
+                        "uuid"
+                    ]
+                }
+            ]
+        },
+        "ip": {
+            "type": "text",
+            "maxLength": [
+                40
+            ],
+            "modifiers": [
+                {
+                    "oolType": "Validator",
+                    "name": "isIP"
+                }
+            ]
+        },
+        "phone": {
+            "type": "text",
+            "maxLength": [
+                20
+            ],
+            "modifiers": [
+                {
+                    "oolType": "Validator",
+                    "name": "isPhone"
+                },
+                {
+                    "oolType": "Processor",
+                    "name": "normalizePhone",
+                    "args": [
+                        "+61"
+                    ]
+                }
+            ]
+        },
+        "code": {
+            "type": "text",
+            "maxLength": [
+                100
+            ]
+        },
+        "money": {
+            "type": "number"
+        },
+        "desc": {
+            "type": "text",
+            "optional": true
+        }
+    },
+    "entity": {
+        "dictionary": {
+            "features": [
+                "logicalDeletion"
+            ],
+            "fields": {
+                "code": {
+                    "name": "code",
+                    "type": "code"
+                },
+                "name": {
+                    "name": "name",
+                    "type": "name"
+                },
+                "desc": {
+                    "name": "desc",
+                    "type": "desc"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": "name",
+                    "unique": true
+                }
+            ]
+        },
+        "timebound": {
+            "fields": {
+                "startDate": {
+                    "name": "startDate",
+                    "type": "datetime",
+                    "default": [
+                        {
+                            "oorType": "SymbolToken",
+                            "name": "now"
+                        }
+                    ]
+                },
+                "endDate": {
+                    "name": "endDate",
+                    "type": "datetime",
+                    "optional": true
+                },
+                "isValid": {
+                    "name": "isValid",
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "namespace": [],
+    "id": "./entities/common.geml",
+    "name": "common"
+}

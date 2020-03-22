@@ -1,0 +1,18 @@
+entity profile
+  -- "Profile"
+
+  has
+    id : text maxLength(32) -- "Profile Id"
+    firstName : text maxLength(20) optional
+    lastName : text maxLength(20) optional
+    address : text maxLength(100) optional
+
+  associations
+    refersTo gender as gender
+    belongsTo user as user
+
+  key id
+
+  index
+    [user] is unique
+    [gender]

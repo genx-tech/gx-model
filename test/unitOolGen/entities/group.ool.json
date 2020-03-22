@@ -1,0 +1,32 @@
+{
+  "type": {},
+  "entity": {
+    "group": {
+      "comment": "",
+      "features": [
+        {
+          "name": "autoId",
+          "options": {}
+        }
+      ],
+      "fields": {
+        "name": {
+          "type": "text",
+          "maxLength": 255,
+          "optional": true
+        }
+      },
+      "associations": [
+        {
+          "type": "hasMany",
+          "destEntity": "user",
+          "connectedBy": "userGroup"
+        }
+      ],
+      "key": [
+        "id"
+      ],
+      "indexes": []
+    }
+  }
+}

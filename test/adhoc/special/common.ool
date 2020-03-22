@@ -1,0 +1,27 @@
+import '<oolong>/types'
+
+type
+  code : text maxLength(20)
+  money : number
+  desc : text optional 
+
+entity dictionary            
+  with 
+    logicalDeletion
+    
+  has 
+    code
+    name
+    desc 
+
+  key code
+  
+  index
+    name is unique
+
+entity timebound
+  has
+    startDate : datetime default(@@now) 
+    endDate : datetime optional
+    isValid : boolean  
+        

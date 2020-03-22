@@ -1,0 +1,73 @@
+import 'common'
+
+type
+  password : text maxLength(200)  
+  userStatus : enum values("inactive", "active", "disabled", "forbidden")  
+
+const
+  ADMIN_ID = 1  
+  USER_ID = 10000
+
+entity user
+  -- "User Credential"  
+  mixes CustomUser
+  with
+    autoId({startFrom: 10000})
+    createTimestamp
+    updateTimestamp
+    logicalDeletion
+    stateTracking("status")
+    atLeastOneNotNull(["email","mobile"])
+
+  has
+    email -- "User Email"
+    mobile : phone -- "User Mobile"
+    password |~enforceStrongPassword |>hashPassword(@latest.passwordSalt) -- "User Password"
+    passwordSalt : text fixedLength(8) auto -- "User Password Salt"
+    locale : text default("en_AU") -- "User Locale"
+    isEmailVerified : boolean writeOnce optional
+    emailVerifiedTime : datetime writeOnce optional 
+    isMobileVerified : boolean writeOnce optional
+    mobileVerifiedTime : datetime writeOnce optional
+    status : userStatus default("inactive") -- "User Status"
+    tag : array optional
+
+  index
+    email is unique
+    mobile is unique
+
+  data in "production" [
+    {
+      id: ADMIN_ID,   
+      email: 'admin@email.com',
+      mobile: '0412345678',
+      password: '60E616f7834C',
+      isEmailVerified: true,
+      isMobileVerified: true,
+      status: 'active'
+    }
+  ]
+
+  data in "development" [    
+    {
+      id: ADMIN_ID,   
+      email: 'admin@email.com',
+      mobile: '0412345678',
+      password: 'test',
+      isEmailVerified: true,
+      isMobileVerified: true,
+      status: 'active'
+    }
+  ]
+
+  data [
+    {
+      id: USER_ID,   
+      email: 'user@email.com',
+      mobile: '0412345679',
+      password: 'test',
+      isEmailVerified: false,
+      isMobileVerified: false,
+      status: 'inactive'
+    }
+  ]

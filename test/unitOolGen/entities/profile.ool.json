@@ -1,0 +1,48 @@
+{
+  "type": {},
+  "entity": {
+    "profile": {
+      "comment": "",
+      "features": [],
+      "fields": {        
+        "id": {
+          "type": "text",
+          "maxLength": 32
+        }
+      },
+      "associations": [
+        {
+          "type": "refersTo",
+          "srcField": "gender",
+          "destEntity": "gender"
+        },
+        {
+          "type": "belongsTo",
+          "srcField": "user",
+          "destEntity": "user"
+        }
+      ],
+      "key": [
+        "id"
+      ],
+      "indexes": [
+        {
+          "name": "fk_profile_user",
+          "fields": [
+            "user"
+          ],
+          "unique": true,
+          "nullable": true
+        },
+        {
+          "name": "fk_profile_gender",
+          "fields": [
+            "gender"
+          ],
+          "unique": false,
+          "nullable": true
+        }
+      ]
+    }
+  }
+}

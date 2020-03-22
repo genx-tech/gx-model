@@ -1,0 +1,72 @@
+{
+  "name": "@genx/model",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Meta programming DSL specially for automating database structure creation and data access.",
+  "main": "lib/index.js",
+  "bin": {
+    "genx-eml": "bin/geml.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "babel-node ./src/cli/index --config=test/geml.json",
+    "doc": "jsdoc -c jsdoc.json -t ./node_modules/ink-docstrap/template -R README.md -d './docs/api' -r --verbose ./src",
+    "jison": "jison ./src/lang/grammar/oolong.jison -o ./src/lang/grammar/oolong.js && npm run build",
+    "test:all": "mocha test/*.mocha.js --recursive src/**/*.spec.js --timeout 5000",
+    "test:spec": "mocha --recursive src/**/*.spec.js --timeout 5000",
+    "test": "npm run build && npm run test:all",
+    "cover": "npm run build:test && nyc --reporter=html --reporter=text mocha test/*.mocha.js --recursive src/**/*.spec.js --timeout 5000",
+    "bulid:clean": "rm -rf lib",
+    "build": "npm run bulid:clean && NODE_ENV=development babel src -d lib --copy-files && del lib/**/__test__",
+    "build:prod": "npm run bulid:clean && NODE_ENV=production babel src -d lib --copy-files && del lib/**/__test__",
+    "build:test": "npm run bulid:clean && NODE_ENV=test babel src -d lib --copy-files && del lib/**/__test__",
+    "build:watch": "NODE_ENV=development babel src -w -d lib --copy-files",
+    "test:build": "npm run jison && OOL_DBG=1 node test/build.adhoc.js"
+  },
+  "repository": "https://github.com/genx-tech/gx-model",
+  "bugs": {
+    "url": "https://github.com/kitmi/k-suite/issues"
+  },
+  "author": "Rockie Guo <rockie@kitmi.com.au>",
+  "license": "MIT",
+  "nyc": {
+    "exclude": [
+      "babel.config.js",
+      "test",
+      "src",
+      "lib/cli",
+      "lib/modeler",
+      "lib/lang/grammar",
+      "lib/migration"
+    ]
+  },
+  "mocha": {
+    "require": [
+      "@babel/register",
+      "should"
+    ],
+    "timeout": 30000
+  },
+  "peerDependencies": {
+    "@genx/app": "*",
+    "rk-utils": "*"
+  },
+  "devDependencies": {
+    "@genx/app": "*",
+    "rk-utils": "*"
+  },
+  "dependencies": {
+    "@genx/algorithm": "*",
+    "@genx/data": "*",
+    "escodegen": "^1.11.0",
+    "exceljs": "^1.7.0",
+    "http-status-codes": "^1.3.0",
+    "immutable": "^4.0.0-rc.12",
+    "inquirer": "^6.2.0",
+    "number-to-letter": "^1.0.1",
+    "pluralize": "^7.0.0",
+    "swig-templates": "^2.0.3"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "type": {},
+  "entity": {
+    "usergroup": {
+      "comment": "",
+      "features": [],
+      "associations": [
+        {
+          "type": "refersTo",
+          "srcField": "groupid",
+          "destEntity": "group"
+        },
+        {
+          "type": "refersTo",
+          "srcField": "userid",
+          "destEntity": "user"
+        }
+      ],
+      "key": [
+        "userid",
+        "groupid"
+      ],
+      "indexes": [
+        {
+          "name": "fk_group",
+          "fields": [
+            "groupid"
+          ],
+          "unique": false,
+          "nullable": false
+        },
+        {
+          "name": "fk_user",
+          "fields": [
+            "userid"
+          ],
+          "unique": false,
+          "nullable": false
+        }
+      ]
+    }
+  }
+}

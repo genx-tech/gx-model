@@ -1,0 +1,7 @@
+import 'entities/**'
+
+schema 'sample-db'
+  entities
+    user
+    
+

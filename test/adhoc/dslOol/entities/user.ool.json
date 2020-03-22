@@ -1,0 +1,453 @@
+{
+    "namespace": [
+        "/Users/rockieguo/Documents/GitHub/k-suite/packages/oolong/test/adhoc/dslOol/entities/group.ool"
+    ],
+    "type": {
+        "password": {
+            "type": "text",
+            "maxLength": [
+                200
+            ]
+        },
+        "email": {
+            "type": "text",
+            "maxLength": [
+                200
+            ],
+            "modifiers": [
+                {
+                    "oolType": "Validator",
+                    "name": "isEmail"
+                }
+            ]
+        },
+        "phone": {
+            "type": "text",
+            "maxLength": [
+                20
+            ],
+            "modifiers": [
+                {
+                    "oolType": "Validator",
+                    "name": "matches",
+                    "args": [
+                        {
+                            "oolType": "RegExp",
+                            "value": "/^((\\+|00)\\d+)?\\d+(-\\d+)?$/"
+                        }
+                    ]
+                }
+            ]
+        },
+        "userStatus": {
+            "type": "enum",
+            "values": [
+                "inactive",
+                "active",
+                "disabled",
+                "forbidden",
+                "deleted"
+            ]
+        },
+        "name": {
+            "type": "text",
+            "maxLength": [
+                20
+            ]
+        }
+    },
+    "constant": {
+        "ABC": 1,
+        "CDE": "fjeifj"
+    },
+    "entity": {
+        "user": {
+            "comment": "User Credential",
+            "features": [
+                {
+                    "name": "autoId",
+                    "args": [
+                        {
+                            "startFrom": 100000
+                        }
+                    ]
+                },
+                "createTimestamp",
+                "updateTimestamp",
+                {
+                    "name": "logicalDeletion",
+                    "args": [
+                        {
+                            "status": "deleted"
+                        }
+                    ]
+                },
+                {
+                    "name": "stateTracking",
+                    "args": [
+                        "status"
+                    ]
+                },
+                {
+                    "name": "atLeastOneNotNull",
+                    "args": [
+                        [
+                            "email",
+                            "mobile"
+                        ]
+                    ]
+                }
+            ],
+            "fields": {
+                "email": {
+                    "name": "email",
+                    "type": "email",
+                    "comment": "User Email"
+                },
+                "mobile": {
+                    "name": "mobile",
+                    "type": "phone",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isMobilePhone",
+                            "args": [
+                                {
+                                    "oolType": "PipedValue",
+                                    "value": {
+                                        "oolType": "ObjectReference",
+                                        "name": "latest.locale"
+                                    },
+                                    "modifiers": [
+                                        {
+                                            "oolType": "Processor",
+                                            "name": "stringDasherize"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizeMobile"
+                        }
+                    ],
+                    "comment": "User Mobile"
+                },
+                "password": {
+                    "name": "password",
+                    "type": "password",
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "hashPassword",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.passwordSalt"
+                                }
+                            ]
+                        }
+                    ],
+                    "comment": "User Password"
+                },
+                "passwordSalt": {
+                    "name": "passwordSalt",
+                    "type": "text",
+                    "fixedLength": [
+                        8
+                    ],
+                    "auto": true,
+                    "comment": "User Password Salt"
+                },
+                "locale": {
+                    "name": "locale",
+                    "type": "text",
+                    "default": [
+                        "en_AU"
+                    ],
+                    "comment": "User Locale"
+                },
+                "status": {
+                    "name": "status",
+                    "type": "userStatus",
+                    "default": [
+                        "inactive"
+                    ],
+                    "comment": "User Status"
+                },
+                "testToken": {
+                    "name": "testToken",
+                    "type": "datetime",
+                    "default": [
+                        {
+                            "oorType": "SymbolToken",
+                            "name": "now"
+                        }
+                    ]
+                }
+            },
+            "associations": [
+                {
+                    "type": "hasMany",
+                    "destEntity": "profile",
+                    "srcField": "profiles",
+                    "fieldProps": {}
+                },
+                {
+                    "type": "hasMany",
+                    "destEntity": "group",
+                    "by": "userGroup",
+                    "srcField": "groups",
+                    "fieldProps": {}
+                }
+            ],
+            "indexes": [
+                {
+                    "fields": "email",
+                    "unique": true
+                },
+                {
+                    "fields": "mobile",
+                    "unique": true
+                }
+            ],
+            "data": [
+                {
+                    "email": "admin@email.com",
+                    "mobile": "0412345678",
+                    "password": "123456",
+                    "isEmailVerified": true,
+                    "isMobileVerified": true,
+                    "status": "active"
+                }
+            ],
+            "restful": {
+                "/user": {
+                    "create": {
+                        "allowedRoles": [
+                            "admin"
+                        ]
+                    },
+                    "findOne": {
+                        "allowAnonymous": true,
+                        "nested": {
+                            "/profiles": {
+                                "association": [
+                                    "profiles"
+                                ]
+                            },
+                            "/profile/:id": {
+                                "association": [
+                                    "profiles"
+                                ],
+                                "query": {
+                                    "profiles.id": {
+                                        "oolType": "ObjectReference",
+                                        "name": "params.id"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "findAll": {
+                        "allowedRoles": [
+                            "admin"
+                        ],
+                        "presetOfOrder": {
+                            "default": {
+                                "id": true
+                            }
+                        }
+                    },
+                    "updateOne": {
+                        "allowedRoles": [
+                            "admin"
+                        ],
+                        "allowUserSelf": true,
+                        "presetOptions": {
+                            "retrieveUpdated": true
+                        }
+                    },
+                    "updateMany": {
+                        "allowedRoles": [
+                            "admin"
+                        ],
+                        "presetOptions": {
+                            "retrieveUpdated": true
+                        }
+                    },
+                    "deleteOne": {
+                        "allowedRoles": [
+                            "admin"
+                        ]
+                    },
+                    "deleteMany": {
+                        "allowedRoles": [
+                            "admin"
+                        ]
+                    }
+                }
+            },
+            "interfaces": {
+                "validateUserCredential": {
+                    "accept": [
+                        {
+                            "name": "identity",
+                            "type": "text",
+                            "maxLength": [
+                                200
+                            ]
+                        },
+                        {
+                            "name": "password",
+                            "type": "password"
+                        }
+                    ],
+                    "implementation": [
+                        {
+                            "oolType": "FindOneStatement",
+                            "model": "user",
+                            "condition": {
+                                "oolType": "cases",
+                                "items": [
+                                    {
+                                        "oolType": "ConditionalStatement",
+                                        "test": {
+                                            "oolType": "ValidateExpression",
+                                            "caller": {
+                                                "oolType": "ObjectReference",
+                                                "name": "identity"
+                                            },
+                                            "callee": {
+                                                "oolType": "Validator",
+                                                "name": "isEmail"
+                                            }
+                                        },
+                                        "then": {
+                                            "oolType": "BinaryExpression",
+                                            "operator": "==",
+                                            "left": {
+                                                "oolType": "ObjectReference",
+                                                "name": "user.email"
+                                            },
+                                            "right": {
+                                                "oolType": "ObjectReference",
+                                                "name": "identity"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "oolType": "ConditionalStatement",
+                                        "test": {
+                                            "oolType": "ValidateExpression",
+                                            "caller": {
+                                                "oolType": "ObjectReference",
+                                                "name": "identity"
+                                            },
+                                            "callee": {
+                                                "oolType": "Validator",
+                                                "name": "matches",
+                                                "args": [
+                                                    {
+                                                        "oolType": "RegExp",
+                                                        "value": "/^(\\+?\\d{6,})$/"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "then": {
+                                            "oolType": "BinaryExpression",
+                                            "operator": "==",
+                                            "left": {
+                                                "oolType": "ObjectReference",
+                                                "name": "user.mobile"
+                                            },
+                                            "right": {
+                                                "oolType": "ObjectReference",
+                                                "name": "identity"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "else": {
+                                    "oolType": "ThrowExpression",
+                                    "errorType": "BusinessError",
+                                    "args": [
+                                        "invalid_identity"
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    "return": {
+                        "oolType": "ReturnExpression",
+                        "value": {
+                            "oolType": "ObjectReference",
+                            "name": "user"
+                        },
+                        "exceptions": [
+                            {
+                                "oolType": "ConditionalStatement",
+                                "test": {
+                                    "oolType": "UnaryExpression",
+                                    "operator": "not-exists",
+                                    "argument": {
+                                        "oolType": "ObjectReference",
+                                        "name": "user"
+                                    }
+                                },
+                                "then": {
+                                    "oolType": "ThrowExpression",
+                                    "errorType": "BusinessError",
+                                    "args": [
+                                        "user_not_found"
+                                    ]
+                                }
+                            },
+                            {
+                                "oolType": "ConditionalStatement",
+                                "test": {
+                                    "oolType": "BinaryExpression",
+                                    "operator": "!=",
+                                    "left": {
+                                        "oolType": "PipedValue",
+                                        "value": {
+                                            "oolType": "ObjectReference",
+                                            "name": "password"
+                                        },
+                                        "modifiers": [
+                                            {
+                                                "oolType": "Processor",
+                                                "name": "hashPassword",
+                                                "args": [
+                                                    {
+                                                        "oolType": "ObjectReference",
+                                                        "name": "user.passwordSalt"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "right": {
+                                        "oolType": "ObjectReference",
+                                        "name": "user.password"
+                                    }
+                                },
+                                "then": {
+                                    "oolType": "ThrowExpression",
+                                    "errorType": "BusinessError",
+                                    "args": [
+                                        "invalid_password"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "id": "./entities/user.ool",
+    "name": "user"
+}

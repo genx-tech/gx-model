@@ -1,0 +1,6 @@
+import './entities/*';
+
+schema product
+  entities
+    product
+    user

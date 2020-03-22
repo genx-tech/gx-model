@@ -1,0 +1,41 @@
+import '<oolong>/types'
+
+entity company
+  with
+    autoId
+
+  has    
+    companyName : text maxLength(100) optional |>upperCase    
+
+  associations    
+    hasMany company connectedBy companyRelation with @companyRelation.relationType == 'B' as beneficialCompanies
+    hasMany company connectedBy companyRelation with @companyRelation.relationType == 'S' as shareholderCompanies
+    hasOne company connectedBy companyRelation with @companyRelation.relationType == 'T' as trusteeCompany
+
+  index    
+    companyName is unique
+
+entity companyRelationType 
+  has
+    code : text fixedLength(1)
+    name : text maxLength(20)
+  data [
+    { code: 'T', name: 'Trustee' },
+    { code: 'B', name: 'Beneficiary' },
+    { code: 'S', name: 'Shareholder' }
+  ]  
+
+entity companyRelation
+  -- "Company and Company Relationship"
+  with 
+    autoId
+    createTimestamp
+    logicalDeletion    
+
+  associations
+    refersTo companyRelationType as relationType
+    refersTo company as company1
+    refersTo company as company2
+
+  index
+    [company1, company2, relationType] is unique

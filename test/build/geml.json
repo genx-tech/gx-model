@@ -1,0 +1,27 @@
+{
+    "dataSource": {
+        "mysql": {
+            "fooBar": {
+                "connection": "mysql://root:root@localhost/test-db",
+                "logSQLStatement": true,
+                "reverseRules": "reverseRules.js",
+                "saveDatabaseMeta": true
+            }
+        }
+    },
+    "settings": {
+        "geml": {
+            "modelPath": "models",
+            "gemlPath": "geml",
+            "scriptPath": "scripts",
+            "manifestPath": "manifest",
+            "useJsonSource": false,
+            "saveIntermediate": false,
+            "schemas": { 
+                "test": {
+                    "dataSource": "mysql.fooBar"
+                }
+            }
+        }
+    } 
+}

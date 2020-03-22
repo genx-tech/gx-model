@@ -1,0 +1,7 @@
+import './entities/*';
+
+schema manyToMany
+  entities
+    company
+    companyRelationType
+    companyRelation

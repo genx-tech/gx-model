@@ -1,0 +1,17 @@
+entity group
+  -- "Group"
+  with
+    autoId
+
+  has
+    name : text maxLength(255) optional -- "Group Name"
+
+  associations
+    hasMany user connectedBy userGroup
+
+entity userGroup
+  with
+    autoId
+  associations
+    refersTo user
+    refersTo group

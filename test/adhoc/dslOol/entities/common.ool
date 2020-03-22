@@ -1,0 +1,22 @@
+type
+  name : text maxLength(40)
+  url : text maxLength(200)
+
+entity settings
+  has
+    code: text maxLength(20)
+    value: object optional
+  key code
+  data [
+    { code: 'EXPIRY_DAYS', value: 30 }
+  ]
+
+entity taxCode
+  has
+    code: text maxLength(20)
+    value: object optional
+  key code  
+  data [
+    { code: 'GST', value: 0.1 }
+  ]
+      

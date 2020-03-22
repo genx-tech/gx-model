@@ -1,0 +1,241 @@
+{
+    "name": "sampleDb",
+    "displayName": "Sample Db",
+    "entities": {
+        "user": {
+            "name": "user",
+            "displayName": "User",
+            "comment": "User Credential",
+            "features": {
+                "autoId": {
+                    "field": "id",
+                    "startFrom": 10000
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                },
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                },
+                "atLeastOneNotNull": [
+                    [
+                        "email",
+                        "mobile"
+                    ]
+                ],
+                "stateTracking": [
+                    {
+                        "field": "status",
+                        "stateMapping": {
+                            "inactive": "statusInactiveTimestamp",
+                            "active": "statusActiveTimestamp",
+                            "disabled": "statusDisabledTimestamp",
+                            "forbidden": "statusForbiddenTimestamp"
+                        }
+                    }
+                ]
+            },
+            "fields": {
+                "id": {
+                    "type": "integer",
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Id"
+                },
+                "email": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "comment": "User Email",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isEmail"
+                        },
+                        {
+                            "oolType": "Processor",
+                            "name": "lowerCase"
+                        }
+                    ],
+                    "subClass": [
+                        "email"
+                    ],
+                    "displayName": "Email",
+                    "optional": true
+                },
+                "mobile": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "comment": "User Mobile",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isPhone"
+                        },
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+61"
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "phone"
+                    ],
+                    "displayName": "Mobile",
+                    "optional": true
+                },
+                "password": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "comment": "User Password",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "enforceStrongPassword"
+                        },
+                        {
+                            "oolType": "Processor",
+                            "name": "hashPassword",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.passwordSalt"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "password"
+                    ],
+                    "displayName": "Password"
+                },
+                "passwordSalt": {
+                    "type": "text",
+                    "fixedLength": 8,
+                    "auto": true,
+                    "comment": "User Password Salt",
+                    "displayName": "Password Salt"
+                },
+                "locale": {
+                    "type": "text",
+                    "default": "en_AU",
+                    "comment": "User Locale",
+                    "displayName": "Locale"
+                },
+                "isEmailVerified": {
+                    "type": "boolean",
+                    "writeOnce": true,
+                    "optional": true,
+                    "displayName": "Is Email Verified"
+                },
+                "emailVerifiedTime": {
+                    "type": "datetime",
+                    "writeOnce": true,
+                    "optional": true,
+                    "displayName": "Email Verified Time"
+                },
+                "isMobileVerified": {
+                    "type": "boolean",
+                    "writeOnce": true,
+                    "optional": true,
+                    "displayName": "Is Mobile Verified"
+                },
+                "mobileVerifiedTime": {
+                    "type": "datetime",
+                    "writeOnce": true,
+                    "optional": true,
+                    "displayName": "Mobile Verified Time"
+                },
+                "status": {
+                    "type": "enum",
+                    "values": [
+                        "inactive",
+                        "active",
+                        "disabled",
+                        "forbidden"
+                    ],
+                    "default": "inactive",
+                    "comment": "User Status",
+                    "subClass": [
+                        "userStatus"
+                    ],
+                    "displayName": "Status"
+                },
+                "tag": {
+                    "type": "array",
+                    "optional": true,
+                    "displayName": "Tag"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At"
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                },
+                "statusInactiveTimestamp": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Inactive Timestamp"
+                },
+                "statusActiveTimestamp": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Active Timestamp"
+                },
+                "statusDisabledTimestamp": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Disabled Timestamp"
+                },
+                "statusForbiddenTimestamp": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Forbidden Timestamp"
+                }
+            },
+            "key": "id"
+        }
+    },
+    "datasets": {},
+    "views": {}
+}

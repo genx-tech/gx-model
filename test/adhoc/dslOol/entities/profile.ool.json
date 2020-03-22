@@ -1,0 +1,84 @@
+{
+    "namespace": [
+        "/Users/rockieguo/Documents/GitHub/k-suite/packages/oolong/test/adhoc/dslOol/entities/common.ool"
+    ],
+    "constant": {
+        "locale": {
+            "lang": "zh_CN",
+            "timezone": "Australia/Sydney",
+            "array": [
+                "abv",
+                90,
+                200.5
+            ],
+            "multiline": [
+                "gogogo",
+                "nextline",
+                "double quote",
+                {
+                    "oolType": "JavaScript",
+                    "value": "function () {\n          return 'this is inside a script block';\n        }"
+                },
+                true,
+                true,
+                false,
+                {
+                    "key": "another",
+                    "value": "object"
+                }
+            ]
+        }
+    },
+    "entity": {
+        "profile": {
+            "comment": "Profile",
+            "features": [
+                "autoId"
+            ],
+            "fields": {
+                "firstName": {
+                    "name": "firstName",
+                    "type": "name",
+                    "optional": true
+                },
+                "middleName": {
+                    "name": "middleName",
+                    "type": "name",
+                    "optional": true
+                },
+                "surName": {
+                    "name": "surName",
+                    "type": "name",
+                    "optional": true
+                },
+                "dob": {
+                    "name": "dob",
+                    "type": "datetime",
+                    "optional": true,
+                    "comment": "Date of birth"
+                },
+                "avatar": {
+                    "name": "avatar",
+                    "type": "url",
+                    "optional": true
+                }
+            },
+            "associations": [
+                {
+                    "type": "refersTo",
+                    "destEntity": "gender",
+                    "srcField": "gender",
+                    "fieldProps": {}
+                },
+                {
+                    "type": "belongsTo",
+                    "destEntity": "user",
+                    "srcField": "owner",
+                    "fieldProps": {}
+                }
+            ]
+        }
+    },
+    "id": "./entities/profile.ool",
+    "name": "profile"
+}
