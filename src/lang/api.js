@@ -47,35 +47,7 @@ const { Connector, Validators } = require('@genx/data');
     }); 
  }
 
- async function importDataFiles(migrator, folderName) {
-    let dataSetPath = path.join(migrator.dbScriptPath, 'data', folderName);
-    let dataListFile = path.join(dataSetPath, 'index.list');
 
-    let runtimeDataSetPath, runtimeDataSetFile, imported = false;    
-
-    if (migrator.appModule.runtimeEnv) {
-        runtimeDataSetPath = path.join(dataSetPath, migrator.appModule.runtimeEnv);        
-        runtimeDataSetFile = path.join(runtimeDataSetPath, 'index.list');
-    }    
-
-    if (fs.existsSync(dataListFile)) {
-        await importDataFilesByList(migrator, dataSetPath, dataListFile);      
-        imported = true;  
-    } else {
-        migrator.appModule.log('warn', `Dataset index file "${dataListFile}" not exist.`)
-    }
-    
-    if (runtimeDataSetFile && fs.existsSync(runtimeDataSetFile)) {
-        await importDataFilesByList(migrator, runtimeDataSetPath, runtimeDataSetFile);    
-        imported = true;      
-    } else if (migrator.appModule.runtimeEnv) {
-        migrator.appModule.log(imported ? 'info' : 'warn', `Dataset index file of "${migrator.appModule.runtimeEnv}" env "${runtimeDataSetFile}" not exist.`)
-    }
-    
-    if (!imported) {
-        throw new Error(`Entry file of dataset "${folderName}" not found.`);
-    }    
- }
 
 
 

@@ -6,9 +6,9 @@ const {
     Validators, 
     Processors, 
     Generators, 
-    Errors: { BusinessError, DataValidationError, DsOperationError }, 
+    Errors: { ValidationError, DatabaseError }, 
     Utils: { Lang: { isNothing } } 
-} = require('@k-suite/oolong');
+} = require('@genx/data');
 {{ imports|safe }} 
 
 module.exports = (db, BaseEntityModel) => {

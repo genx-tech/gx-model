@@ -64,7 +64,7 @@ class MySQLModeler {
                 let assocNames = assocs.reduce((result, v) => {
                     result[v] = v;
                     return result;
-                }, {});                
+                }, {});             
 
                 entity.info.associations.forEach(assoc => this._processAssociation(modelingSchema, entity, assoc, assocNames, pendingEntities));
             }
@@ -299,7 +299,7 @@ class MySQLModeler {
     }
 
     _preProcessAssociations(entity) {
-        return entity.info.associations.map(assoc => {
+        return entity.info.associations.map(assoc => {            
             if (assoc.srcField) return assoc.srcField;
 
             if (assoc.type === 'hasMany') {
@@ -611,7 +611,7 @@ class MySQLModeler {
                         {
                             entity: connEntityName,
                             key: connEntity.key,
-                            on: this._translateJoinCondition({ ...assocNames, [connEntityName]: localFieldName }, entity.key, localFieldName,
+                            on: this._translateJoinCondition({ ...assocNames, [destEntityName]: destEntityName, [connEntityName]: localFieldName }, entity.key, localFieldName,
                                 assoc.with ? {
                                     by: connectedByField,
                                     with: assoc.with
@@ -645,13 +645,19 @@ class MySQLModeler {
                     this.linker.log('verbose', `Processed week reference: ${tag}`);
                 }
 
+                let joinOn = { [localField]: this._toColumnReference(localField + '.' + destEntity.key) };
+
+                if (assoc.with) {
+                    Object.assign(joinOn, this._oolConditionToQueryCondition({ ...assocNames, [destEntityName]: destEntityName }, assoc.with)); 
+                }
+
                 entity.addAssocField(localField, destEntity, destKeyField, assoc.fieldProps);
                 entity.addAssociation(
                     localField,                      
                     { 
                         entity: destEntityName, 
                         key: destEntity.key,
-                        on: { [localField]: this._toColumnReference(localField + '.' + destEntity.key) }
+                        on: joinOn 
                     }
                 );
 
@@ -763,6 +769,7 @@ class MySQLModeler {
 
         let translated = context[base];
         if (!translated) {
+            console.log(context);
             throw new Error(`Referenced object "${ref}" not found in context.`);
         }
 

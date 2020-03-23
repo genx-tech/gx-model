@@ -6,6 +6,13 @@ const AppInitiator = require('../AppInitiator');
 
 const { Commands, getCommandOptions } = require('./commands');
 
+const afterCommandConfirmed = (cli) => {
+    let cmd = cli.argv._[0];
+    let options = getCommandOptions(cli, cmd);                                                  
+    cli.usage.options = { ...cli.usage.options, ...options };    
+    cli.parse(cli.usage.options);
+};
+
 function main () {
     startCommand((app) => {
         let cmd = app.commandLine;
@@ -46,11 +53,8 @@ function main () {
                         "promptType": "list",
                         "promptMessage": "What command are you going to execute?",
                         "choicesProvider": _.map(Commands, (desc, cmd) => ({ name: `${cmd} - ${desc}`, value: cmd })),
-                        "afterInquire": (cli) => {
-                            let cmd = cli.argv._[0];
-                            let options = getCommandOptions(cli, cmd);                                                  
-                            cli.usage.options = { ...cli.usage.options, ...options };
-                        }
+                        "afterInquire": afterCommandConfirmed,
+                        "onArgumentExists": afterCommandConfirmed
                     }
                 ],  
                 "options": {                

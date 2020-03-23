@@ -1,29 +1,29 @@
 "use strict";
 
 const path = require('path');
-const { _, fs, eachAsync_, pascalCase, quote } = require('rk-utils');
+const { _, fs, eachAsync_,  quote } = require('rk-utils');
 
 /**
  * MySQL migration.
  * @class
  */
 class MySQLMigration {
-    /**     
+    /** 
+     * @param {ServiceContainer} app    
      * @param {object} context
-     * @param {Connector} connector
+     * @param {Db} db
      */
-    constructor(app, context, schemaName, connector) {
+    constructor(app, context, db) {
         this.app = app;        
         this.modelPath = context.modelPath;
-        this.scriptPath = context.scriptPath;
-        this.schemaName = schemaName;
-        this.connector = connector;
+        this.scriptPath = context.scriptPath;        
+        this.db = db;
 
-        this.dbScriptPath = path.join(this.scriptPath, this.connector.driver, this.connector.database);
+        this.dbScriptPath = path.join(this.scriptPath, this.db.driver, this.db.connector.database);
     }
 
     async reset_() {
-        return this.connector.execute_(`DROP DATABASE IF EXISTS ??`, [ this.connector.database ], { createDatabase: true });
+        return this.db.connector.execute_(`DROP DATABASE IF EXISTS ??`, [ this.db.connector.database ], { createDatabase: true });
     }
 
     async create_(extraOptions) {        
@@ -37,15 +37,15 @@ class MySQLMigration {
             }, '');
         }
         
-        let result = await this.connector.execute_(sqlCreate, 
-            [ this.connector.database ], 
+        let result = await this.db.connector.execute_(sqlCreate, 
+            [ this.db.connector.database ], 
             { createDatabase: true }
         );
         
         if (result.warningStatus == 0) {
-            this.app.log('info', `Created database "${this.connector.database}".`);
+            this.app.log('info', `Created database "${this.db.connector.database}".`);
         } else {
-            this.app.log('warn', `Database "${this.connector.database}" exists.`);
+            this.app.log('warn', `Database "${this.db.connector.database}" exists.`);
         }                        
 
         return eachAsync_(sqlFiles, async (file) => {
@@ -56,7 +56,7 @@ class MySQLMigration {
 
             let sql = _.trim(fs.readFileSync(sqlFile, { encoding: 'utf8' }));
             if (sql) {
-                result = _.castArray(await this.connector.execute_(sql, null, { multipleStatements: 1 }));
+                result = _.castArray(await this.db.connector.execute_(sql, null, { multipleStatements: 1 }));
 
                 let warningRows = _.reduce(result, (sum, row) => {
                     sum += row.warningStatus;
@@ -87,7 +87,7 @@ class MySQLMigration {
             }
         } else if (ext === '.sql') {
             let sql = fs.readFileSync(dataFile, {encoding: 'utf8'});
-            let result = await this.connector.execute_(sql, null, { multipleStatements: 1 });
+            let result = await this.db.connector.execute_(sql, null, { multipleStatements: 1 });
             this.app.log('verbose', `Executed SQL file: ${dataFile}`, result);
         } else if (ext === '.xlsx') {
 
@@ -118,46 +118,38 @@ class MySQLMigration {
             await this._loadMultiEntityRecords_(data);
         } else if (ext === '.js') {           
             let executor = require(dataFile);
-            await executor(this.app, this.connector);
+            await executor(this.app, this.db.connector);
         } else {
             throw new Error('Unsupported data file format.');
         }
     }
 
     async _loadMultiEntityRecords_(data) {
-        let className = pascalCase(this.schemaName);
-        let Db = require(path.join(this.modelPath, className));
-        let db = new Db(this.connector.connectionString, this.connector.options);    
+        
 
         try {
-            await db.connector.execute_('SET FOREIGN_KEY_CHECKS=0;');
+            await this.db.connector.execute_('SET FOREIGN_KEY_CHECKS=0;');
 
             await eachAsync_(data, async (records, entityName) => {                
                 let items = Array.isArray(records) ? records : [ records ];
-                return eachAsync_(items, item => db.model(entityName).create_(item, { $migration: true }));  
+                return eachAsync_(items, item => this.db.model(entityName).create_(item, { $migration: true }));  
             });
         } catch (error) {
             throw error;
         } finally {
-            await db.connector.execute_('SET FOREIGN_KEY_CHECKS=1;');
-            await db.close_();
+            await this.db.connector.execute_('SET FOREIGN_KEY_CHECKS=1;');
         }
     }
 
     async _loadSingleEntityRecords_(entityName, data) {
-        let className = pascalCase(this.schemaName);
-        let Db = require(path.join(this.modelPath, className));
-        let db = new Db(this.connector.connectionString, this.connector.options);    
-
         try {
-            await db.connector.execute_('SET FOREIGN_KEY_CHECKS=0;');
+            await this.db.connector.execute_('SET FOREIGN_KEY_CHECKS=0;');
 
-            await eachAsync_(data, item => db.model(entityName).create_(item, { $migration: true }));  
+            await eachAsync_(data, item => this.db.model(entityName).create_(item, { $migration: true }));  
         } catch (error) {
             throw error;
         } finally {
             await db.connector.execute_('SET FOREIGN_KEY_CHECKS=1;');
-            await db.close_();
         }
     }
 }

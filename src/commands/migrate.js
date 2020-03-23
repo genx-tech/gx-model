@@ -20,25 +20,24 @@ module.exports = async (app, context) => {
     throwIfFileNotExist("modelPath", context.modelPath);
     throwIfFileNotExist("scriptPath", context.scriptPath);
 
-    let schemaToConnector = getSchemaConnectors(app, context.schemas);
-
     let reset = app.option('reset');
 
     if (reset) {
-        await eachAsync_(Object.keys(context.schemas).reverse(), async (schemaName) => {
-            const connector = schemaToConnector[schemaName];
+        await eachAsync_(Object.keys(context.schemas).reverse(), async (schemaName) => {            
+            const db = app.db(schemaName);
     
-            const Migrator = require(`../migration/${connector.driver}`);
-            const migrator = new Migrator(app, context, schemaName, connector);
+            const Migrator = require(`../migration/${db.driver}`);
+            const migrator = new Migrator(app, context, db);
 
             await migrator.reset_();    
         });
     }
 
     return eachAsync_(context.schemas, async (schemaConfig, schemaName) => {
-        const connector = schemaToConnector[schemaName];
-        const Migrator = require(`../migration/${connector.driver}`);
-        const migrator = new Migrator(app, context, schemaName, connector);
+        const db = app.db(schemaName);        
+    
+        const Migrator = require(`../migration/${db.driver}`);
+        const migrator = new Migrator(app, context, db);
 
         await migrator.create_(schemaConfig.extraOptions);      
 

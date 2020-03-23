@@ -17,6 +17,8 @@
     //top level keywords
     const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity', 'dataset', 'view']);
 
+    //const TOP_LEVEL_KEYWORDS = 
+
     //allowed  keywords of differenty state
     const SUB_KEYWORDS = { 
         // level 1
@@ -59,7 +61,7 @@
         'const.*': 'const.item',
         'import.$INDENT': 'import.block',
         'type.$INDENT': 'type.block',
-        'const.$INDENT': 'const.block',
+        'const.$INDENT': 'const.block',        
         'entity.with': 'entity.with', 
         'entity.has': 'entity.has', 
         'entity.key': 'entity.key', 
@@ -106,7 +108,8 @@
     };
 
     //exit number of states on dedent if exists in below table
-    const DEDENT_STOPPER = new Map([                        
+    const DEDENT_STOPPER = new Map([      
+        [ 'entity', 1 ],                                  
         [ 'entity.with', 1 ],
         [ 'entity.has', 1 ],               
         [ 'entity.data', 1 ], 
@@ -131,7 +134,7 @@
     const NEWLINE_STOPPER = new Map([                
         [ 'import.item', 2 ],
         [ 'type.item', 2 ],
-        [ 'const.item', 2 ],      
+        [ 'const.item', 2 ],              
         [ 'entity.mixes', 1 ],
         [ 'entity.code', 1 ],
         [ 'entity.key', 1 ],   
@@ -584,7 +587,7 @@ route_only_one_node      "/"{identifier}
 symbol_operators        {relation_operators}|{syntax_operators}|{math_operators}
 word_operators          {logical_operators}|{relation_operators2}|{predicate_operators}
 bracket_operators       "("|")"|"["|"]"|"{"|"}"
-syntax_operators        "|~"|","|":"|"|>"|"|="|"--"|"=>"|"~"|"="|"->"
+syntax_operators        "|~" | "," | ":" | "|>" | "|=" | "--" | "=>" | "~" | "=" | "->"
 comment_operators       "//"
 relation_operators      "!="|">="|"<="|">"|"<"|"=="
 logical_operators       "not"|"and"|"or"
@@ -775,7 +778,6 @@ escapeseq               \\.
                             yytext = state.normalizeStringTemplate(yytext);
                             return 'STRING';
                         %}
-
 <INLINE>{longstring}    %{
                             state.matchAnyExceptNewline();
 
@@ -1187,7 +1189,8 @@ entity_statement_header0
     ;
 
 entity_statement_block
-    : comment_or_not entity_sub_items -> Object.assign({}, $1, $2)
+    : comment_or_not -> $1
+    | comment_or_not entity_sub_items -> Object.assign({}, $1, $2)
     ;
 
 entity_sub_items
@@ -1270,7 +1273,7 @@ associations_block
 association_item
     : association_type_referee identifier_or_string (association_through)? (association_as)? type_info_or_not field_comment_or_not -> { type: $1, destEntity: $2, ...$3, ...$4, fieldProps: { ...$5, ...$6} }    
     | association_type_referee NEWLINE INDENT identifier_or_string association_cases_block (association_as)? type_info_or_not field_comment_or_not NEWLINE DEDENT -> { type: $1, destEntity: $4, ...$5, ...$6, fieldProps: { ...$7, ...$8 } }
-    | association_type_referer identifier_or_string (association_as)? type_info_or_not type_modifiers_or_not field_comment_or_not -> { type: $1, destEntity: $2, ...$3, fieldProps: { ...$4, ...$5, ...$6 } }      
+    | association_type_referer identifier_or_string (association_extra_condition)? (association_as)? type_info_or_not type_modifiers_or_not field_comment_or_not -> { type: $1, destEntity: $2, ...$3, ...$4, fieldProps: { ...$5, ...$6, ...$7 } }      
     ;
 
 association_type_referee
@@ -1285,10 +1288,14 @@ association_type_referer
 
 association_through
     : "connectedBy" identifier_string_or_dotname -> { by: $2 }    
-    | "connectedBy" identifier_string_or_dotname "with" conditional_expression -> { by: $2, with: $4 }    
+    | "connectedBy" identifier_string_or_dotname association_extra_condition -> { by: $2, ...$3 }    
     | association_connection -> { remoteField: $1 }     
     | "being" array_of_identifier_or_string -> { remoteField: $2 }      
     | association_condition -> { with: $1 }
+    ;
+
+association_extra_condition
+    : "with" conditional_expression -> { with: $2 }    
     ;
 
 association_cases_block

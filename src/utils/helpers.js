@@ -1,5 +1,5 @@
 const path = require('path');
-const { _, fs } = require('rk-utils');
+const { _, fs, eachAsync_ } = require('rk-utils');
 
 exports.throwIfFileNotExist = (name, filePath) => {
     if (!fs.existsSync(filePath)) {
@@ -14,6 +14,27 @@ exports.getSchemaConnectors = (app, schemas) => _.mapValues(schemas, (schemaConf
     } 
     return connector;
 });
+
+async function importDataFilesByList(migrator, dataSetPath, dataListFile) {
+    let dataList = fs.readFileSync(dataListFile).toString().match(/^.+$/gm);
+
+    if (!dataList) {
+        return;
+    }
+
+    return eachAsync_(dataList, async line => {
+        line = line.trim();
+
+        if (line.length > 0 && line[0] !== '#') {            
+            let dataFile = path.join(dataSetPath, line);
+            if (!fs.existsSync(dataFile)) {
+                throw new Error(`Data file "${dataFile}" not found.`);
+            }
+
+            await migrator.load_(dataFile);
+        }
+    }); 
+}
 
 exports.importDataFiles = async function (migrator, folderName) {
     let dataSetPath = path.join(migrator.dbScriptPath, 'data', folderName);

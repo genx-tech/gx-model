@@ -52,6 +52,12 @@ class AppInitiator {
 
         await this.container.start_();
 
+        this.app.on('stopping', stopper => {
+            stopper.push((async () => {                
+                await this.container.stop_();
+            })());
+        });
+
         this.container.option = (name) => {
             return this.app.commandLine.option(name);
         };
@@ -76,6 +82,8 @@ class AppInitiator {
             'useJsonSource': { type: 'boolean', default: false },
             'saveIntermediate': { type: 'boolean', default: false }
         });
+
+        this.container.options.modelsPath = modelPath;
         
         gemlPath = this.container.toAbsolutePath(gemlPath);    
         modelPath = this.container.toAbsolutePath(modelPath);
@@ -91,6 +99,11 @@ class AppInitiator {
             useJsonSource,
             saveIntermediate  
         };
+
+        if (!_.isEmpty(gemlConfig.schemas)) {            
+            const { load_: useDb } = require('@genx/app/lib/features/useDb');
+            await useDb(this.container, gemlConfig.schemas);
+        }
 
         let cmdMethod_ = require('./commands/' + command);        
         await cmdMethod_(this.container, gemlConfig);

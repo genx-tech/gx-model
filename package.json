@@ -55,6 +55,8 @@
   },
   "devDependencies": {
     "@genx/app": "*",
+    "jison": "^0.4.18",
+    "mongodb": "^3.5.5",
     "rk-utils": "*"
   },
   "dependencies": {
