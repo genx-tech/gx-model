@@ -44,7 +44,8 @@ class AppInitiator {
                 'settings',
                 'timezone',
                 'version',                
-                'dataSource'
+                'dataSource',
+                'env'
             ]
         });
 
