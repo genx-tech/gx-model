@@ -632,9 +632,22 @@ class MySQLModeler {
             case 'refersTo':
             case 'belongsTo':
                 let localField = assoc.srcField || destEntityNameAsFieldName;
+                let destFieldName = destKeyField.name;
+                let referencedField = destKeyField;
 
                 if (assoc.type === 'refersTo') {
                     let tag = `${entity.name}:1-${destEntityName}:* ${localField}`;
+
+                    if (assoc.destField) {
+                        if (!destEntity.hasField(assoc.destField)) {
+                            throw new Error(`The field "${assoc.destField}" being referenced is not a field of entity "${destEntityName}".`);
+                        }
+
+                        destFieldName = assoc.destField;  
+                        referencedField = destEntity.fields[destFieldName];               
+                    }
+
+                    tag += '->' + assoc.destField;
 
                     if (this._processedRef.has(tag)) {                        
                         //already processed by connection, skip
@@ -645,18 +658,20 @@ class MySQLModeler {
                     this.linker.log('verbose', `Processed week reference: ${tag}`);
                 }
 
-                let joinOn = { [localField]: this._toColumnReference(localField + '.' + destEntity.key) };
+                let joinOn = { [localField]: this._toColumnReference(destEntityName + '.' + destFieldName) };
 
                 if (assoc.with) {
                     Object.assign(joinOn, this._oolConditionToQueryCondition({ ...assocNames, [destEntityName]: destEntityName }, assoc.with)); 
                 }
 
-                entity.addAssocField(localField, destEntity, destKeyField, assoc.fieldProps);
+                entity.addAssocField(localField, destEntity, referencedField, assoc.fieldProps);
                 entity.addAssociation(
                     localField,                      
                     { 
+                        type: assoc.type,
                         entity: destEntityName, 
                         key: destEntity.key,
+                        field: destFieldName,
                         on: joinOn 
                     }
                 );
@@ -686,7 +701,7 @@ class MySQLModeler {
                 constraints.onUpdate || (constraints.onUpdate = 'NO ACTION');
                 constraints.onDelete || (constraints.onDelete = 'NO ACTION');
 
-                this._addReference(entity.name, localField, destEntityName, destKeyField.name, constraints);
+                this._addReference(entity.name, localField, destEntityName, destFieldName, constraints);
             break;
         }
     }

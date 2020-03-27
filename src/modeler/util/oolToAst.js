@@ -295,7 +295,7 @@ function compileModifier(topoId, value, functor, compileContext) {
     let declareParams;
 
     if (functor.oolType === OolTypes.Modifier.ACTIVATOR) { 
-        declareParams = translateFunctionParams(functor.args);        
+        declareParams = translateFunctionParams([{name: compileContext.moduleName}, {name: 'context'}].concat(functor.args));        
     } else {
         declareParams = translateFunctionParams(_.isEmpty(functor.args) ? [value] : [value].concat(functor.args));        
     }        
