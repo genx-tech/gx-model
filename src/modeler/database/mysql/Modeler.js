@@ -611,7 +611,7 @@ class MySQLModeler {
                         {
                             entity: connEntityName,
                             key: connEntity.key,
-                            on: this._translateJoinCondition({ ...assocNames, [destEntityName]: destEntityName, [connEntityName]: localFieldName }, entity.key, localFieldName,
+                            on: this._translateJoinCondition({ ...assocNames, [destEntityName]: localFieldName + '.' + connectedByField2, [connEntityName]: localFieldName }, entity.key, localFieldName,
                                 assoc.with ? {
                                     by: connectedByField,
                                     with: assoc.with
@@ -658,10 +658,10 @@ class MySQLModeler {
                     this.linker.log('verbose', `Processed week reference: ${tag}`);
                 }
 
-                let joinOn = { [localField]: this._toColumnReference(destEntityName + '.' + destFieldName) };
+                let joinOn = { [localField]: this._toColumnReference(localField + '.' + destFieldName) };
 
                 if (assoc.with) {
-                    Object.assign(joinOn, this._oolConditionToQueryCondition({ ...assocNames, [destEntityName]: destEntityName }, assoc.with)); 
+                    Object.assign(joinOn, this._oolConditionToQueryCondition({ ...assocNames, [destEntityName]: localField }, assoc.with)); 
                 }
 
                 entity.addAssocField(localField, destEntity, referencedField, assoc.fieldProps);

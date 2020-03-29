@@ -37,7 +37,7 @@ function main () {
         return appInitiator.run(command);
     }, {
         logger: {
-            level: 'debug'
+            level: 'info'
         },
         commandName: 'geml',
         config: {

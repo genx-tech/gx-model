@@ -195,9 +195,16 @@ class DaoModeler {
 
                     let mixinFilePath = path.join(mixinsDirPath, mixinName + '.js');
                     if (!fs.pathExistsSync(mixinFilePath)) {
-                        fs.writeFileSync(mixinFilePath, `module.exports = ${capitalized} => class extends ${capitalized} {
-                            //...business logic
-                        };`);
+                        fs.writeFileSync(mixinFilePath, `const {
+    Errors: { ValidationError, DatabaseError },
+    Processors,
+    Validators
+} = require("@genx/data");
+const { _ } = require("rk-utils");
+
+module.exports = ${capitalized} => class extends ${capitalized} {
+    //todo: add staic methods
+};`);
                     }
 
                     let mixinVarName = 'mixin' + mixinName;
