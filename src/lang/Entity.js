@@ -267,7 +267,7 @@ class Entity extends Clonable {
     }
 
     /**
-     * Get a field object by field name or field accesor.
+     * Get a field object by field name or entity meta accesor (e.g. $key, $feature).
      * @param fieldId
      * @returns {OolongField}
      */
@@ -277,6 +277,9 @@ class Entity extends Clonable {
 
             switch (token) {
                 case "key":
+                    if (Array.isArray(this.key)) {
+                        throw new Error('Combination key not support for accesor "$key".');
+                    }
                     return this.fields[this.key];
 
                 case 'feature':
@@ -432,6 +435,10 @@ class Entity extends Clonable {
     setKey(name) {
         this.key = name;
         return this;
+    }
+
+    getReferencedEntity(entityName) {
+        return this.linker.loadEntity(this.oolModule, entityName);    
     }
 
     /**
