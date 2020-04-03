@@ -22,7 +22,7 @@ function feature(entity, args) {
     };
 
     const {
-        userEntity: userFieldRef,
+        userField: userFieldRef,
         uidSource,
         trackCreate,
         trackUpdate
