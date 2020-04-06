@@ -1,6 +1,6 @@
 "use strict";
 
-const FEATURE_NAME = 'createTimestamp';
+const FEATURE_NAME = 'userEditTracking';
 
 /**
  * A rule specifies the entity to automatically record the creation time
@@ -18,14 +18,16 @@ function feature(entity, args) {
         uidSource: 'state.user.id',
         trackCreate: 'createdBy',
         trackUpdate: 'updatedBy',
-        ...args
+        addFieldsOnly: false,
+        ...args[0]
     };
 
     const {
         userField: userFieldRef,
         uidSource,
         trackCreate,
-        trackUpdate
+        trackUpdate,
+        addFieldsOnly
     } = options;    
 
     if (!trackCreate && !trackUpdate) {
@@ -70,10 +72,12 @@ function feature(entity, args) {
         fields['updatedBy'] = trackUpdate;
     }
 
-    entity.addFeature(FEATURE_NAME, {
-        fields,
-        uidSource
-    });    
+    if (!addFieldsOnly) {
+        entity.addFeature(FEATURE_NAME, {
+            fields,
+            uidSource
+        });    
+    }
 }
 
 module.exports = feature;

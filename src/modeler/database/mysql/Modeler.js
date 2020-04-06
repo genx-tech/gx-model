@@ -895,13 +895,16 @@ class MySQLModeler {
                 break;
 
             case 'createTimestamp':
-                field = entity.fields[feature.field];
+                field = entity.fields[feature.field];                
                 field.isCreateTimestamp = true;
                 break;
 
             case 'updateTimestamp':
                 field = entity.fields[feature.field];
                 field.isUpdateTimestamp = true;
+                break;
+
+            case 'userEditTracking':
                 break;
 
             case 'logicalDeletion':

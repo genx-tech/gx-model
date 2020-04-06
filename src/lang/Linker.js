@@ -4,7 +4,7 @@ const path = require('path');
 const { _, fs, glob } = require('rk-utils');
 const { Types } = require('@genx/data');
 
-const Oolong = require('./grammar/oolong');
+const Oolong = require('./grammar/geml');
 const OolongParser = Oolong.parser;
 const OolTypes = require('./OolTypes');
 const Entity = require('./Entity');
@@ -279,7 +279,7 @@ class Linker {
     loadEntity(refererModule, elementName, throwOnMissing = true) {
         let entity = this.loadElement(refererModule, OolTypes.Element.ENTITY, elementName, throwOnMissing);
 
-        if (entity && _.isEmpty(entity.fields)) {
+        if (entity && _.isEmpty(entity.fields) && _.isEmpty(entity.info.associations)) {
             throw new Error(`Entity "${elementName}" has no any fields defined.`);
         }
 

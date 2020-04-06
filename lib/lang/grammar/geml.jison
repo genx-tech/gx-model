@@ -36,7 +36,7 @@
         'dataset.body': new Set(['with']),
 
         // level 3
-        'entity.associations.item': new Set(['connectedBy', 'being', 'with', 'as']),        
+        'entity.associations.item': new Set(['connectedBy', 'being', 'with', 'as', 'of']),        
         'entity.interface.find': new Set(['a', 'an', 'the', 'one', 'by', 'cases', 'selected', 'selectedBy', "of", "which", "where", "when", "with", "otherwise", "else"]),           
         'entity.interface.return': new Set(["unless", "when"]),       
         'entity.triggers.onChange': new Set(["when"]), 
@@ -886,7 +886,8 @@ escapeseq               \\.
                                     this.unput(yytext);
                                     this.begin('REPARSE');
                                 }                                
-                            %}                            
+                            %}      
+<INLINE>{symbol_operators}  return yytext;                                                  
 <REPARSE,INLINE>{identifier}        %{        
                                 if (this.topState(0) !== 'INLINE') {
                                     this.begin('INLINE');
@@ -918,7 +919,6 @@ escapeseq               \\.
 
                                 return 'NAME';
                             %}
-<INLINE>{symbol_operators}  return yytext;
 
 /lex
 
@@ -1130,11 +1130,15 @@ type_modifiers
 
 type_modifier
     : "|~" type_modifier_validators -> $2
-    | "|>" identifier -> state.normalizeProcessor($2)
-    | "|>" general_function_call -> state.normalizeProcessor($2.name, $2.args)    
+    | "|>" identifier_or_general_function_call -> state.normalizeProcessor(...$2)    
     | "|=" "(" literal_and_value_expression ")" -> state.normalizeActivator('$eval', [ $3 ])
     | "|=" identifier -> state.normalizeActivator($2)
     | "|=" general_function_call -> state.normalizeActivator($2.name, $2.args)        
+    ;
+
+identifier_or_general_function_call 
+    : general_function_call -> [$1.name, $1.args]
+    | identifier -> [$1]
     ;
 
 type_modifier_validators
@@ -1248,7 +1252,8 @@ association_item
     : association_type_referee identifier_or_string (association_through)? (association_as)? type_info_or_not field_comment_or_not -> { type: $1, destEntity: $2, ...$3, ...$4, fieldProps: { ...$5, ...$6} }    
     | association_type_referee NEWLINE INDENT identifier_or_string association_cases_block (association_as)? type_info_or_not field_comment_or_not NEWLINE DEDENT -> { type: $1, destEntity: $4, ...$5, ...$6, fieldProps: { ...$7, ...$8 } }
     | "belongsTo" identifier_or_string (association_extra_condition)? (association_as)? type_info_or_not type_modifiers_or_not field_comment_or_not -> { type: $1, destEntity: $2, ...$3, ...$4, fieldProps: { ...$5, ...$6, ...$7 } }      
-    | "refersTo" identifier_or_string (identifier_or_string)? (association_extra_condition)? (association_as)? type_info_or_not type_modifiers_or_not field_comment_or_not -> { type: $1, destEntity: $2, destField: $3, ...$4, ...$5, fieldProps: { ...$6, ...$7, ...$8 } }      
+    | "refersTo" identifier_or_string (association_extra_condition)? (association_as)? type_info_or_not type_modifiers_or_not field_comment_or_not -> { type: $1, destEntity: $2, ...$3, ...$4, fieldProps: { ...$5, ...$6, ...$7 } }      
+    | "refersTo" identifier_or_string "of" identifier_or_string (association_extra_condition)? (association_as)? type_info_or_not type_modifiers_or_not field_comment_or_not -> { type: $1, destEntity: $4, destField: $2, ...$5, ...$6, fieldProps: { ...$7, ...$8, ...$9 } }      
     ;
 
 association_type_referee

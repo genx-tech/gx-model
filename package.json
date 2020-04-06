@@ -13,7 +13,7 @@
   "scripts": {
     "start": "babel-node ./src/cli/index --config=test/geml.json",
     "doc": "jsdoc -c jsdoc.json -t ./node_modules/ink-docstrap/template -R README.md -d './docs/api' -r --verbose ./src",
-    "jison": "jison ./src/lang/grammar/oolong.jison -o ./src/lang/grammar/oolong.js && npm run build",
+    "jison": "./scripts/build-grammar.sh",
     "test:all": "mocha test/*.mocha.js --recursive src/**/*.spec.js --timeout 5000",
     "test:spec": "mocha --recursive src/**/*.spec.js --timeout 5000",
     "test": "npm run build && npm run test:all",

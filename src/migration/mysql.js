@@ -85,10 +85,11 @@ class MySQLMigration {
             } else {
                 await this._loadMultiEntityRecords_(data);
             }
+            this.app.log('info', `Loaded JSON data file: ${dataFile}`);
         } else if (ext === '.sql') {
             let sql = fs.readFileSync(dataFile, {encoding: 'utf8'});
             let result = await this.db.connector.execute_(sql, null, { multipleStatements: 1 });
-            this.app.log('verbose', `Executed SQL file: ${dataFile}`, result);
+            this.app.log('info', `Executed SQL file: ${dataFile}`, result);
         } else if (ext === '.xlsx') {
 
             const Excel = require('exceljs');
@@ -116,16 +117,19 @@ class MySQLMigration {
             });
 
             await this._loadMultiEntityRecords_(data);
+
+            this.app.log('info', `Imported excel data file: ${dataFile}`);
         } else if (ext === '.js') {           
             let executor = require(dataFile);
             await executor(this.app, this.db.connector);
+
+            this.app.log('info', `Ran data script: ${dataFile}`);
         } else {
             throw new Error('Unsupported data file format.');
         }
     }
 
-    async _loadMultiEntityRecords_(data) {
-        
+    async _loadMultiEntityRecords_(data) {        
 
         try {
             await this.db.connector.execute_('SET FOREIGN_KEY_CHECKS=0;');
