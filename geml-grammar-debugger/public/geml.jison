@@ -23,7 +23,7 @@
     const SUB_KEYWORDS = { 
         // level 1
         'schema': new Set(['entities', 'views']),
-        'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'interface', 'mixes', 'code', 'triggers' ]),
+        'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'interface', 'code', 'triggers' ]),
         'dataset': new Set(['is']),
     
         // level 2
@@ -64,7 +64,6 @@
         'entity.key': 'entity.key', 
         'entity.index': 'entity.index', 
         'entity.data': 'entity.data', 
-        'entity.mixes': 'entity.mixes', 
         'entity.code': 'entity.code', 
 
         'entity.associations': 'entity.associations',
@@ -115,7 +114,6 @@
         [ 'import.item', 2 ],
         [ 'type.item', 2 ],
         [ 'const.item', 2 ],              
-        [ 'entity.mixes', 1 ],
         [ 'entity.code', 1 ],
         [ 'entity.key', 1 ],   
         [ 'entity.data', 1 ],     
@@ -1132,8 +1130,7 @@ type_modifier
     : "|~" type_modifier_validators -> $2
     | "|>" identifier_or_general_function_call -> state.normalizeProcessor(...$2)    
     | "|=" "(" literal_and_value_expression ")" -> state.normalizeActivator('$eval', [ $3 ])
-    | "|=" identifier -> state.normalizeActivator($2)
-    | "|=" general_function_call -> state.normalizeActivator($2.name, $2.args)        
+    | "|=" identifier_or_general_function_call -> state.normalizeActivator(...$2)
     ;
 
 identifier_or_general_function_call 
@@ -1186,12 +1183,7 @@ entity_sub_item
     | data_statement
     | code_statement    
     | interfaces_statement
-    | mixin_statement
     | triggers_statement
-    ;
-
-mixin_statement
-    : "mixes" identifier_or_string_list NEWLINE -> { mixins: $2 }
     ;
 
 code_statement

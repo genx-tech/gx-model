@@ -687,7 +687,7 @@ class MySQLModeler {
 
                 if (localFieldObj.constraintOnDelete) {
                     constraints.onDelete = localFieldObj.constraintOnDelete;
-                }
+                }                
 
                 if (assoc.type === 'belongsTo') {
                     constraints.onUpdate || (constraints.onUpdate = 'RESTRICT');

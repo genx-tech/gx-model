@@ -184,6 +184,7 @@ class DaoModeler {
                 });
             }
 
+            /*
             let mixins = [];
 
             if (!_.isEmpty(entity.info.mixins)) {
@@ -211,7 +212,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                     importLines.push(JsLang.astToCode(JsLang.astRequire(mixinVarName, './mixins/' + mixinName)));
                     mixins.push(mixinVarName);
                 });
-            }
+            }*/
 
             //assemble the source code file
             //JsLang.astPushInBody(ast, astClassMain);
@@ -227,7 +228,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                     result['$' + functor.functionName] = JsLang.astId(functor.functionName);
                     return result;
                 }, {}))), 4),
-                mixins 
+                //mixins 
             };
 
             let classTemplate = path.resolve(__dirname, 'database', this.connector.driver, 'EntityModel.js.swig');
