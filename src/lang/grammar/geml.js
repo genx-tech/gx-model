@@ -511,7 +511,7 @@ case 312:
 this.$ = [ $$[$0-1] ].concat($$[$0]) ;
 break;
 case 327:
-this.$ = {};
+this.$ = {}    ;
 break;
 case 329: case 331:
 this.$ = {[$$[$0-2]]: $$[$0]};

@@ -1769,7 +1769,7 @@ literal
     ;    
 
 inline_object
-    : "{" "}" -> {}
+    : "{" "}" -> {}    
     | "{" kv_pairs "}" -> $2
     ;
 

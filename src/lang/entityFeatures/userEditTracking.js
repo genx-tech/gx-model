@@ -17,7 +17,8 @@ function feature(entity, args) {
         userEntity: 'user.id',
         uidSource: 'state.user.id',
         trackCreate: 'createdBy',
-        trackUpdate: 'updatedBy',
+        trackUpdate: 'updatedBy', 
+        revisionField: 'revision',       
         addFieldsOnly: false,
         ...args[0]
     };
@@ -27,7 +28,8 @@ function feature(entity, args) {
         uidSource,
         trackCreate,
         trackUpdate,
-        addFieldsOnly
+        revisionField,
+        addFieldsOnly,
     } = options;    
 
     if (!trackCreate && !trackUpdate) {
@@ -67,9 +69,14 @@ function feature(entity, args) {
 
         entity.on('afterAddingFields', () => {
             entity.addField(typeInfo.name, typeInfo);
+            entity.addField(revisionField, {
+                type: 'integer',
+                readOnly: true
+            });
         });
 
         fields['updatedBy'] = trackUpdate;
+        fields['revision'] = revisionField;
     }
 
     if (!addFieldsOnly) {
