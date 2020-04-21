@@ -30,6 +30,7 @@ function feature(entity, args) {
         trackUpdate,
         revisionField,
         addFieldsOnly,
+        migrationUser
     } = options;    
 
     if (!trackCreate && !trackUpdate) {
@@ -82,7 +83,8 @@ function feature(entity, args) {
     if (!addFieldsOnly) {
         entity.addFeature(FEATURE_NAME, {
             fields,
-            uidSource
+            uidSource,
+            migrationUser
         });    
     }
 }
