@@ -1056,7 +1056,7 @@ parse: function parse(input) {
         }
 
         normalizeSymbol(ref) {
-            return { oorType: 'SymbolToken', name: ref.substr(2) };
+            return { oorType: 'SymbolToken', name: ref.substr(2).toUpperCase() };
         }                
         
         normalizeReference(ref) {

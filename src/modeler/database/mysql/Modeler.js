@@ -359,7 +359,7 @@ class MySQLModeler {
         }
 
         let destKeyField = destEntity.getKeyField();
-        assert: destKeyField, `Empty key field. Entity: ${destEntityName}`; 
+        assert: destKeyField, `Empty key field "${destEntity.keyField}". Dest entity: ${destEntityName}, current entity: ${entity.name}`; 
 
         if (Array.isArray(destKeyField)) {
             throw new Error(`Destination entity "${destEntityName}" with combination primary key is not supported.`);

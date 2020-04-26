@@ -47,29 +47,22 @@ function feature(entity, args) {
     const fields = {};
 
     if (trackCreate) {
-        const typeInfo = {
-            name: trackCreate,
-            type: uidField.type,
-            readOnly: true,
-            writeOnce: true
-        };
-
-        entity.on('afterAddingFields', () => {
-            entity.addField(typeInfo.name, typeInfo);
-        });
-
         fields['createdBy'] = trackCreate;
+
+        entity.info.associations || (entity.info.associations = []);
+        entity.info.associations.push({
+            type: 'refersTo',
+            destEntity: userEntityName,
+            srcField: trackCreate,
+            fieldProps: {
+                readOnly: true,
+                writeOnce: true
+            }
+        });
     }
 
     if (trackUpdate) {
-        const typeInfo = {
-            name: trackUpdate,
-            type: uidField.type,
-            readOnly: true
-        };
-
         entity.on('afterAddingFields', () => {
-            entity.addField(typeInfo.name, typeInfo);
             entity.addField(revisionField, {
                 type: 'integer',
                 readOnly: true
@@ -78,6 +71,16 @@ function feature(entity, args) {
 
         fields['updatedBy'] = trackUpdate;
         fields['revision'] = revisionField;
+
+        entity.info.associations || (entity.info.associations = []);
+        entity.info.associations.push({
+            type: 'refersTo',
+            destEntity: userEntityName,
+            srcField: trackUpdate,
+            fieldProps: {
+                readOnly: true
+            }
+        });
     }
 
     if (!addFieldsOnly) {

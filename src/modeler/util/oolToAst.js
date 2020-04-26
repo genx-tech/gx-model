@@ -618,7 +618,7 @@ function compileConcreteValueExpression(startTopoId, value, compileContext) {
 }
 
 function translateSymbolToken(name) {
-    if (name === 'now') {
+    if (name === 'NOW') {
         return {
             "type": "CallExpression",
             "callee": {
@@ -653,7 +653,7 @@ function translateSymbolToken(name) {
         };
     } 
     
-    throw new Error('not support');
+    throw new Error('not support: ' + name);
 }
 
 /**
