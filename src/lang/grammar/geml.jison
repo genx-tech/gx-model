@@ -1315,7 +1315,7 @@ hasmany_keywords
 
 key_statement
     : "key" identifier_or_string NEWLINE -> { key: $2 }
-    | "key" array_of_identifier_or_string NEWLINE -> { key: $2 }
+ /* | "key" array_of_identifier_or_string NEWLINE -> { key: $2 } // remove combination key support, too much effort to infer the relationship */ 
     ;
 
 index_statement
