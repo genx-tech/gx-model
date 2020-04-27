@@ -153,7 +153,7 @@ class MySQLMigration {
         } catch (error) {
             throw error;
         } finally {
-            await db.connector.execute_('SET FOREIGN_KEY_CHECKS=1;');
+            await this.db.connector.execute_('SET FOREIGN_KEY_CHECKS=1;');
         }
     }
 }
