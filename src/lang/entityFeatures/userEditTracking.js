@@ -78,7 +78,8 @@ function feature(entity, args) {
             destEntity: userEntityName,
             srcField: trackUpdate,
             fieldProps: {
-                readOnly: true
+                readOnly: true,
+                optional: true
             }
         });
     }
