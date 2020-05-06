@@ -46,20 +46,13 @@ exports.getCommandOptions = (cli, command) => {
 
         case 'import':
             cmdOptions['schema'] = {
-                desc: 'The schema to list',                
-                promptMessage: 'Please select a schema:',
-                inquire: true,
-                required: true,
-                promptType: 'list',
-                choicesProvider: () => core.getSchemasInConfig()
+                desc: 'The schema to list',                               
+                required: true                
             };
             cmdOptions['dataset'] = {
-                desc: 'The name of the data set to import',
-                promptMessage: 'Please select the target dataset:',
+                desc: 'The name of the data set to import',                
                 alias: [ 'ds', 'data' ],
-                inquire: true,
-                promptType: 'list',
-                choicesProvider: () => core.getDataset_()
+                required: true                
             };
             break;
 
