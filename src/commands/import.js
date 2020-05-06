@@ -33,7 +33,5 @@ module.exports = async (app, context) => {
     const Migrator = require(`../migration/${db.driver}`);
     const migrator = new Migrator(app, context, db);
 
-    await migrator.create_(schemaConfig.extraOptions);      
-
     await importDataFiles(migrator, dataset);  
 };
