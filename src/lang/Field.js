@@ -46,6 +46,10 @@ class Field extends Clonable {
             this[key] = Array.isArray(value) ? value[0] : value;
         });
 
+        if (this.info.modifiers && _.find(this.info.modifiers, mod => mod.oolType === 'Activator')) {
+            this.hasActivator = true;
+        }
+
         /**
          * The default name of the field
          * @member {string}
