@@ -423,16 +423,42 @@ const _fieldRequirementCheck = (fieldName, references, content, requireTargetFie
         ? {
               type: "IfStatement",
               test: {
-                  type: "UnaryExpression",
-                  operator: "!",
-                  argument: {
-                      type: "CallExpression",
-                      callee: {
-                          type: "Identifier",
-                          name: "isNothing",
+                  type: "LogicalExpression",
+                  operator: "&&",
+                  left: {
+                      type: "UnaryExpression",
+                      operator: "!",
+                      argument: {
+                          type: "CallExpression",
+                          callee: {
+                              type: "Identifier",
+                              name: "isNothing",
+                          },
+                          arguments: [
+                              {
+                                  type: "MemberExpression",
+                                  computed: true,
+                                  object: {
+                                      type: "Identifier",
+                                      name: "latest",
+                                  },
+                                  property: {
+                                      type: "Literal",
+                                      value: fieldName,
+                                      raw: quote(fieldName, "'"),
+                                  },
+                              },
+                          ],
                       },
-                      arguments: [
-                          {
+                      prefix: true,
+                  },
+                  right: {
+                      type: "UnaryExpression",
+                      operator: "!",
+                      argument: {
+                          type: "MemberExpression",
+                          computed: false,
+                          object: {
                               type: "MemberExpression",
                               computed: true,
                               object: {
@@ -445,9 +471,13 @@ const _fieldRequirementCheck = (fieldName, references, content, requireTargetFie
                                   raw: quote(fieldName, "'"),
                               },
                           },
-                      ],
+                          property: {
+                              type: "Identifier",
+                              name: "oorType",
+                          },
+                      },
+                      prefix: true,
                   },
-                  prefix: true,
               },
               consequent: {
                   type: "BlockStatement",

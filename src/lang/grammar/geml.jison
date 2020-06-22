@@ -1370,7 +1370,7 @@ triggers_operation_block
     ;
 
 triggers_operation_item
-    : "when" conditional_expression NEWLINE INDENT triggers_result_block DEDENT NEWLINE? -> { condition: $2, do: $5 }
+    : "when" conditional_expression NEWLINE INDENT triggers_result_block DEDENT NEWLINE? -> { condition: $2, do: $5 }    
     | "always" NEWLINE INDENT triggers_result_block DEDENT NEWLINE? -> { do: $4 }
     ;   
 
