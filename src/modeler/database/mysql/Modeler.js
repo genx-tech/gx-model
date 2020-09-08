@@ -43,8 +43,10 @@ class MySQLModeler {
         this._processedRef = new Set();
     }
 
-    modeling(schema, schemaToConnector) {
-        this.linker.log('info', 'Generating mysql scripts for schema "' + schema.name + '"...');
+    modeling(schema, schemaToConnector, skipGeneration) {
+        if (!skipGeneration) {
+            this.linker.log('info', 'Generating mysql scripts for schema "' + schema.name + '"...');
+        }
 
         let modelingSchema = schema.clone();
 
@@ -106,157 +108,162 @@ class MySQLModeler {
                         this._featureReducer(modelingSchema, entity, featureName, f);
                     }
                 });
-            }            
+            }         
+            
+            if (!skipGeneration) {
 
-            tableSQL += this._createTableStatement(entityName, entity/*, mapOfEntityNameToCodeName*/) + '\n';
+                tableSQL += this._createTableStatement(entityName, entity/*, mapOfEntityNameToCodeName*/) + '\n';
 
-            if (entity.info.data) {
-                entity.info.data.forEach(({ dataSet, runtimeEnv, records }) => {
-                    //intiSQL += `-- Initial data for entity: ${entityName}\n`;
-                    
-                    let entityData = [];
+                if (entity.info.data) {
+                    entity.info.data.forEach(({ dataSet, runtimeEnv, records }) => {
+                        //intiSQL += `-- Initial data for entity: ${entityName}\n`;
+                        
+                        let entityData = [];
 
-                    if (Array.isArray(records)) {
-                        records.forEach(record => {
-                            if (!_.isPlainObject(record)) {
-                                let fields = Object.keys(entity.fields);
-                                if (fields.length !== 2) {                                
-                                    throw new Error(`Invalid data syntax: entity "${entity.name}" has more than 2 fields.`);
+                        if (Array.isArray(records)) {
+                            records.forEach(record => {
+                                if (!_.isPlainObject(record)) {
+                                    let fields = Object.keys(entity.fields);
+                                    if (fields.length !== 2) {                                
+                                        throw new Error(`Invalid data syntax: entity "${entity.name}" has more than 2 fields.`);
+                                    }
+
+                                    let keyField = entity.fields[fields[0]];
+
+                                    if (!keyField.auto && !keyField.defaultByDb) {
+                                        throw new Error(`The key field "${entity.name}" has no default value or auto-generated value.`);
+                                    }
+
+                                    record = { [fields[1]]: this.linker.translateOolValue(entity.oolModule, record) };
+                                } else {
+                                    record = this.linker.translateOolValue(entity.oolModule, record);
                                 }
 
-                                let keyField = entity.fields[fields[0]];
+                                entityData.push(record);
+                            });
+                        } else {
+                            _.forOwn(records, (record, key) => {
+                                if (!_.isPlainObject(record)) {
+                                    let fields = Object.keys(entity.fields);
+                                    if (fields.length !== 2) {
+                                        throw new Error(`Invalid data syntax: entity "${entity.name}" has more than 2 fields.`);
+                                    }
 
-                                if (!keyField.auto && !keyField.defaultByDb) {
-                                    throw new Error(`The key field "${entity.name}" has no default value or auto-generated value.`);
+                                    record = {[entity.key]: key, [fields[1]]: this.linker.translateOolValue(entity.oolModule, record)};
+                                } else {
+                                    record = Object.assign({[entity.key]: key}, this.linker.translateOolValue(entity.oolModule, record));
                                 }
 
-                                record = { [fields[1]]: this.linker.translateOolValue(entity.oolModule, record) };
-                            } else {
-                                record = this.linker.translateOolValue(entity.oolModule, record);
-                            }
-
-                            entityData.push(record);
-                        });
-                    } else {
-                        _.forOwn(records, (record, key) => {
-                            if (!_.isPlainObject(record)) {
-                                let fields = Object.keys(entity.fields);
-                                if (fields.length !== 2) {
-                                    throw new Error(`Invalid data syntax: entity "${entity.name}" has more than 2 fields.`);
-                                }
-
-                                record = {[entity.key]: key, [fields[1]]: this.linker.translateOolValue(entity.oolModule, record)};
-                            } else {
-                                record = Object.assign({[entity.key]: key}, this.linker.translateOolValue(entity.oolModule, record));
-                            }
-
-                            entityData.push(record);
-                            //intiSQL += 'INSERT INTO `' + entityName + '` SET ' + _.map(record, (v,k) => '`' + k + '` = ' + JSON.stringify(v)).join(', ') + ';\n';
-                        });
-                    }
-
-                    if (!_.isEmpty(entityData)) {
-
-                        dataSet || (dataSet = '_init');
-                        runtimeEnv || (runtimeEnv = 'default');
-
-                        let nodes = [ dataSet, runtimeEnv ];                        
-
-                        nodes.push(entityName);
-
-                        let key = nodes.join('.');
-
-                        putIntoBucket(data, key, entityData, true);
-                    }
-                });
-
-                //intiSQL += '\n';
-            }
-        });
-
-        _.forOwn(this._references, (refs, srcEntityName) => {
-            _.each(refs, ref => {
-                relationSQL += this._addForeignKeyStatement(srcEntityName, ref, schemaToConnector/*, mapOfEntityNameToCodeName*/) + '\n';
-            });
-        });
-
-        this._writeFile(path.join(this.outputPath, dbFilePath), tableSQL);
-        this._writeFile(path.join(this.outputPath, fkFilePath), relationSQL);
-
-        let initIdxFiles = {};
-
-        if (!_.isEmpty(data)) {            
-            _.forOwn(data, (envData, dataSet) => {
-                _.forOwn(envData, (entitiesData, runtimeEnv) => {
-                    _.forOwn(entitiesData, (records, entityName) => {
-                        let initFileName = `0-${entityName}.json`;
-
-                        let pathNodes = [
-                            sqlFilesDir, 'data', dataSet || '_init'
-                        ];
-
-                        if (runtimeEnv !== 'default') {
-                            pathNodes.push(runtimeEnv);
+                                entityData.push(record);
+                                //intiSQL += 'INSERT INTO `' + entityName + '` SET ' + _.map(record, (v,k) => '`' + k + '` = ' + JSON.stringify(v)).join(', ') + ';\n';
+                            });
                         }
 
-                        let initFilePath = path.join(...pathNodes, initFileName);    
-                        let idxFilePath = path.join(...pathNodes, 'index.list');                 
-                        
-                        putIntoBucket(initIdxFiles, [idxFilePath], initFileName);
+                        if (!_.isEmpty(entityData)) {
 
-                        this._writeFile(path.join(this.outputPath, initFilePath), JSON.stringify({ [entityName]: records }, null, 4));
-                    }) 
-                });
-            })
-        } 
+                            dataSet || (dataSet = '_init');
+                            runtimeEnv || (runtimeEnv = 'default');
 
-        //console.dir(initIdxFiles, {depth: 10});
+                            let nodes = [ dataSet, runtimeEnv ];                        
 
-        _.forOwn(initIdxFiles, (list, filePath) => {
-            let idxFilePath = path.join(this.outputPath, filePath);
+                            nodes.push(entityName);
 
-            let manual = [];
+                            let key = nodes.join('.');
 
-            if (fs.existsSync(idxFilePath)) {
-                let lines = fs.readFileSync(idxFilePath, 'utf8').split('\n');
-                lines.forEach(line => {
-                    if (!line.startsWith('0-')) {
-                        manual.push(line);
-                    }
-                });
+                            putIntoBucket(data, key, entityData, true);
+                        }
+                    });
+
+                    //intiSQL += '\n';
+                }
             }
-        
-            this._writeFile(idxFilePath, list.concat(manual).join('\n'));
         });
 
-        let funcSQL = '';
-        
-        //process view
-        /*
-        _.each(modelingSchema.views, (view, viewName) => {
-            view.inferTypeInfo(modelingSchema);
+        if (!skipGeneration) {
+            _.forOwn(this._references, (refs, srcEntityName) => {
+                _.each(refs, ref => {
+                    relationSQL += this._addForeignKeyStatement(srcEntityName, ref, schemaToConnector/*, mapOfEntityNameToCodeName*/) + '\n';
+                });
+            });
 
-            funcSQL += `CREATE PROCEDURE ${dbService.getViewSPName(viewName)}(`;
+            this._writeFile(path.join(this.outputPath, dbFilePath), tableSQL);
+            this._writeFile(path.join(this.outputPath, fkFilePath), relationSQL);
+
+            let initIdxFiles = {};
+
+            if (!_.isEmpty(data)) {            
+                _.forOwn(data, (envData, dataSet) => {
+                    _.forOwn(envData, (entitiesData, runtimeEnv) => {
+                        _.forOwn(entitiesData, (records, entityName) => {
+                            let initFileName = `0-${entityName}.json`;
+
+                            let pathNodes = [
+                                sqlFilesDir, 'data', dataSet || '_init'
+                            ];
+
+                            if (runtimeEnv !== 'default') {
+                                pathNodes.push(runtimeEnv);
+                            }
+
+                            let initFilePath = path.join(...pathNodes, initFileName);    
+                            let idxFilePath = path.join(...pathNodes, 'index.list');                 
+                            
+                            putIntoBucket(initIdxFiles, [idxFilePath], initFileName);
+
+                            this._writeFile(path.join(this.outputPath, initFilePath), JSON.stringify({ [entityName]: records }, null, 4));
+                        }) 
+                    });
+                })
+            } 
+
+            //console.dir(initIdxFiles, {depth: 10});
+
+            _.forOwn(initIdxFiles, (list, filePath) => {
+                let idxFilePath = path.join(this.outputPath, filePath);
+
+                let manual = [];
+
+                if (fs.existsSync(idxFilePath)) {
+                    let lines = fs.readFileSync(idxFilePath, 'utf8').split('\n');
+                    lines.forEach(line => {
+                        if (!line.startsWith('0-')) {
+                            manual.push(line);
+                        }
+                    });
+                }
             
-            if (!_.isEmpty(view.params)) {
-                let paramSQLs = [];
-                view.params.forEach(param => {
-                    paramSQLs.push(`p${_.upperFirst(param.name)} ${MySQLModeler.columnDefinition(param, true)}`);
-                });
+                this._writeFile(idxFilePath, list.concat(manual).join('\n'));
+            });
 
-                funcSQL += paramSQLs.join(', ');
-            }
+            let funcSQL = '';
+            
+            //process view
+            /*
+            _.each(modelingSchema.views, (view, viewName) => {
+                view.inferTypeInfo(modelingSchema);
 
-            funcSQL += `)\nCOMMENT 'SP for view ${viewName}'\nREADS SQL DATA\nBEGIN\n`;
+                funcSQL += `CREATE PROCEDURE ${dbService.getViewSPName(viewName)}(`;
+                
+                if (!_.isEmpty(view.params)) {
+                    let paramSQLs = [];
+                    view.params.forEach(param => {
+                        paramSQLs.push(`p${_.upperFirst(param.name)} ${MySQLModeler.columnDefinition(param, true)}`);
+                    });
 
-            funcSQL += this._viewDocumentToSQL(modelingSchema, view) + ';';
+                    funcSQL += paramSQLs.join(', ');
+                }
 
-            funcSQL += '\nEND;\n\n';
-        });
-        */
+                funcSQL += `)\nCOMMENT 'SP for view ${viewName}'\nREADS SQL DATA\nBEGIN\n`;
 
-        let spFilePath = path.join(sqlFilesDir, 'procedures.sql');
-        this._writeFile(path.join(this.outputPath, spFilePath), funcSQL);
+                funcSQL += this._viewDocumentToSQL(modelingSchema, view) + ';';
+
+                funcSQL += '\nEND;\n\n';
+            });
+            */
+
+            let spFilePath = path.join(sqlFilesDir, 'procedures.sql');
+            this._writeFile(path.join(this.outputPath, spFilePath), funcSQL);
+        }
 
         return modelingSchema;
     }    

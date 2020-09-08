@@ -26,7 +26,8 @@ module.exports = function (api) {
     ],
     "comments": false,
     "ignore": [
-      "node_modules"
+      "node_modules",
+      "lib/lang/grammar/geml.js"
     ], 
     "plugins": [
       ["contract", {

@@ -14,9 +14,9 @@
     "start": "babel-node ./src/cli/index --config=test/geml.json",
     "doc": "jsdoc -c jsdoc.json -t ./node_modules/ink-docstrap/template -R README.md -d './docs/api' -r --verbose ./src",
     "jison": "./scripts/build-grammar.sh",
-    "test:all": "mocha test/*.mocha.js --recursive src/**/*.spec.js --timeout 5000",
-    "test:spec": "mocha --recursive src/**/*.spec.js --timeout 5000",
-    "test": "npm run build && npm run test:all",
+    "test:func": "mocha test/*.spec.js",
+    "test:unit": "mocha --recursive src/**/*.spec.js --timeout 5000",
+    "test": "npm run build && npm run test:unit && npm run test:func",
     "cover": "npm run build:test && nyc --reporter=html --reporter=text mocha test/*.mocha.js --recursive src/**/*.spec.js --timeout 5000",
     "bulid:clean": "rm -rf lib",
     "build": "npm run bulid:clean && NODE_ENV=development babel src -d lib --copy-files && del lib/**/__test__",
@@ -55,7 +55,10 @@
   },
   "devDependencies": {
     "@genx/app": "*",
+    "allure-commandline": "^2.13.0",
     "jison": "^0.4.18",
+    "mocha-allure-reporter": "^1.4.0",
+    "mocha-multi": "^1.1.3",
     "mongodb": "^3.5.5",
     "rk-utils": "*"
   },

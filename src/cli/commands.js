@@ -2,6 +2,7 @@
 
 exports.Commands = {    
     'build': 'Generate database scripts and entity models.',
+    'graphql': 'Generate graphql schemas.',
     'migrate': 'Create database structure.',        
     'dataset': 'List available data set.',
     'import': 'Import data set.',
@@ -19,6 +20,9 @@ exports.getCommandOptions = (cli, command) => {
 
     switch (command) {
         case 'build':
+            break;
+
+        case 'graphql':
             break;
 
         case 'migrate':

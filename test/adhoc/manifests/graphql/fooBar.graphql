@@ -1,0 +1,56 @@
+type Gender {
+    code ID!
+    name String
+}
+
+type Group {
+    id ID!
+    name String
+    users_ [UserGroup!]
+}
+
+type Profile {
+    id ID!
+    gender String!
+    user Int!
+    gender_ Gender
+    user_ User
+}
+
+enum UserStatus {
+    inactive
+    active
+    disabled
+    forbidden
+    deleted
+}
+
+scalar Date
+
+type User {
+    id ID!
+    email String
+    mobile String
+    password String!
+    passwordSalt String!
+    locale String!
+    status UserStatus!
+    testToken Date!
+    createdAt Date!
+    updatedAt Date
+    statusInactiveTimestamp Date
+    statusActiveTimestamp Date
+    statusDisabledTimestamp Date
+    statusForbiddenTimestamp Date
+    statusDeletedTimestamp Date
+    groups_ [UserGroup!]
+    profiles_ [Profile!]
+}
+
+type UserGroup {
+    id ID!
+    user Int!
+    group Int!
+    user_ User
+    group_ Group
+}

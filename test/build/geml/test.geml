@@ -1,6 +1,6 @@
 import 'entities/**'
 
-schema 'test'
+schema 'fooBar'
   entities
     gender
     group

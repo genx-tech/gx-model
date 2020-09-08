@@ -9,7 +9,7 @@ const ENT_SOURCE_PATH = path.join(SOURCE_PATH, 'entities');
 const OolCodeGen = require('../../../lib/lang/OolCodeGen');
 const Linker = require('../../../lib/lang/Linker');
 
-describe('unit:lang:OolCodeGen', function () {    
+describe.skip('unit:lang:OolCodeGen', function () {    
     let logger = winston.createLogger({
         "level": "info",
         "transports": [

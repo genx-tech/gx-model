@@ -79,12 +79,12 @@ class AppInitiator {
             'gemlPath': { type: 'text', default: 'geml' },
             'modelPath': { type: 'text', default: 'src/models' },
             'scriptPath': { type: 'text', default: 'src/scripts' },
-            'manifestPath': { type: 'text', default: 'manifest' },
+            'manifestPath': { type: 'text', default: 'manifests' },
             'useJsonSource': { type: 'boolean', default: false },
             'saveIntermediate': { type: 'boolean', default: false }
         });
 
-        this.container.options.modelsPath = modelPath;
+        this.container.options.modelPath = modelPath;
         
         gemlPath = this.container.toAbsolutePath(gemlPath);    
         modelPath = this.container.toAbsolutePath(modelPath);

@@ -9,15 +9,10 @@
             }
         }
     },
-    "useDb": {        
-        "fooBar": {
-            "dataSource": "mysql.test"
-        }
-    },
     "settings": {
         "geml": {
             "modelPath": "models",
-            "gemlPath": "geml",
+            "gemlPath": "../build/geml",
             "scriptPath": "scripts",
             "manifestPath": "manifests",
             "useJsonSource": false,
@@ -28,5 +23,5 @@
                 }
             }
         }
-    } 
+    }    
 }
