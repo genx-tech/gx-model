@@ -3,7 +3,12 @@
   "entity": {
     "usergroup": {
       "comment": "",
-      "features": [],
+      "features": [{
+        "name": "autoId",
+        "args": [ {
+            "startFrom": 100000
+        } ]
+    }],
       "associations": [
         {
           "type": "refersTo",
@@ -16,26 +21,11 @@
           "destEntity": "user"
         }
       ],
-      "key": [
-        "userid",
-        "groupid"
-      ],
       "indexes": [
         {
-          "name": "fk_group",
-          "fields": [
-            "groupid"
-          ],
-          "unique": false,
-          "nullable": false
-        },
-        {
-          "name": "fk_user",
-          "fields": [
-            "userid"
-          ],
-          "unique": false,
-          "nullable": false
+          "fields": ["userid",
+            "groupid" ],
+          "unique": true
         }
       ]
     }

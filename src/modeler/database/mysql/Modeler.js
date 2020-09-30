@@ -6,8 +6,8 @@ const path = require('path');
 const Util = require('rk-utils');
 const { _, fs, quote, putIntoBucket } = Util;
 
-const OolUtils = require('../../../lang/OolUtils');
-const { pluralize, isDotSeparateName, extractDotSeparateName } = OolUtils;
+const GemlUtils = require('../../../lang/GemlUtils');
+const { pluralize, isDotSeparateName, extractDotSeparateName } = GemlUtils;
 const Entity = require('../../../lang/Entity');
 const { Types } = require('@genx/data');
 
@@ -134,9 +134,9 @@ class MySQLModeler {
                                         throw new Error(`The key field "${entity.name}" has no default value or auto-generated value.`);
                                     }
 
-                                    record = { [fields[1]]: this.linker.translateOolValue(entity.oolModule, record) };
+                                    record = { [fields[1]]: this.linker.translateOolValue(entity.gemlModule, record) };
                                 } else {
-                                    record = this.linker.translateOolValue(entity.oolModule, record);
+                                    record = this.linker.translateOolValue(entity.gemlModule, record);
                                 }
 
                                 entityData.push(record);
@@ -149,9 +149,9 @@ class MySQLModeler {
                                         throw new Error(`Invalid data syntax: entity "${entity.name}" has more than 2 fields.`);
                                     }
 
-                                    record = {[entity.key]: key, [fields[1]]: this.linker.translateOolValue(entity.oolModule, record)};
+                                    record = {[entity.key]: key, [fields[1]]: this.linker.translateOolValue(entity.gemlModule, record)};
                                 } else {
-                                    record = Object.assign({[entity.key]: key}, this.linker.translateOolValue(entity.oolModule, record));
+                                    record = Object.assign({[entity.key]: key}, this.linker.translateOolValue(entity.gemlModule, record));
                                 }
 
                                 entityData.push(record);
@@ -353,7 +353,7 @@ class MySQLModeler {
             destEntity = destSchema.entities[actualDestEntityName]; 
             destEntityNameAsFieldName = actualDestEntityName;
         } else {
-            destEntity = schema.ensureGetEntity(entity.oolModule, destEntityName, pendingEntities);
+            destEntity = schema.ensureGetEntity(entity.gemlModule, destEntityName, pendingEntities);
             if (!destEntity) {
                 throw new Error(`Entity "${entity.name}" references to an unexisting entity "${destEntityName}".`)
             }
@@ -416,7 +416,7 @@ class MySQLModeler {
 
                         // connected by field is usually a refersTo assoc
                         let connectedByField = (connectedByParts.length > 1 && connectedByParts[1]) || entity.name; 
-                        let connEntityName = OolUtils.entityNaming(connectedByParts[0]);
+                        let connEntityName = GemlUtils.entityNaming(connectedByParts[0]);
 
                         assert: connEntityName;
 
@@ -443,7 +443,7 @@ class MySQLModeler {
                             throw new Error('Cannot use the same "by" field in a relation entity.');
                         }
 
-                        let connEntity = schema.ensureGetEntity(entity.oolModule, connEntityName, pendingEntities);
+                        let connEntity = schema.ensureGetEntity(entity.gemlModule, connEntityName, pendingEntities);
                         if (!connEntity) {                        
                             //create a
                             connEntity = this._addRelationEntity(schema, connEntityName, entity.name, destEntityName, connectedByField, connectedByField2);
@@ -561,11 +561,11 @@ class MySQLModeler {
                 } else {  
                     // semi association 
 
-                    let connectedByParts = assoc.by ? assoc.by.split('.') : [ OolUtils.prefixNaming(entity.name, destEntityName) ];
+                    let connectedByParts = assoc.by ? assoc.by.split('.') : [ GemlUtils.prefixNaming(entity.name, destEntityName) ];
                     assert: connectedByParts.length <= 2;
 
                     let connectedByField = (connectedByParts.length > 1 && connectedByParts[1]) || entity.name;
-                    let connEntityName = OolUtils.entityNaming(connectedByParts[0]);
+                    let connEntityName = GemlUtils.entityNaming(connectedByParts[0]);
 
                     assert: connEntityName;
 
@@ -577,7 +577,7 @@ class MySQLModeler {
 
                     assert: !this._processedRef.has(tag1);  
 
-                    let connEntity = schema.ensureGetEntity(entity.oolModule, connEntityName, pendingEntities);
+                    let connEntity = schema.ensureGetEntity(entity.gemlModule, connEntityName, pendingEntities);
                     if (!connEntity) {                        
                         //create a
                         connEntity = this._addRelationEntity(schema, connEntityName, entity.name, destEntityName, connectedByField, destEntityNameAsFieldName);
@@ -978,7 +978,7 @@ class MySQLModeler {
             ]
         };
 
-        let entity = new Entity(this.linker, relationEntityName, schema.oolModule, entityInfo);
+        let entity = new Entity(this.linker, relationEntityName, schema.gemlModule, entityInfo);
         entity.link();
 
         schema.addEntity(entity);
@@ -1099,7 +1099,7 @@ class MySQLModeler {
                 return left + ' ' + MySQLModeler.oolOpToSql(ool.operator) + ' ' + right;
             
             case 'ObjectReference':
-                if (!OolUtils.isMemberAccess(ool.name)) {
+                if (!GemlUtils.isMemberAccess(ool.name)) {
                     if (params && _.find(params, p => p.name === ool.name) !== -1) {
                         return 'p' + _.upperFirst(ool.name);
                     }
@@ -1107,7 +1107,7 @@ class MySQLModeler {
                     throw new Error(`Referencing to a non-existing param "${ool.name}".`);
                 }                
                 
-                let { entityNode, entity, field } = OolUtils.parseReferenceInDocument(schema, doc, ool.name);
+                let { entityNode, entity, field } = GemlUtils.parseReferenceInDocument(schema, doc, ool.name);
 
                 return entityNode.alias + '.' + MySQLModeler.quoteIdentifier(field.name);
             
@@ -1617,7 +1617,7 @@ class MySQLModeler {
             }
         }
 
-        return OolUtils.entityNaming(entityName);
+        return GemlUtils.entityNaming(entityName);
     };
 }
 

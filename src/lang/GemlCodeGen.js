@@ -2,7 +2,7 @@
 
 const Util = require('rk-utils');
 const { _ } = Util;
-const { generateDisplayName } = require('./OolUtils');
+const { generateDisplayName } = require('./GemlUtils');
 const { isNothing, isQuotedWith } = require('../utils/lang');
 
 const KW_NAMESPACE = 'import';
@@ -20,11 +20,11 @@ const KW_KEY = 'key';
 const KW_INDEXES = 'index';
 
 const { Types } = require('@genx/data');
-const OolTypes = require('./OolTypes');
+const GemlTypes = require('./GemlTypes');
 
-class OolCodeGen {
+class GemlCodeGen {
     static transform(json, options) {
-        let codeGen = new OolCodeGen(options);
+        let codeGen = new GemlCodeGen(options);
         return codeGen.generate(json);
     }
 
@@ -308,15 +308,15 @@ class OolCodeGen {
         if (value.modifiers) {
             value.modifiers.forEach(v => {
                 switch (v.oolType) {
-                    case OolTypes.Lang.VALIDATOR:
+                    case GemlTypes.Lang.VALIDATOR:
                     lineInfo.push('|~' + this._translateModifier(v));
                     break;
 
-                    case OolTypes.Lang.PROCESSOR:
+                    case GemlTypes.Lang.PROCESSOR:
                     lineInfo.push('|>' + this._translateModifier(v));
                     break;
 
-                    case OolTypes.Lang.ACTIVATOR:
+                    case GemlTypes.Lang.ACTIVATOR:
                     lineInfo.push('|=' + this._translateModifier(v));
                     break;
 
@@ -368,4 +368,4 @@ class OolCodeGen {
     }
 }
 
-module.exports = OolCodeGen;
+module.exports = GemlCodeGen;

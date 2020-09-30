@@ -6,16 +6,16 @@ const { Types } = require('@genx/data');
 
 const Oolong = require('./grammar/geml');
 const OolongParser = Oolong.parser;
-const OolTypes = require('./OolTypes');
+const GemlTypes = require('./GemlTypes');
 const Entity = require('./Entity');
 const Schema = require('./Schema');
 const View = require('./View');
 const Dataset = require('./Dataset');
 
 const ELEMENT_CLASS_MAP = {
-    [OolTypes.Element.ENTITY]: Entity,
-    [OolTypes.Element.VIEW]: View,
-    [OolTypes.Element.DATASET]: Dataset,
+    [GemlTypes.Element.ENTITY]: Entity,
+    [GemlTypes.Element.VIEW]: View,
+    [GemlTypes.Element.DATASET]: Dataset,
 };
 
 const GEML_SOURCE_EXT = '.geml';
@@ -89,7 +89,7 @@ class Linker {
          * @member {object}
          * @private
          */
-        this._oolModules = {};
+        this._gemlModules = {};
 
         /**
          * Element cache, map of <referenceId, element> and <selfId, element>
@@ -122,7 +122,7 @@ class Linker {
      * @returns {boolean}
      */
     isModuleLoaded(moduleId) {
-        return (moduleId in this._oolModules);
+        return (moduleId in this._gemlModules);
     }
 
     /**
@@ -131,7 +131,7 @@ class Linker {
      * @returns {object}
      */
     getModuleById(moduleId) {
-        return this._oolModules[moduleId];
+        return this._gemlModules[moduleId];
     }
 
     /**
@@ -187,34 +187,34 @@ class Linker {
             return undefined;
         }       
 
-        let ool = this._compile(modulePath);
+        let gemlModule = this._compile(modulePath);
 
-        return (this._oolModules[id] = ool);
+        return (this._gemlModules[id] = gemlModule);
     }
 
     /**
      * Track back the type derived chain.
-     * @param {object} oolModule
+     * @param {object} gemlModule
      * @param {object} info
      * @returns {object}
      */
-    trackBackType(oolModule, info) {
+    trackBackType(gemlModule, info) {
         if (Types.Builtin.has(info.type)) {
             return info;
         }
 
-        let baseInfo = this.loadElement(oolModule, OolTypes.Element.TYPE, info.type, true);
+        let baseInfo = this.loadElement(gemlModule, GemlTypes.Element.TYPE, info.type, true);
 
         if (!Types.Builtin.has(baseInfo.type)) {
             //the base type is not a builtin type
-            let uniqueId = this.getElementUniqueId(oolModule, OolTypes.Element.TYPE, value.name);
-            let ownerModule = this.getModuleById(this._mapOfReferenceToModuleId.get(uniqueId));
+            let ownerModule = baseInfo.gemlModule;  
+
             let rootTypeInfo = this.trackBackType(ownerModule, baseInfo);
             ownerModule.type[baseInfo.type] = rootTypeInfo;
             baseInfo = rootTypeInfo;
         }
 
-        let derivedInfo = { ..._.cloneDeep(_.omit(baseInfo, ['modifiers'])), ..._.omit(info, ['type', 'modifiers'])};
+        let derivedInfo = { ..._.cloneDeep(_.omit(baseInfo, ['gemlModule', 'modifiers'])), ..._.omit(info, ['gemlModule', 'type', 'modifiers'])};
         if (baseInfo.modifiers || info.modifiers) {
             derivedInfo.modifiers = [ ...(baseInfo.modifiers || []), ...(info.modifiers || []) ];
         }
@@ -228,26 +228,26 @@ class Linker {
     
     /**
      * Translate an value by inferring all the references.
-     * @param {object} oolModule 
+     * @param {object} gemlModule 
      * @param {*} value 
      * @returns {*} - Translated value.
      */
-    translateOolValue(oolModule, value) {
+    translateOolValue(gemlModule, value) {
         if (_.isPlainObject(value)) {
-            if (value.oolType === OolTypes.Lang.CONST_REF) {                
-                let refedValue = this.loadElement(oolModule, OolTypes.Element.CONST, value.name, true);
-                let uniqueId = this.getElementUniqueId(oolModule, OolTypes.Element.CONST, value.name);
+            if (value.oolType === GemlTypes.Lang.CONST_REF) {                
+                let refedValue = this.loadElement(gemlModule, GemlTypes.Element.CONST, value.name, true);
+                let uniqueId = this.getElementUniqueId(gemlModule, GemlTypes.Element.CONST, value.name);
                 let ownerModule = this.getModuleById(this._mapOfReferenceToModuleId.get(uniqueId));
                 return this.translateOolValue(ownerModule, refedValue);
             } else if (value.oolType) {
                 throw new Error(`todo: translateOolValue with type: ${value.oolType}`)
             }
 
-            return _.mapValues(value, v => this.translateOolValue(oolModule, v));
+            return _.mapValues(value, v => this.translateOolValue(gemlModule, v));
         }
 
         if (Array.isArray(value)) {
-            return value.map(v => this.translateOolValue(oolModule, v));
+            return value.map(v => this.translateOolValue(gemlModule, v));
         }
 
         return value;
@@ -277,7 +277,7 @@ class Linker {
     }
 
     loadEntity(refererModule, elementName, throwOnMissing = true) {
-        let entity = this.loadElement(refererModule, OolTypes.Element.ENTITY, elementName, throwOnMissing);
+        let entity = this.loadElement(refererModule, GemlTypes.Element.ENTITY, elementName, throwOnMissing);
 
         if (entity && _.isEmpty(entity.fields) && _.isEmpty(entity.info.associations)) {
             throw new Error(`Entity "${elementName}" has no any fields defined.`);
@@ -287,15 +287,15 @@ class Linker {
     }
 
     loadType(refererModule, elementName, throwOnMissing = true) {
-        return this.loadElement(refererModule, OolTypes.Element.TYPE, elementName, throwOnMissing);
+        return this.loadElement(refererModule, GemlTypes.Element.TYPE, elementName, throwOnMissing);
     }
 
     loadDataset(refererModule, elementName, throwOnMissing = true) {
-        return this.loadElement(refererModule, OolTypes.Element.DATASET, elementName, throwOnMissing);
+        return this.loadElement(refererModule, GemlTypes.Element.DATASET, elementName, throwOnMissing);
     }
 
     loadView(refererModule, elementName, throwOnMissing = true) {
-        return this.loadElement(refererModule, OolTypes.Element.VIEW, elementName, throwOnMissing);
+        return this.loadElement(refererModule, GemlTypes.Element.VIEW, elementName, throwOnMissing);
     }
 
     /**
@@ -344,23 +344,24 @@ class Linker {
             // already initialized            
             return (this._elementsCache[uniqueId] = this._elementsCache[elementSelfId]);
         }
-
-        // assert naming validaty
-        //assert: !this._mapOfReferenceToModuleId.has(uniqueId), `${elementType} "${elementName}" in "${targetModule.id}" conflicts with ${elementType} in "${this._mapOfReferenceToModuleId.get(uniqueId)}"!`;
-        
+       
         this._mapOfReferenceToModuleId.set(uniqueId, targetModule.id);
 
         // retrieve the compiled info
-        let elementInfo = Object.freeze(targetModule[elementType][elementName]);
+        let elementInfo = targetModule[elementType][elementName];
         let element;
 
         if (elementType in ELEMENT_CLASS_MAP) {
             // element need linking
             let ElementClass = ELEMENT_CLASS_MAP[elementType];
-            element = new ElementClass(this, elementName, targetModule, elementInfo);   
+            element = new ElementClass(this, elementName, targetModule, Object.freeze(elementInfo));   
             element.link();         
         } else {
-            element = elementInfo;
+            if (elementType === GemlTypes.Element.TYPE) {
+                elementInfo.gemlModule = targetModule;
+            }
+            
+            element = Object.freeze(elementInfo);
         }
 
         this._elementsCache[elementSelfId] = element;
@@ -437,8 +438,8 @@ class Linker {
             ool.namespace.forEach(ns => {
                 let p;
                 
-                if (ns.startsWith('<oolong>/')) {
-                    ns = path.join(BUILTINS_PATH, ns.substr(9));   
+                if (ns.startsWith('<builtins>/')) {
+                    ns = path.join(BUILTINS_PATH, ns.substr(11));   
                 } else if (ns.startsWith('<source>/')) {
                     ns = path.join(this.sourcePath, ns.substr(9));   
                 }               

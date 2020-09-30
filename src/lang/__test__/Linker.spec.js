@@ -19,7 +19,7 @@ describe('unit:lang:Linker', function () {
     });
 
     beforeEach(function () {
-        linker = new Linker(logger, { gemlPath: SOURCE_PATH/*, saveIntermediate: true */ });
+        linker = new Linker(logger, { gemlPath: SOURCE_PATH, schemas: { product: {}, manyToMany: {} } /*, saveIntermediate: true */ });
     });
 
     describe('load module', function () {
@@ -47,16 +47,15 @@ describe('unit:lang:Linker', function () {
             should.exists(mod);            
             mod.should.be.eql(expected);
         });
-
-        /*
+        
         it('compile product entity', function () {
-            let mod = linker.loadModule('entities/product.ool');
+            let mod = linker.loadModule('entities/product.geml');
 
             let expected =
             {
                 "namespace": [
-                    path.resolve(__dirname, '../../../lib/lang/builtins/types.ool'),
-                    path.resolve(__dirname, '../../../lib/lang/builtins/dictionary.ool')
+                    path.resolve(__dirname, '../../../src/lang/builtins/types.geml'),
+                    path.resolve(__dirname, '../../../src/lang/builtins/dictionary.geml')
                 ],
                 "entity": {
                     "product": {
@@ -89,21 +88,20 @@ describe('unit:lang:Linker', function () {
                         }
                     }
                 },
-                "id": "./entities/product.ool",
+                "id": "./entities/product.geml",
                 "name": "product"
             };
             should.exists(mod);            
             mod.should.be.eql(expected);
-        });*/
+        });
     });
 
-    /*
     describe('load element', function () {
         it('load product entity from schema', function () {
-            let schemaMod = linker.loadModule('product.ool');
+            let schemaMod = linker.loadModule('product.geml');
             let refId = 'entity:product<-' + schemaMod.id;
 
-            let productMod = linker.loadModule('entities/product.ool');
+            let productMod = linker.loadModule('entities/product.geml');
             let selfId = 'entity:product@' + productMod.id;
 
             linker._elementsCache.should.not.have.key(refId);
@@ -123,7 +121,7 @@ describe('unit:lang:Linker', function () {
 
     describe('link a schema', function () {
         it('linker.link', function () {
-            linker.link('product.ool', 'product');
+            linker.link('product.geml', 'product');
             linker.schemas.should.have.key('product')
             let linked = linker.schemas['product'].toJSON();
             linked.displayName.should.equal('Product');
@@ -140,7 +138,7 @@ describe('unit:lang:Linker', function () {
 
     describe('manyToMany', function () {
         it('linker.link', function () {
-            linker.link('manyToMany.ool', 'manyToMany');
+            linker.link('manyToMany.geml', 'manyToMany');
             linker.schemas.should.have.key('manyToMany')
             let linked = linker.schemas['manyToMany'].toJSON();
             
@@ -151,23 +149,4 @@ describe('unit:lang:Linker', function () {
             company.should.have.key('name', 'displayName', 'fields', 'key', 'info');
         });
     });
-
-    describe('link json sources', function () {
-        it('linker.options.useJsonSource=true', function () {
-            let linker2 = new Linker({ useJsonSource: true, dslSourcePath: SOURCE_PATH });
-
-            linker2.link('product.ool.json', 'product');
-            linker2.schemas.should.have.key('product')
-            let linked = linker2.schemas['product'].toJSON();
-            linked.displayName.should.equal('Product');
-            linked.entities.should.have.key('product');
-
-            let product = linked.entities['product'];
-            product.should.have.key('name', 'displayName', 'fields', 'key');
-            product.name.should.equal('product');
-            product.displayName.should.equal('Product');
-            product.fields.should.have.key('id', 'name', 'email', 'desc');
-            product.key.should.equal('id');
-        });
-    });*/
 });

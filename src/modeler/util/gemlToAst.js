@@ -9,8 +9,8 @@ const { _ } = require('rk-utils');
 const { TopoSort } = require('@genx/algorithm');
 
 const JsLang = require('./ast.js');
-const OolTypes = require('../../lang/OolTypes');
-const { isDotSeparateName, extractDotSeparateName, extractReferenceBaseName } = require('../../lang/OolUtils');
+const GemlTypes = require('../../lang/GemlTypes');
+const { isDotSeparateName, extractDotSeparateName, extractReferenceBaseName } = require('../../lang/GemlUtils');
 const {  Types, Validators: OolongValidators, Processors: OolongProcessors, Activators: OolongActivators } = require('@genx/data');
 
 const defaultError = 'InvalidRequest';
@@ -27,27 +27,27 @@ const AST_BLK_INTERFACE_RETURN = 'InterfaceReturn';
 const AST_BLK_EXCEPTION_ITEM = 'ExceptionItem';
 
 const OOL_MODIFIER_CODE_FLAG = {
-    [OolTypes.Modifier.VALIDATOR]: AST_BLK_VALIDATOR_CALL,
-    [OolTypes.Modifier.PROCESSOR]: AST_BLK_PROCESSOR_CALL,
-    [OolTypes.Modifier.ACTIVATOR]: AST_BLK_ACTIVATOR_CALL
+    [GemlTypes.Modifier.VALIDATOR]: AST_BLK_VALIDATOR_CALL,
+    [GemlTypes.Modifier.PROCESSOR]: AST_BLK_PROCESSOR_CALL,
+    [GemlTypes.Modifier.ACTIVATOR]: AST_BLK_ACTIVATOR_CALL
 };
 
 const OOL_MODIFIER_OP = {
-    [OolTypes.Modifier.VALIDATOR]: '|~',
-    [OolTypes.Modifier.PROCESSOR]: '|>',
-    [OolTypes.Modifier.ACTIVATOR]: '|=' 
+    [GemlTypes.Modifier.VALIDATOR]: '|~',
+    [GemlTypes.Modifier.PROCESSOR]: '|>',
+    [GemlTypes.Modifier.ACTIVATOR]: '|=' 
 };
 
 const OOL_MODIFIER_PATH = {
-    [OolTypes.Modifier.VALIDATOR]: 'validators',
-    [OolTypes.Modifier.PROCESSOR]: 'processors',
-    [OolTypes.Modifier.ACTIVATOR]: 'activators' 
+    [GemlTypes.Modifier.VALIDATOR]: 'validators',
+    [GemlTypes.Modifier.PROCESSOR]: 'processors',
+    [GemlTypes.Modifier.ACTIVATOR]: 'activators' 
 };
 
 const OOL_MODIFIER_BUILTIN = {
-    [OolTypes.Modifier.VALIDATOR]: OolongValidators,
-    [OolTypes.Modifier.PROCESSOR]: OolongProcessors,
-    [OolTypes.Modifier.ACTIVATOR]: OolongActivators 
+    [GemlTypes.Modifier.VALIDATOR]: OolongValidators,
+    [GemlTypes.Modifier.PROCESSOR]: OolongProcessors,
+    [GemlTypes.Modifier.ACTIVATOR]: OolongActivators 
 };
 
 const OPERATOR_TOKEN = {
@@ -263,7 +263,7 @@ function compileConditionalExpression(test, compileContext, startTopoId) {
  * @returns {*|string}
  */
 function compileAdHocValidator(topoId, value, functor, compileContext) {
-    assert: functor.oolType === OolTypes.Modifier.VALIDATOR;        
+    assert: functor.oolType === GemlTypes.Modifier.VALIDATOR;        
 
     let callArgs;
     
@@ -294,7 +294,7 @@ function compileAdHocValidator(topoId, value, functor, compileContext) {
 function compileModifier(topoId, value, functor, compileContext) {
     let declareParams;
 
-    if (functor.oolType === OolTypes.Modifier.ACTIVATOR) { 
+    if (functor.oolType === GemlTypes.Modifier.ACTIVATOR) { 
         declareParams = translateFunctionParams([{name: compileContext.moduleName}, {name: 'context'}].concat(functor.args));        
     } else {
         declareParams = translateFunctionParams(_.isEmpty(functor.args) ? [value] : [value].concat(functor.args));        
@@ -315,7 +315,7 @@ function compileModifier(topoId, value, functor, compileContext) {
         callArgs = [];
     }        
     
-    if (functor.oolType === OolTypes.Modifier.ACTIVATOR) {            
+    if (functor.oolType === GemlTypes.Modifier.ACTIVATOR) {            
         compileContext.astMap[topoId] = JsLang.astAwait(functorId, [ JsLang.astVarRef('this'), JsLang.astVarRef('context') ].concat(callArgs));
     } else {
         let arg0 = value;
@@ -334,7 +334,7 @@ function compileModifier(topoId, value, functor, compileContext) {
         let targetVarName = value.name;
         let needDeclare = false;
 
-        if (!isDotSeparateName(value.name) && compileContext.variables[value.name] && functor.oolType !== OolTypes.Modifier.VALIDATOR) {
+        if (!isDotSeparateName(value.name) && compileContext.variables[value.name] && functor.oolType !== GemlTypes.Modifier.VALIDATOR) {
             //conflict with existing variables, need to rename to another variable
             let counter = 1;
             do {

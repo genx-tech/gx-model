@@ -7,7 +7,7 @@
         "excludePattern": "(^|\\/|\\\\)__"
     },
 	"templates" : {
-		"systemName"            : "@gx/erml",
+		"systemName"            : "@genx/model",
 		"footer"                : "",
 		"copyright"             : "Copyright (c) since 2018, Gen-X Tech Pty Ltd",
 		"includeDate"           : false,

@@ -38,11 +38,12 @@ exports.getCommandOptions = (cli, command) => {
             break;        
 
         case 'dataset': 
-            cmdOptions['schema'] = {
+            cmdOptions['s'] = {
                 desc: 'The schema to list',                
                 promptMessage: 'Please select a schema:',
                 inquire: true,
                 required: true,
+                alias: [ 'schema' ],
                 promptType: 'list',
                 choicesProvider: () => core.getSchemasInConfig()
             };
@@ -74,15 +75,9 @@ exports.getCommandOptions = (cli, command) => {
             break;
 
         case 'reverse':        
-            cmdOptions['conn'] = {
-                desc: 'The data source connector',
-                alias: [ 'connector' ],
-                promptMessage: 'Please select the data source connector:',
-                inquire: true,
-                required: true,
-                promptType: 'list',
-                choicesProvider: () => Object.keys(core.connectionStrings),
-                afterInquire: () => { console.log('The conenction string of selected connector:', connectionStrings[core.option('conn')]); }                
+            cmdOptions['s'] = {
+                desc: 'The schema to reverse',
+                alias: [ 'schema' ]        
             };
             break;
 

@@ -1,5 +1,5 @@
-import '<oolong>/types'
-import '<oolong>/dictionary'
+import '<builtins>/types'
+import '<builtins>/dictionary'
 
 entity product
   with

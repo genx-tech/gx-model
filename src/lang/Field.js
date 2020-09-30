@@ -1,7 +1,7 @@
 "use strict";
 
 const { _ } = require('rk-utils');
-const { generateDisplayName, deepCloneField, Clonable, fieldNaming } = require('./OolUtils');
+const { generateDisplayName, deepCloneField, Clonable, fieldNaming } = require('./GemlUtils');
 const { Types } = require('@genx/data');
 const RESERVED_KEYS = new Set(['name', 'type', 'modifiers', 'subClass', 'values']);
 

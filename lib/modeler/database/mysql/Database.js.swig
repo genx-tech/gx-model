@@ -11,13 +11,13 @@ class {{ className }} extends DbModel {
         this.entities = {{ entities|safe }};        
     }
 
-    loadModel(modelClassName) {        
-        return require(`./${this.schemaName}/${modelClassName}`);
+    loadCustomModel(modelClassName) { 
+        const customModelPath = path.resolve(__dirname, `./${this.schemaName}/${modelClassName}.js`);           
+        return fs.existsSync(customModelPath) && require(customModelPath);
     }
 
-    loadCustomModel(modelClassName) {    
-        const customModelPath = path.resolve(__dirname, `./${this.schemaName}/custom/${modelClassName}.js`);    
-        return fs.existsSync(customModelPath) && require(customModelPath);
+    loadModel(modelClassName) {            
+        return require(`./${this.schemaName}/base/${modelClassName}`);
     }
 
     async doTransaction_(transaction, errorHandler, connOptions) {

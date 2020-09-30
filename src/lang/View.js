@@ -1,7 +1,7 @@
 "use strict";
 
 const { _ } = require('rk-utils');
-const { generateDisplayName, deepCloneField, Clonable } = require('./OolUtils');
+const { generateDisplayName, deepCloneField, Clonable } = require('./GemlUtils');
 
 const Dataset = require('./Dataset');
 
@@ -16,10 +16,10 @@ class View extends Clonable {
     /**          
      * @param {OolongLinker} linker
      * @param {string} name - View name
-     * @param {object} oolModule - Source ool module
+     * @param {object} gemlModule - Source ool module
      * @param {object} info - View info
      */
-    constructor(linker, name, oolModule, info) {
+    constructor(linker, name, gemlModule, info) {
         /**
          * Linker to process this view
          * @member {OolongLinker}
@@ -33,10 +33,10 @@ class View extends Clonable {
         this.name = name;
 
         /**
-         * Owner oolong module
+         * Owner geml module
          * @member {object}
          */
-        this.oolModule = oolModule;
+        this.gemlModule = gemlModule;
 
         /**
          * Raw metadata
@@ -53,13 +53,13 @@ class View extends Clonable {
         pre: !this.linked;
 
         if (this.info.dataset) {
-            this.dataset = this.linker.loadDoc(this.oolModule, this.info.dataset);
+            this.dataset = this.linker.loadDoc(this.gemlModule, this.info.dataset);
         } else {
             assert: this.info.entity, 'Invalid view syntax!';
             
-            let mainEntity = this.linker.getReferencedEntity(this.oolModule, this.info.entity);
+            let mainEntity = this.linker.getReferencedEntity(this.gemlModule, this.info.entity);
             
-            this.dataset = new Dataset(this.linker, mainEntity.name, this.oolModule, { mainEntity: mainEntity.name });
+            this.dataset = new Dataset(this.linker, mainEntity.name, this.gemlModule, { mainEntity: mainEntity.name });
             this.dataset.link();
         }
 
@@ -101,7 +101,7 @@ class View extends Clonable {
             let inferredParams = [];
 
             this.params.forEach(param => {
-                if (OolUtils.isMemberAccess(param.type)) {
+                if (GemlUtils.isMemberAccess(param.type)) {
                     let [ entityName, fieldName ] = param.type.split('.');
 
                     if (!inSchema.hasEntity(entityName)) {
@@ -114,7 +114,7 @@ class View extends Clonable {
                     let field = entity.getEntityAttribute(fieldName);
                     inferredParams.push(Object.assign(_.omit(_.toPlainObject(field), ['isReference', 'optional', 'displayName']), {name: param.name}));
                 } else {
-                    inferredParams.push(this.linker.trackBackType(this.oolModule, param));
+                    inferredParams.push(this.linker.trackBackType(this.gemlModule, param));
                 }
             });
 
@@ -123,7 +123,7 @@ class View extends Clonable {
     }
 
     getDocumentHierarchy(inSchema) {
-        return inSchema.getDocumentHierachy(this.oolModule, this.dataset.name);
+        return inSchema.getDocumentHierachy(this.gemlModule, this.dataset.name);
     }
 
     /**
@@ -133,7 +133,7 @@ class View extends Clonable {
     clone() {
         super.clone();
         
-        let view = new View(this.linker, this.name, this.oolModule, this.info);
+        let view = new View(this.linker, this.name, this.gemlModule, this.info);
 
         deepCloneField(this, view, 'dataset');
         deepCloneField(this, view, 'params');

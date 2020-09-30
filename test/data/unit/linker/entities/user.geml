@@ -1,4 +1,4 @@
-import '<oolong>/types'
+import '<builtins>/types'
 
 type
   password : text maxLength(200)  

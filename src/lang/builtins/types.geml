@@ -1,0 +1,15 @@
+type
+  nonEmptyText : text emptyAsNull
+  email : nonEmptyText maxLength(200) |~isEmail
+  name : nonEmptyText maxLength(200)
+  url : nonEmptyText maxLength(1000) |~isURL({require_tld: false})
+  path : nonEmptyText maxLength(2000) |~isURL({allow_protocol_relative_urls: true})
+  uuid : nonEmptyText maxLength(36) fixedLength |~isUUID |=generator('uuid')
+  ip : nonEmptyText maxLength(40) |~isIP
+  phone : nonEmptyText maxLength(20) |>normalizePhone('+61') |~isPhone
+  code : nonEmptyText maxLength(100)
+  money : number
+  desc : text optional     
+  date : datetime dateOnly
+  postcode : nonEmptyText maxLength(10) 
+  csv: array csv

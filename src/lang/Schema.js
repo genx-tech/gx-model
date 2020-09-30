@@ -1,7 +1,7 @@
 "use strict";
 
 const { _ } = require('rk-utils');
-const { generateDisplayName, deepCloneField, Clonable, schemaNaming } = require('./OolUtils');
+const { generateDisplayName, deepCloneField, Clonable, schemaNaming } = require('./GemlUtils');
 
 /**
  * Oolong schema class.
@@ -29,10 +29,10 @@ class Schema extends Clonable {
     /**     
      * @param {OolongLinker} linker
      * @param {string} name
-     * @param {object} oolModule
+     * @param {object} gemlModule
      * @param {object} info
      */
-    constructor(linker, name, oolModule, info, deploymentSettings) {
+    constructor(linker, name, gemlModule, info, deploymentSettings) {
         super();
 
         /**
@@ -48,10 +48,10 @@ class Schema extends Clonable {
         this.name = schemaNaming(name);
 
         /**
-         * Owner oolong module
+         * Owner geml module
          * @member {object}
          */
-        this.oolModule = oolModule;
+        this.gemlModule = gemlModule;
 
         /**
          * Raw metadata
@@ -91,7 +91,7 @@ class Schema extends Clonable {
         this.info.entities || (this.info.entities = []);
 
         this.info.entities.forEach(entityEntry => {            
-            let entity = this.linker.loadEntity(this.oolModule, entityEntry.entity);
+            let entity = this.linker.loadEntity(this.gemlModule, entityEntry.entity);
             assert: entity.linked;
 
             this.addEntity(entity);
@@ -99,7 +99,7 @@ class Schema extends Clonable {
 
         if (!_.isEmpty(this.info.views)) {
             this.info.views.forEach(viewName => {
-                this.linker.loadView(this.oolModule, viewName);
+                this.linker.loadView(this.gemlModule, viewName);
                 assert: view.linked;
 
                 this.addView(view);
@@ -215,7 +215,7 @@ class Schema extends Clonable {
     clone() {
         super.clone();
         
-        let schema = new Schema(this.linker, this.name, this.oolModule, this.info, this.deploymentSettings);
+        let schema = new Schema(this.linker, this.name, this.gemlModule, this.info, this.deploymentSettings);
         
         deepCloneField(this, schema, 'displayName');
         deepCloneField(this, schema, 'comment');        

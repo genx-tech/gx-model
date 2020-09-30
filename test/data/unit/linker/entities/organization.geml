@@ -1,4 +1,4 @@
-import '<oolong>/types'
+import '<builtins>/types'
 
 entity company
   with

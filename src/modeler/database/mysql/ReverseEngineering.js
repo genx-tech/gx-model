@@ -1,8 +1,8 @@
 const path = require('path');
 const Util = require('rk-utils');
 const { _, fs } = Util;
-const OolCodeGen = require('../../../lang/OolCodeGen');
-const OolUtils = require('../../../lang/OolUtils');
+const GemlCodeGen = require('../../../lang/GemlCodeGen');
+const GemlUtils = require('../../../lang/GemlUtils');
 
 class MySQLReverseEngineering {
     constructor(context, connector) {
@@ -47,7 +47,7 @@ class MySQLReverseEngineering {
                 }
             };
     
-            let entityContent = OolCodeGen.transform(entity);
+            let entityContent = GemlCodeGen.transform(entity);
             let entityFile = path.join(entitiesOolPath, entityName + '.ool');
             fs.writeFileSync(entityFile + '.json', JSON.stringify(entity, null, 2));
             fs.writeFileSync(entityFile, entityContent);
@@ -67,7 +67,7 @@ class MySQLReverseEngineering {
             }
         };
 
-        let schemaContent = OolCodeGen.transform(json);
+        let schemaContent = GemlCodeGen.transform(json);
         let schemaFile = path.join(outputDir, schemaName + '.ool');
         fs.writeFileSync(schemaFile + '.json', JSON.stringify(json, null, 2));
         fs.writeFileSync(schemaFile, schemaContent);
@@ -252,7 +252,7 @@ class MySQLReverseEngineering {
             return this.reverseRules.fieldNamin(name);
         } 
         
-        return OolUtils.fieldNaming(name);
+        return GemlUtils.fieldNaming(name);
     }
 
     _entityNaming(name) {
@@ -260,7 +260,7 @@ class MySQLReverseEngineering {
             return this.reverseRules.entityNaming(name);
         } 
         
-        return OolUtils.entityNaming(name);
+        return GemlUtils.entityNaming(name);
     }
 
     _schemaNaming(name) {
@@ -268,7 +268,7 @@ class MySQLReverseEngineering {
             return this.reverseRules.schemaNaming(name);
         } 
         
-        return OolUtils.schemaNaming(name);
+        return GemlUtils.schemaNaming(name);
     }
 
     _mysqlTypeToOolType(table, col, fieldName, types) {

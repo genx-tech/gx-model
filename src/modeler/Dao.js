@@ -4,15 +4,15 @@ const path = require('path');
 const { _, fs, pascalCase, replaceAll, putIntoBucket }  = require('rk-utils');
 const swig  = require('swig-templates');
 
-const OolTypes = require('../lang/OolTypes');
+const GemlTypes = require('../lang/GemlTypes');
 const JsLang = require('./util/ast.js');
-const OolToAst = require('./util/oolToAst.js');
+const GemlToAst = require('./util/gemlToAst.js');
 const Snippets = require('./dao/snippets');
 
 const ChainableType = [
-    OolToAst.AST_BLK_VALIDATOR_CALL, 
-    OolToAst.AST_BLK_PROCESSOR_CALL,
-    OolToAst.AST_BLK_ACTIVATOR_CALL
+    GemlToAst.AST_BLK_VALIDATOR_CALL, 
+    GemlToAst.AST_BLK_PROCESSOR_CALL,
+    GemlToAst.AST_BLK_ACTIVATOR_CALL
 ];
 
 const getFieldName = t => t.split('.').pop();
@@ -39,9 +39,9 @@ const asyncMethodNaming = (name) => name + '_';
 const indentLines = (lines, indentation) => lines.split('\n').map((line, i) => i === 0 ? line : (_.repeat(' ', indentation) + line)).join('\n');
 
 const OOL_MODIFIER_RETURN = {
-    [OolTypes.Modifier.VALIDATOR]: () => [ JsLang.astReturn(true) ],
-    [OolTypes.Modifier.PROCESSOR]: args => [ JsLang.astReturn(JsLang.astId(args[0])) ],
-    [OolTypes.Modifier.ACTIVATOR]: () => [ JsLang.astReturn(JsLang.astId("undefined")) ]
+    [GemlTypes.Modifier.VALIDATOR]: () => [ JsLang.astReturn(true) ],
+    [GemlTypes.Modifier.PROCESSOR]: args => [ JsLang.astReturn(JsLang.astId(args[0])) ],
+    [GemlTypes.Modifier.ACTIVATOR]: () => [ JsLang.astReturn(JsLang.astId("undefined")) ]
 };
 
 /**
@@ -174,7 +174,7 @@ class DaoModeler {
             //generate functors if any
             if (!_.isEmpty(sharedContext.mapOfFunctorToFile)) {
                 _.forOwn(sharedContext.mapOfFunctorToFile, (fileName, functionName) => {
-                    importLines.push(JsLang.astToCode(JsLang.astRequire(functionName, fileName)))
+                    importLines.push(JsLang.astToCode(JsLang.astRequire(functionName, '.' + fileName)))
                 });
             }
 
@@ -234,7 +234,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
             let classTemplate = path.resolve(__dirname, 'database', this.connector.driver, 'EntityModel.js.swig');
             let classCode = swig.renderFile(classTemplate, locals);
 
-            let modelFilePath = path.resolve(this.outputPath, schema.name, capitalized + '.js');
+            let modelFilePath = path.resolve(this.outputPath, schema.name, 'base', capitalized + '.js');
             fs.ensureFileSync(modelFilePath);
             fs.writeFileSync(modelFilePath, classCode);
 
@@ -406,20 +406,20 @@ module.exports = ${capitalized} => class extends ${capitalized} {
     */
 
     _processFieldModifiers(entity, sharedContext) {
-        let compileContext = OolToAst.createCompileContext(entity.oolModule.name, this.linker, sharedContext);
+        let compileContext = GemlToAst.createCompileContext(entity.gemlModule.name, this.linker, sharedContext);
         compileContext.variables['raw'] = { source: 'context', finalized: true };
         compileContext.variables['i18n'] = { source: 'context', finalized: true };
         compileContext.variables['connector'] = { source: 'context', finalized: true };
         compileContext.variables['latest'] = { source: 'context' };
 
-        const allFinished = OolToAst.createTopoId(compileContext, 'done.');
+        const allFinished = GemlToAst.createTopoId(compileContext, 'done.');
 
         //map of field name to dependencies
         let fieldReferences = {};
 
         _.forOwn(entity.fields, (field, fieldName) => {
-            let topoId = OolToAst.compileField(fieldName, field, compileContext);
-            OolToAst.dependsOn(compileContext, topoId, allFinished);
+            let topoId = GemlToAst.compileField(fieldName, field, compileContext);
+            GemlToAst.dependsOn(compileContext, topoId, allFinished);
 
             if (field.writeOnce || field.freezeAfterNonDefault) {
                 putIntoBucket(fieldReferences, fieldName, { reference: fieldName, writeProtect: true });
@@ -473,7 +473,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                     fieldReferences[targetFieldName] = fieldReference = [];
                 }
 
-                if (sourceMap.type === OolToAst.AST_BLK_ACTIVATOR_CALL) {
+                if (sourceMap.type === GemlToAst.AST_BLK_ACTIVATOR_CALL) {
                     sourceMap.references.forEach(ref => { fieldReference.push({ reference: ref, whenNull: true }); });
                 } else {
                     sourceMap.references.forEach(ref => { if (fieldReference.indexOf(ref) === -1) fieldReference.push(ref); });
@@ -495,16 +495,16 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                 }
             }            
 
-            if (sourceMap.type === OolToAst.AST_BLK_VALIDATOR_CALL) {
+            if (sourceMap.type === GemlToAst.AST_BLK_VALIDATOR_CALL) {
                 //hasValidator = true;
                 let astCache = Snippets._validateCheck(targetFieldName, astBlock);
                 
                 _mergeDoValidateAndFillCode(targetFieldName, sourceMap.references, astCache, true);                                
-            } else if (sourceMap.type === OolToAst.AST_BLK_PROCESSOR_CALL) {
+            } else if (sourceMap.type === GemlToAst.AST_BLK_PROCESSOR_CALL) {
                 let astCache = JsLang.astAssign(JsLang.astVarRef(sourceMap.target, true), astBlock, `Processing "${targetFieldName}"`);
                 
                 _mergeDoValidateAndFillCode(targetFieldName, sourceMap.references, astCache, true);
-            } else if (sourceMap.type === OolToAst.AST_BLK_ACTIVATOR_CALL) {
+            } else if (sourceMap.type === GemlToAst.AST_BLK_ACTIVATOR_CALL) {
                 let astCache = Snippets._checkAndAssign(astBlock, JsLang.astVarRef(sourceMap.target, true), `Activating "${targetFieldName}"`);
                 
                 _mergeDoValidateAndFillCode(targetFieldName, sourceMap.references, astCache, false);
@@ -581,7 +581,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                 JsLang.astVarDeclare('$meta', JsLang.astVarRef('this.meta.interfaces.' + name), true, false, 'Retrieving the meta data')
             ];
 
-            let compileContext = OolToAst.createCompileContext(entity.oolModule.name, this.linker, sharedContext);
+            let compileContext = GemlToAst.createCompileContext(entity.gemlModule.name, this.linker, sharedContext);
             
             let paramMeta;
 
@@ -595,11 +595,11 @@ module.exports = ${capitalized} => class extends ${capitalized} {
 
             _.each(method.implementation, (operation, index) => {
                 //let lastTopoId = 
-                OolToAst.compileDbOperation(index, operation, compileContext, compileContext.mainStartId);                
+                GemlToAst.compileDbOperation(index, operation, compileContext, compileContext.mainStartId);                
             });
 
             if (method.return) {
-                OolToAst.compileExceptionalReturn(method.return, compileContext);
+                GemlToAst.compileExceptionalReturn(method.return, compileContext);
             }
 
             let deps = compileContext.topoSort.sort();
@@ -616,17 +616,17 @@ module.exports = ${capitalized} => class extends ${capitalized} {
 
                 let targetFieldName = sourceMap.target; //getFieldName(sourceMap.target);      
 
-                if (sourceMap.type === OolToAst.AST_BLK_VALIDATOR_CALL) {                    
+                if (sourceMap.type === GemlToAst.AST_BLK_VALIDATOR_CALL) {                    
                     astBlock = Snippets._validateCheck(targetFieldName, astBlock);
 
-                } else if (sourceMap.type === OolToAst.AST_BLK_PROCESSOR_CALL) {
+                } else if (sourceMap.type === GemlToAst.AST_BLK_PROCESSOR_CALL) {
                     if (sourceMap.needDeclare) {
                         astBlock = JsLang.astVarDeclare(JsLang.astVarRef(sourceMap.target), astBlock, false, false, `Processing "${targetFieldName}"`);                    
                     } else {
                         astBlock = JsLang.astAssign(JsLang.astVarRef(sourceMap.target, true), astBlock, `Processing "${targetFieldName}"`);                    
                     }
                     
-                } else if (sourceMap.type === OolToAst.AST_BLK_ACTIVATOR_CALL) {
+                } else if (sourceMap.type === GemlToAst.AST_BLK_ACTIVATOR_CALL) {
                     if (sourceMap.needDeclare) {
                         astBlock = JsLang.astVarDeclare(JsLang.astVarRef(sourceMap.target), astBlock, false, false, `Processing "${targetFieldName}"`);                    
                     } else {
@@ -647,7 +647,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
         let paramMeta = {};
 
         acceptParams.forEach((param, i) => {
-            OolToAst.compileParam(i, param, compileContext);
+            GemlToAst.compileParam(i, param, compileContext);
             paramMeta[param.name] = param;
             compileContext.variables[param.name] = { source: 'argument' };
         });

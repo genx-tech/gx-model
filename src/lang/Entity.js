@@ -4,7 +4,7 @@ const EventEmitter = require('events');
 const path = require('path');
 
 const { _ } = require('rk-utils');
-const { generateDisplayName, deepCloneField, deepClone, Clonable, entityNaming } = require('./OolUtils');
+const { generateDisplayName, deepCloneField, deepClone, Clonable, entityNaming } = require('./GemlUtils');
 
 const Field = require('./Field');
 const { Types: { FunctionalQualifiers } } = require('@genx/data');
@@ -31,10 +31,10 @@ class Entity extends Clonable {
     /**     
      * @param {Linker} linker
      * @param {string} name
-     * @param {*} oolModule
+     * @param {*} gemlModule
      * @param {object} info
      */
-    constructor(linker, name, oolModule, info) {
+    constructor(linker, name, gemlModule, info) {
         super();
 
         /**
@@ -50,10 +50,10 @@ class Entity extends Clonable {
         this.name = entityNaming(name);
 
         /**
-         * Owner oolong module
+         * Owner geml module
          * @member {object}
          */
-        this.oolModule = oolModule;
+        this.gemlModule = gemlModule;
 
         /**
          * Raw metadata
@@ -96,7 +96,7 @@ class Entity extends Clonable {
             //inherit fields, processed features, key and indexes
             let baseClasses = _.castArray(this.info.base);
             baseClasses.forEach(base => {
-                let baseEntity = this.linker.loadEntity(this.oolModule, base);
+                let baseEntity = this.linker.loadEntity(this.gemlModule, base);
                 assert: baseEntity.linked;
 
                 this._inherit(baseEntity);
@@ -142,7 +142,7 @@ class Entity extends Clonable {
                         throw new Error(`Unknow feature "${featureName}" reference in entity "${this.name}"`);
                     }
                 }
-                fn(this, this.linker.translateOolValue(this.oolModule, feature.args));
+                fn(this, this.linker.translateOolValue(this.gemlModule, feature.args));
             });
         }
 
@@ -180,7 +180,7 @@ class Entity extends Clonable {
             _.forOwn(this.interfaces, (intf) => {
                 if (!_.isEmpty(intf.accept)) {
                     intf.accept = _.map(intf.accept, param => {
-                        return this.linker.trackBackType(this.oolModule, param);
+                        return this.linker.trackBackType(this.gemlModule, param);
                     });
                 }
             });
@@ -377,8 +377,8 @@ class Entity extends Clonable {
         if (rawInfo instanceof Field) {
             field = rawInfo.clone();
             field.name = name; // todo: displayName
-        } else {
-            let fullRawInfo = this.linker.trackBackType(this.oolModule, rawInfo);
+        } else {            
+            let fullRawInfo = this.linker.trackBackType(this.gemlModule, rawInfo);            
 
             field = new Field(name, fullRawInfo);
             field.link();
@@ -438,7 +438,7 @@ class Entity extends Clonable {
     }
 
     getReferencedEntity(entityName) {
-        return this.linker.loadEntity(this.oolModule, entityName);    
+        return this.linker.loadEntity(this.gemlModule, entityName);    
     }
 
     /**
@@ -480,7 +480,7 @@ class Entity extends Clonable {
     clone() {        
         super.clone();
 
-        let entity = new Entity(this.linker, this.name, this.oolModule, this.info);        
+        let entity = new Entity(this.linker, this.name, this.gemlModule, this.info);        
 
         deepCloneField(this, entity, 'code');
         deepCloneField(this, entity, 'displayName');

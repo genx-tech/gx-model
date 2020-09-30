@@ -1,4 +1,4 @@
-const OolTypes = {
+const GemlTypes = {
     Lang: Object.freeze({
         CONST_REF: 'ConstReference',
         STRING_TMPL: 'StringTemplate',
@@ -29,6 +29,6 @@ const OolTypes = {
     })
 };
 
-OolTypes.ModifiersList = Object.values(OolTypes.Modifier);
+GemlTypes.ModifiersList = Object.values(GemlTypes.Modifier);
 
-module.exports = Object.freeze(OolTypes);
+module.exports = Object.freeze(GemlTypes);

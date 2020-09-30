@@ -1,7 +1,7 @@
 "use strict";
 
 const { _, quote } = require("rk-utils");
-const { extractDotSeparateName } = require("../../lang/OolUtils");
+const { extractDotSeparateName } = require("../../lang/GemlUtils");
 const JsLang = require("../util/ast");
 
 const _applyModifiersHeader = [

@@ -1,15 +1,15 @@
 'use strict';
 
-const { fs } = require('rk-utils');
+const { fs, glob } = require('rk-utils');
 const path = require('path');
 const winston = require('winston');
 
-const SOURCE_PATH = path.resolve(__dirname, '../../../test/unitOolGen');
+const SOURCE_PATH = path.resolve(__dirname, '../../../test/unitGemlGen');
 const ENT_SOURCE_PATH = path.join(SOURCE_PATH, 'entities');
-const OolCodeGen = require('../../../lib/lang/OolCodeGen');
-const Linker = require('../../../lib/lang/Linker');
+const GemlCodeGen = require('../GemlCodeGen');
+const Linker = require('../Linker');
 
-describe.skip('unit:lang:OolCodeGen', function () {    
+describe('unit:lang:GemlCodeGen', function () {    
     let logger = winston.createLogger({
         "level": "info",
         "transports": [
@@ -19,23 +19,27 @@ describe.skip('unit:lang:OolCodeGen', function () {
         ]
     });
 
-    it('Generate entities', function () {        
-        let entitiesPath = path.join(ENT_SOURCE_PATH);
-        let files = fs.readdirSync(entitiesPath);
+    after(function () {        
+        const files = glob.sync(path.join(ENT_SOURCE_PATH, '*.geml'));
+        files.forEach(f => fs.removeSync(f));
+    });
+
+    it('Generate entities', function () {                
+        let files = fs.readdirSync(ENT_SOURCE_PATH);
 
         files.forEach(f => {
             if (f.endsWith('.json')) {
                 let json = fs.readJsonSync(path.join(ENT_SOURCE_PATH, f), 'utf8') //linker.loadModule(f);
                 
-                let content = OolCodeGen.transform(json);
-                fs.writeFileSync(path.join(entitiesPath, f.substr(0, f.length - 5)), content, 'utf8');
+                let content = GemlCodeGen.transform(json);
+                fs.writeFileSync(path.join(ENT_SOURCE_PATH, f.substr(0, f.length - 5)), content, 'utf8');
             }
         });        
     });
 
     it('Linking from generated', function () {
-        let linker = new Linker({ logger, dslSourcePath: SOURCE_PATH, schemaDeployment: {  } });
-        linker.link('test.ool');
+        let linker = new Linker(logger, { gemlPath: SOURCE_PATH, schemas: { test: {} } });
+        linker.link('test.geml');
 
         linker.schemas.should.have.keys('test');
         linker.schemas.test.entities.should.have.keys('user', 'profile', 'gender', 'group', 'usergroup');

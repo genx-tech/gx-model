@@ -1,7 +1,7 @@
 "use strict";
 
 const { _ } = require('rk-utils');
-const { deepCloneField, Clonable, isDotSeparateName } = require('./OolUtils');
+const { deepCloneField, Clonable, isDotSeparateName } = require('./GemlUtils');
 
 /**
  * Oolong dataset class.
@@ -11,10 +11,10 @@ class Dataset extends Clonable {
     /**     
      * @param {OolongLinker} linker
      * @param {string} name - Dataset name
-     * @param {object} oolModule - Source ool module
+     * @param {object} gemlModule - Source ool module
      * @param {object} info - Dataset info
      */
-    constructor(linker, name, oolModule, info) {
+    constructor(linker, name, gemlModule, info) {
         /**
          * Linker to process this document
          * @member {OolongLinker}
@@ -31,7 +31,7 @@ class Dataset extends Clonable {
          * Owner oolong module
          * @member {object}
          */
-        this.oolModule = oolModule;
+        this.gemlModule = gemlModule;
 
         /**
          * Raw metadata
@@ -48,10 +48,10 @@ class Dataset extends Clonable {
         pre: !this.linked;
 
         if (this.info.entity) {
-            let entity = this.linker.getReferencedEntity(this.oolModule, this.info.entity);
+            let entity = this.linker.getReferencedEntity(this.gemlModule, this.info.entity);
             this.mainEntity = entity.name;
         } else {
-            let dataset = this.linker.loadDataset(this.oolModule, this.info.dataset);
+            let dataset = this.linker.loadDataset(this.gemlModule, this.info.dataset);
             assert: dataset.linked;
 
             this.mainEntity = dataset.mainEntity;
@@ -100,7 +100,7 @@ class Dataset extends Clonable {
                 }
 
                 if (joining.dataset) {
-                    let rightHierarchy = inSchema.getDocumentHierachy(this.oolModule, joining.dataset);
+                    let rightHierarchy = inSchema.getDocumentHierachy(this.gemlModule, joining.dataset);
 
                     if (isDotSeparateName(joining.on.right)) {
                         let parts = joining.on.right.split('.');
@@ -164,7 +164,7 @@ class Dataset extends Clonable {
     clone() {
         super.clone();
 
-        let dataset = new Dataset(this.linker, this.name, this.oolModule, this.info);
+        let dataset = new Dataset(this.linker, this.name, this.gemlModule, this.info);
 
         dataset.mainEntity = this.mainEntity;
         deepCloneField(this, dataset, 'joinWith');
