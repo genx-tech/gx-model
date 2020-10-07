@@ -62,7 +62,7 @@ function feature(entity, args) {
     }
 
     if (trackUpdate) {
-        entity.on('afterAddingFields', () => {
+        entity.once('afterAddingFields', () => {
             entity.addField(revisionField, {
                 type: 'integer',
                 readOnly: true

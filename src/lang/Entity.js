@@ -20,8 +20,6 @@ const { Types: { FunctionalQualifiers } } = require('@genx/data');
  * @class OolongEntity
  */
 class Entity extends Clonable {
-    _events = new EventEmitter();
-
     /**
      * Fields of the entity, map of <fieldName, fieldObject>
      * @member {object.<string, OolongField>}
@@ -36,6 +34,9 @@ class Entity extends Clonable {
      */
     constructor(linker, name, gemlModule, info) {
         super();
+
+
+        this._events = new EventEmitter();
 
         /**
          * Linker to process this entity
@@ -68,8 +69,8 @@ class Entity extends Clonable {
      * @param {OolongEntity.eventListener} listener
      * @returns {EventEmitter}
      */
-    on(eventName, listener) {
-        return this._events.on(eventName, listener);
+    once(eventName, listener) {
+        return this._events.once(eventName, listener);
     }
 
     /**
@@ -95,7 +96,7 @@ class Entity extends Clonable {
         if (this.info.base) {
             //inherit fields, processed features, key and indexes
             let baseClasses = _.castArray(this.info.base);
-            baseClasses.forEach(base => {
+            baseClasses.reverse().forEach(base => {
                 let baseEntity = this.linker.loadEntity(this.gemlModule, base);
                 assert: baseEntity.linked;
 
@@ -413,8 +414,8 @@ class Entity extends Clonable {
 
             this.features[name].push(feature);
         } else {
-            if (feature.name in this.features) {
-                throw new Error(`Duplicate feature found: ${name}. Turn on allowMultiple to enable multiple occurrence of a feature.`);
+            if (name in this.features) {
+                throw new Error(`Duplicate feature found: ${name}. An entity can only have one "${name}" feature only.`);
             }
 
             this.features[name] = feature;
@@ -529,20 +530,27 @@ class Entity extends Clonable {
             }
         }
 
-        if (baseEntity.features) {
-            let baseFeatures = deepClone(baseEntity.features);
-            this.features = { ...this.features, ...baseFeatures };
-        }
-
-        if (baseEntity.fields) {
-            let fields = deepClone(baseEntity.fields);
-            this.fields = { ...this.fields, ...fields };
+        if (!_.isEmpty(baseEntity.info.features)) {
+            let baseFeatures = _.cloneDeep(baseEntity.info.features);          
+            
+            if (this.info.features) {
+                overrideInfo.features = baseFeatures.concat(this.info.features);
+            } else {
+                overrideInfo.features = baseFeatures;
+            }
+        }        
+        
+        if (!_.isEmpty(baseEntity.info.fields)) {
+            let fields = _.cloneDeep(baseEntity.info.fields);
+            overrideInfo.fields = { ...fields, ...this.info.fields };
         }
         
-        deepCloneField(baseEntity, this, 'key');            
+        if (baseEntity.info.key) {
+            overrideInfo.key = baseEntity.info.key;
+        }         
         
         if (baseEntity.info.indexes) {
-            let indexes = deepClone(baseEntity.info.indexes);
+            let indexes = _.cloneDeep(baseEntity.info.indexes);
 
             if (this.info.indexes) {
                 indexes = indexes.concat(this.info.indexes);
@@ -552,7 +560,7 @@ class Entity extends Clonable {
         }        
 
         if (baseEntity.info.associations) {
-            let assocs = deepClone(baseEntity.info.associations);
+            let assocs = _.cloneDeep(baseEntity.info.associations);
 
             assocs = assocs.map(assoc => {
                 if (assoc.destEntity === baseEntity.name) {
@@ -572,8 +580,8 @@ class Entity extends Clonable {
             overrideInfo.associations = assocs;
         }     
 
-        if (!_.isEmpty(overrideInfo)) {        
-            this.info = Object.freeze({ ...this.info, ...overrideInfo });
+        if (!_.isEmpty(overrideInfo)) {                    
+            this.info = { ...this.info, ...overrideInfo };
         }
     }
 }

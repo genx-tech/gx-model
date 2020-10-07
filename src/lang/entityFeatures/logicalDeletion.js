@@ -48,6 +48,8 @@ function feature(entity, args = []) {
         }
     }
 
+    console.log(entity.name, 'options', options, newField);
+
     if (newField) {
         fieldName = fieldInfo.name;
 
@@ -66,14 +68,14 @@ function feature(entity, args = []) {
             timestampField: timestampFieldName
         });
 
-        entity.on('afterAddingFields', () => {
+        entity.once('afterAddingFields', () => {
             entity.addField(fieldName, fieldInfo);
             entity.addField(timestampFieldName, deletedTimestamp);
         });
     } else {
         entity.addFeature(FEATURE_NAME, featureSetting);
 
-        entity.on('afterAddingFields', () => {
+        entity.once('afterAddingFields', () => {
             if (!entity.hasField(featureSetting.field)) {
                 throw new Error(`Field "${featureSetting.field}" used by feature "${FEATURE_NAME}" is not found in entity "${entity.name}".`);
             }

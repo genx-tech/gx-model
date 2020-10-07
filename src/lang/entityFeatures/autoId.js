@@ -110,7 +110,7 @@ function feature(entity, args = []) {
     entity.addFeature(FEATURE_NAME, {
         field: fieldName,
         ...featureExtra        
-    }).on('beforeAddingFields', () => {
+    }).once('beforeAddingFields', () => {
         entity.addField(fieldName, typeInfo)
             .setKey(fieldName);
     });

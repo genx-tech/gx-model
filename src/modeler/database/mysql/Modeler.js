@@ -894,7 +894,7 @@ class MySQLModeler {
                 if (field.type === 'integer' && !field.generator) {
                     field.autoIncrementId = true;
                     if ('startFrom' in feature) {
-                        this._events.on('setTableOptions:' + entity.name, extraOpts => {
+                        this._events.once('setTableOptions:' + entity.name, extraOpts => {
                             extraOpts['AUTO_INCREMENT'] = feature.startFrom;
                         });
                     }

@@ -35,7 +35,7 @@ function feature(entity, args = []) {
 
     entity.addFeature(FEATURE_NAME, {
         field: fieldName
-    }).on('afterAddingFields', () => {
+    }).once('afterAddingFields', () => {
         entity.addField(fieldName, typeInfo);
     });
 }

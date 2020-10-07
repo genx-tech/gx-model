@@ -19,7 +19,7 @@ function feature(entity, [ fields ]) {
 
     Array.isArray(fields) || (fields = [ fields ]);
 
-    entity.addFeature(FEATURE_NAME, fields, true).on('afterAddingFields', () => {
+    entity.addFeature(FEATURE_NAME, fields, true).once('afterAddingFields', () => {
         fields.forEach(fieldName => {
             let field = entity.fields[fieldName];
 

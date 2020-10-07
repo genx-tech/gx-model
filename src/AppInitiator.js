@@ -53,7 +53,7 @@ class AppInitiator {
 
         await this.container.start_();
 
-        this.app.on('stopping', stopper => {
+        this.app.once('stopping', stopper => {
             stopper.push((async () => {                
                 await this.container.stop_();
             })());

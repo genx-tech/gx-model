@@ -39,7 +39,7 @@ function feature(entity, args = []) {
         throw new Error('Invalid locale mapping. Plain object expected!');
     }
 
-    entity.addFeature(FEATURE_NAME, options, true).on('afterAddingFields', () => {
+    entity.addFeature(FEATURE_NAME, options, true).once('afterAddingFields', () => {
         if (!entity.hasField(options.field)) {
             throw new Error('Field "' + options.field + '" does not exist!');
         }

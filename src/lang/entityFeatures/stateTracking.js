@@ -49,7 +49,7 @@ function feature(entity, args = []) {
         stateSetTimestamp.writeOnce = true;
     }
 
-    entity.on('afterAddingFields', () => {
+    entity.once('afterAddingFields', () => {
         if (!entity.hasField(options.field)) {
             throw new Error('Field "' + options.field + '" does not exist!');
         }

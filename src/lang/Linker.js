@@ -11,6 +11,7 @@ const Entity = require('./Entity');
 const Schema = require('./Schema');
 const View = require('./View');
 const Dataset = require('./Dataset');
+const deepFreeze = require('deep-freeze');
 
 const ELEMENT_CLASS_MAP = {
     [GemlTypes.Element.ENTITY]: Entity,
@@ -353,15 +354,19 @@ class Linker {
 
         if (elementType in ELEMENT_CLASS_MAP) {
             // element need linking
-            let ElementClass = ELEMENT_CLASS_MAP[elementType];
-            element = new ElementClass(this, elementName, targetModule, Object.freeze(elementInfo));   
+            let ElementClass = ELEMENT_CLASS_MAP[elementType];            
+
+            element = new ElementClass(this, elementName, targetModule, elementInfo);   
             element.link();         
         } else {
             if (elementType === GemlTypes.Element.TYPE) {
-                elementInfo.gemlModule = targetModule;
-            }
-            
-            element = Object.freeze(elementInfo);
+                element = {
+                    ...elementInfo,
+                    gemlModule: targetModule
+                };
+            } else {
+                element = elementInfo;
+            }            
         }
 
         this._elementsCache[elementSelfId] = element;
