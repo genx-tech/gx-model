@@ -48,8 +48,6 @@ function feature(entity, args = []) {
         }
     }
 
-    console.log(entity.name, 'options', options, newField);
-
     if (newField) {
         fieldName = fieldInfo.name;
 
