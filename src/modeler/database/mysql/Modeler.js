@@ -690,15 +690,15 @@ class MySQLModeler {
 
                 if (localFieldObj.constraintOnUpdate) {
                     constraints.onUpdate = localFieldObj.constraintOnUpdate;
-                }
+                } 
 
                 if (localFieldObj.constraintOnDelete) {
                     constraints.onDelete = localFieldObj.constraintOnDelete;
                 }                
 
                 if (assoc.type === 'belongsTo') {
-                    constraints.onUpdate || (constraints.onUpdate = 'RESTRICT');
-                    constraints.onDelete || (constraints.onDelete = 'RESTRICT');
+                    constraints.onUpdate || (constraints.onUpdate = 'CASCADE');
+                    constraints.onDelete || (constraints.onDelete = 'CASCADE');
 
                 } else if (localFieldObj.optional) {
                     constraints.onUpdate || (constraints.onUpdate = 'SET NULL');
