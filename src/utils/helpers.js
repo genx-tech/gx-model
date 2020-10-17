@@ -38,6 +38,8 @@ async function importDataFilesByList(migrator, dataSetPath, dataListFile) {
 
 exports.importDataFiles = async function (migrator, folderName) {
     let dataSetPath = path.join(migrator.dbScriptPath, 'data', folderName);
+    if (!fs.existsSync(dataSetPath)) return;
+
     let dataListFile = path.join(dataSetPath, 'index.list');
 
     let runtimeDataSetPath, stageDataSetFile, imported = false;    
