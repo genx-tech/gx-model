@@ -1,0 +1,42 @@
+{    
+    "dataSource": {
+        "mysql": {
+            "test2": {
+                "connection": "mysql://root:root@localhost/teamlink",
+                "logSQLStatement": true
+            }
+        }
+    },
+    "useDb": {        
+        "test": {
+            "dataSource": "mysql.test2"
+        }
+    },
+    "settings": {
+        "geml": {
+            "modelPath": "models",
+            "gemlPath": "geml",
+            "scriptPath": "scripts",
+            "manifestPath": "manifests",
+            "useJsonSource": false,
+            "saveIntermediate": false,
+            "schemas": { 
+                "test": {
+                    "dataSource": "mysql.test2"
+                }
+            },
+            "export": {
+                "user": {
+                    "associations": [
+                        ""
+                    ]
+                },
+                "product": {
+                    "associations": [
+                        ""
+                    ]
+                }
+            }
+        }
+    } 
+}

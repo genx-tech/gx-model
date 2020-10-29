@@ -401,7 +401,8 @@ class Linker {
             try {
                 ool = OolongParser.parse(fs.readFileSync(oolFile, 'utf8'));
             } catch (error) {
-                throw new Error(`Failed to compile "${ oolFile }".\n${ error.message || error }`)
+                throw error;
+                //throw new Error(`Failed to compile "${ oolFile }".\n${ error.message || error }`)
             }
 
             if (!ool) {

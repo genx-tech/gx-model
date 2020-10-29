@@ -1,6 +1,6 @@
+const path = require('path');
 const { _, eachAsync_ } = require('rk-utils');
-const { throwIfFileNotExist, getSchemaConnectors } = require('../utils/helpers');
-const Linker = require('../lang/Linker');
+const { throwIfFileNotExist, getSchemaConnectors, getDateNamedDir } = require('../utils/helpers');
 
 /**
  * Build database scripts and entity models from oolong files.
@@ -17,48 +17,19 @@ const Linker = require('../lang/Linker');
  */
 module.exports = async (app, context) => {
     app.log('verbose', 'geml reverse');
-/*
+
     let schemaName = app.option('schema');
+    let override = app.option('override');
 
     let schemaToConnector = getSchemaConnectors(app, context.schemas);
-
     let connector = schemaToConnector[schemaName];
 
-    let oolongConfig = core.oolongConfig;
+    let basePath = path.join(context.manifestPath, 'reverse');
 
-    let dslReverseOutputDir = Util.getValueByPath(oolongConfig, 'oolong.dslReverseOutputDir');
-    if (!dslReverseOutputDir) {
-        throw new Error('"oolong.dslOutputDir" not found in oolong config.');
-    }
+    let reverseOutput = getDateNamedDir(basePath, undefined, override);   
 
-    let outputDir = core.getReverseOutputDir(core.app.toAbsolutePath(dslReverseOutputDir));
+    const ReserveEngineering = require(`../modeler/database/${connector.driver}/ReverseEngineering`);
+    let modeler = new ReserveEngineering(app, connector);
 
-    //todo: relocation, and deep copy connection options
-    let conn = core.option('conn');
-    let [ driver ] = extractDriverAndConnectorName(conn);
-    let connOptions = Util.getValueByPath(oolongConfig, 'dataSource.' + conn);
-    assert: connOptions;    
-
-    if (typeof connOptions.reverseRules === 'string') {
-        connOptions.reverseRules = require(core.app.toAbsolutePath(connOptions.reverseRules));
-    } 
-
-    assert: !connOptions.reverseRules || _.isPlainObject(connOptions.reverseRules);
-
-    let ReserveEngineering = require(`../modeler/database/${context.driver}/ReverseEngineering`);
-    
-    let { connection: connectionString, ...options } = context.connOptions;  
-    let connector = Connector.createConnector(context.driver, connectionString, { logger: context.logger, ...options });     
-    assert: connector;  
-
-    try {
-        let modeler = new ReserveEngineering(context, connector);
-
-        await modeler.reverse_(context.dslReverseOutputPath);
-    } catch (error) {
-        throw error;
-    } finally {
-        await connector.end_();
-    } */
-
+    await modeler.reverse_(reverseOutput);
 };

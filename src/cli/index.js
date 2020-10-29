@@ -37,7 +37,7 @@ function main () {
         return appInitiator.run(command);
     }, {
         logger: {
-            level: 'info'
+            level: process.env.VERBOSE ? 'verbose' : 'info'
         },
         commandName: 'geml',
         config: {
@@ -69,7 +69,7 @@ function main () {
                         "alias": [ "version" ],
                         "bool": true,
                         "default": false
-                    },
+                    },                   
                     "?": {
                         "desc": "Show usage message",
                         "alias": [ "help" ],

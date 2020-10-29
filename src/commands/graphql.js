@@ -21,7 +21,6 @@ module.exports = async (app, context) => {
     throwIfFileNotExist("gemlPath", context.gemlPath);
 
     let linker = new Linker(app, context);
-    context.linker = linker;    
 
     let schemaFiles = Linker.getGemlFiles(context.gemlPath, context.useJsonSource);
     schemaFiles.forEach(schemaFile => linker.link(schemaFile));  
@@ -42,11 +41,11 @@ module.exports = async (app, context) => {
         const skipGeneration = true;
 
         let DbModeler = require(`../modeler/database/${connector.driver}/Modeler`);
-        let dbModeler = new DbModeler(context, connector, deploymentSetting.extraOptions);
+        let dbModeler = new DbModeler(context, linker, connector, deploymentSetting.extraOptions);
         let refinedSchema = dbModeler.modeling(schema, schemaToConnector, skipGeneration);
 
         const GraphQLModeler = require('../modeler/GraphQL');
-        let graphQLModeler = new GraphQLModeler(context, connector);
+        let graphQLModeler = new GraphQLModeler(context, linker, connector);
 
         return graphQLModeler.modeling_(refinedSchema);
     });            

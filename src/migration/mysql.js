@@ -72,7 +72,7 @@ class MySQLMigration {
         });
     }
 
-    async load_(dataFile) {
+    async load_(dataFile, ignoreDuplicate) {
         let ext = path.extname(dataFile);
         this.app.log('verbose', `Loading data file "${dataFile}" ...`);
 
@@ -81,9 +81,9 @@ class MySQLMigration {
 
             if (Array.isArray(data)) {
                 let entityName = path.basename(dataFile, ext);
-                await this._loadSingleEntityRecords_(entityName, data);
+                await this._loadSingleEntityRecords_(entityName, data, ignoreDuplicate);
             } else {
-                await this._loadMultiEntityRecords_(data);
+                await this._loadMultiEntityRecords_(data, ignoreDuplicate);
             }
             this.app.log('info', `Loaded JSON data file: ${dataFile}`);
         } else if (ext === '.sql') {
@@ -129,14 +129,50 @@ class MySQLMigration {
         }
     }
 
-    async _loadMultiEntityRecords_(data) {        
+    async export_(entitiesToExport, outputDir) {
+        fs.ensureDirSync(outputDir);
+
+        const items = [];
+
+        await eachAsync_(entitiesToExport, async (exportConfig, entityName) => {
+            const Entity = this.db.model(entityName);
+            const data = await Entity.findAll_(exportConfig.dataset);
+
+            const rules = { 'default': true, ...exportConfig.rules }; 
+
+            _.forOwn(rules, (enabled, name) => {
+                if (enabled) {
+                    const processRule = require(`./rules/${name}.js`);
+                    data.forEach(entity => processRule(this.db, Entity, entity));
+                }                    
+            });
+
+            const baseFileName = `${Entity.meta.name}.json`;
+            items.push(baseFileName);
+
+            const dataFile = path.join(outputDir, baseFileName);
+
+            fs.writeJsonSync(dataFile, {
+                [Entity.meta.name]: data
+            }, { spaces: 4 });
+
+            this.app.log('info', 'Generated entity data file: ' + dataFile);
+        });
+
+        const indexFile = path.join(outputDir, 'index.list');
+
+        fs.writeFileSync(indexFile, items.join('\n'), 'utf8');
+        this.app.log('info', 'Generated data files list: ' + indexFile);
+    }
+
+    async _loadMultiEntityRecords_(data, ignoreDuplicate) {        
 
         try {
             await this.db.connector.execute_('SET FOREIGN_KEY_CHECKS=0;');
 
             await eachAsync_(data, async (records, entityName) => {                
                 let items = Array.isArray(records) ? records : [ records ];
-                return eachAsync_(items, item => this.db.model(entityName).create_(item, { $migration: true }));  
+                return this._loadRecordsByModel_(entityName, items, ignoreDuplicate);
             });
         } catch (error) {
             throw error;
@@ -145,16 +181,25 @@ class MySQLMigration {
         }
     }
 
-    async _loadSingleEntityRecords_(entityName, data) {
+    async _loadSingleEntityRecords_(entityName, data, ignoreDuplicate) {
         try {
             await this.db.connector.execute_('SET FOREIGN_KEY_CHECKS=0;');
 
-            await eachAsync_(data, item => this.db.model(entityName).create_(item, { $migration: true }));  
+            await this._loadRecordsByModel_(entityName, data, ignoreDuplicate);
         } catch (error) {
             throw error;
         } finally {
             await this.db.connector.execute_('SET FOREIGN_KEY_CHECKS=1;');
         }
+    }
+
+    async _loadRecordsByModel_(entityName, items, ignoreDuplicate) {
+        const connOptions = {};
+        if (ignoreDuplicate) {
+            connOptions.insertIgnore = true;
+        }
+
+        return eachAsync_(items, ({ $skipModifiers, ...item }) => this.db.model(entityName).create_(item, { $migration: true, $skipModifiers }, connOptions));  
     }
 }
 

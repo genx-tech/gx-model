@@ -1,5 +1,5 @@
 const { _, eachAsync_ } = require('rk-utils');
-const { throwIfFileNotExist, getSchemaConnectors, importDataFiles } = require('../utils/helpers');
+const { throwIfFileNotExist, importDataFiles } = require('../utils/helpers');
 
 /**
  * Build database scripts and entity models from oolong files.
@@ -22,6 +22,7 @@ module.exports = async (app, context) => {
 
     let schemaName = app.option('schema');
     let dataset = app.option('dataset');
+    let ignoreDuplicate = app.option('ignore');
 
     let schemaConfig = context.schemas[schemaName];
     if (!schemaConfig) {
@@ -33,5 +34,5 @@ module.exports = async (app, context) => {
     const Migrator = require(`../migration/${db.driver}`);
     const migrator = new Migrator(app, context, db);
 
-    await importDataFiles(migrator, dataset);  
+    await importDataFiles(migrator, dataset, ignoreDuplicate);  
 };

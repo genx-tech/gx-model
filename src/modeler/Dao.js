@@ -56,8 +56,8 @@ class DaoModeler {
      * @property {object} context.manifestPath - Entities manifest output path
      * @param {Connector} connector      
      */
-    constructor(context, connector) {       
-        this.linker = context.linker;
+    constructor(context, linker, connector) {       
+        this.linker = linker;
         this.outputPath = context.modelPath;
         this.manifestPath = context.manifestPath;
 
@@ -295,11 +295,40 @@ module.exports = ${capitalized} => class extends ${capitalized} {
             }
         });
         */
+       /*
         let outputFilePath = path.resolve(this.manifestPath, schema.name + '.manifest.json');
         fs.ensureFileSync(outputFilePath);
         fs.writeFileSync(outputFilePath, JSON.stringify(entities, null, 4));
 
         this.linker.log('info', 'Generated schema manifest: ' + outputFilePath);
+        */
+
+        //generate validator config
+        _.forOwn(schema.entities, (entity, entityInstanceName) => {
+            let validationSchema = {};
+
+            _.forOwn(entity.fields, (field, fieldName) => {
+                let fieldSchema = {
+                    type: field.type
+                };
+
+                if (field.type === 'enum') {
+                    fieldSchema.values = field.values;
+                }
+
+                if (field.optional) {
+                    fieldSchema.optional = true;
+                }
+
+                validationSchema[fieldName] = fieldSchema;
+            });
+
+            let entityOutputFilePath = path.resolve(this.manifestPath, schema.name, 'validation', entityInstanceName + '.manifest.json');
+            fs.ensureFileSync(entityOutputFilePath);
+            fs.writeFileSync(entityOutputFilePath, JSON.stringify(validationSchema, null, 4));
+
+            this.linker.log('info', 'Generated entity manifest: ' + entityOutputFilePath);
+        });
     }
 
     /*

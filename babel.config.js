@@ -27,11 +27,12 @@ module.exports = function (api) {
     "comments": false,
     "ignore": [
       "node_modules",
-      "lib/lang/grammar/geml.js"
+      "src/lang/grammar/geml.js"
     ], 
     "plugins": [
       ["contract", {
         "strip": isProduction,
+        "envStrip": true,
         "names": {
           "assert": "assert",
           "precondition": "pre",

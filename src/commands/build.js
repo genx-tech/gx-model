@@ -21,7 +21,6 @@ module.exports = async (app, context) => {
     throwIfFileNotExist("gemlPath", context.gemlPath);
 
     let linker = new Linker(app, context);
-    context.linker = linker;    
 
     let schemaFiles = Linker.getGemlFiles(context.gemlPath, context.useJsonSource);
     schemaFiles.forEach(schemaFile => linker.link(schemaFile));  
@@ -40,11 +39,11 @@ module.exports = async (app, context) => {
         let connector = schemaToConnector[schemaName];
 
         let DbModeler = require(`../modeler/database/${connector.driver}/Modeler`);
-        let dbModeler = new DbModeler(context, connector, deploymentSetting.extraOptions);
+        let dbModeler = new DbModeler(context, linker, connector, deploymentSetting.extraOptions);
         let refinedSchema = dbModeler.modeling(schema, schemaToConnector);
 
         const DaoModeler = require('../modeler/Dao');
-        let daoModeler = new DaoModeler(context, connector);
+        let daoModeler = new DaoModeler(context, linker, connector);
 
         return daoModeler.modeling_(refinedSchema);
     });            

@@ -5,7 +5,7 @@
                 "connection": "mysql://root:root@localhost/test-db",
                 "logSQLStatement": true,
                 "reverseRules": "reverseRules.js",
-                "saveDatabaseMeta": true
+                "saveDatabaseMeta": false
             }
         }
     },

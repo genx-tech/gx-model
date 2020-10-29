@@ -17,8 +17,8 @@ class GraphQLModeler {
      * @property {object} context.manifestPath - Entities manifest output path
      * @param {Connector} connector      
      */
-    constructor(context, connector) {       
-        this.linker = context.linker;
+    constructor(context, linker, connector) {       
+        this.linker = linker;
         this.outputPath = context.modelPath;
         this.manifestPath = context.manifestPath;
 

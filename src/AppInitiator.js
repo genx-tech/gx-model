@@ -107,7 +107,17 @@ class AppInitiator {
         }
 
         let cmdMethod_ = require('./commands/' + command);        
-        await cmdMethod_(this.container, gemlConfig);
+
+        try {
+            await cmdMethod_(this.container, gemlConfig);
+        } catch (error) {
+            dev: {
+                throw error;
+            }
+
+            this.app.logError(error);
+            process.exit(1);
+        }        
     }
 }
 

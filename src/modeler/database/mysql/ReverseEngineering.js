@@ -5,8 +5,8 @@ const GemlCodeGen = require('../../../lang/GemlCodeGen');
 const GemlUtils = require('../../../lang/GemlUtils');
 
 class MySQLReverseEngineering {
-    constructor(context, connector) {
-        this.logger = context.logger;
+    constructor(logger, connector) {
+        this.logger = logger;
         this.connector = connector;        
 
         this.reverseRules = this.connector.options.reverseRules || {};       
@@ -17,6 +17,7 @@ class MySQLReverseEngineering {
         this.logger.log('verbose', `Reverse engineering against ${this.connector.driver} database "${this.connector.database}" ...`);
 
         fs.ensureDirSync(outputDir);
+        console.log(outputDir);
 
         let tables = await this.connector.execute_("select * from information_schema.tables where table_schema = ?", [ this.connector.database ]);        
 

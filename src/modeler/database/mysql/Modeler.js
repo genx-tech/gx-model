@@ -26,8 +26,8 @@ class MySQLModeler {
      * @property {object} dbOptions.db
      * @property {object} dbOptions.table
      */
-    constructor(context, connector, dbOptions) {
-        this.linker = context.linker;
+    constructor(context, linker, connector, dbOptions) {
+        this.linker = linker;
         this.outputPath = context.scriptPath;
         this.connector = connector;
 
