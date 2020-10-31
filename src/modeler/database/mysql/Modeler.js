@@ -1520,11 +1520,65 @@ class MySQLModeler {
             if (info.hasOwnProperty('default')) {
                 let defaultValue = info['default'];
 
-                if (info.type === 'boolean') {
-                    sql += ' DEFAULT ' + (Types.BOOLEAN.sanitize(defaultValue) ? '1' : '0');
-                } 
+                if (typeof defaultValue === 'object' && defaultValue.oorType === 'SymbolToken') {
+                    const tokenName = defaultValue.name.toUpperCase();
 
-                //todo: other types
+                    switch (tokenName) {
+                        case 'NOW':
+                        sql += ' DEFAULT NOW()';
+                        info.createByDb = true;
+                        break;
+
+                        default:
+                            throw new Error(`Unsupported symbol token "${tokenName}".`);
+                    }                 
+                     
+                } else {
+
+                    switch (info.type) {
+                        case 'boolean':
+                            sql += ' DEFAULT ' + (Types.BOOLEAN.sanitize(defaultValue) ? '1' : '0');                        
+                            break;
+
+                        case 'integer':
+                            if (_.isInteger(defaultValue)) {
+                                sql += ' DEFAULT ' + defaultValue.toString();
+                            } else {
+                                sql += ' DEFAULT ' + parseInt(defaultValue).toString();
+                            }
+                            break;
+
+                        case 'text':
+                        case 'enum':
+                            sql += ' DEFAULT ' + Util.quote(defaultValue);
+                            break;
+                        
+                        case 'number':
+                            if (_.isNumber(defaultValue)) {
+                                sql += ' DEFAULT ' + defaultValue.toString();
+                            } else {
+                                sql += ' DEFAULT ' + parseFloat(defaultValue).toString();
+                            }
+                            break;
+                        
+                        case 'binary':
+                            sql += ' DEFAULT ' + Util.bin2Hex(defaultValue);
+                            break;
+
+                        case 'datetime':
+                            sql += ' DEFAULT ' + Util.quote(Types.DATETIME.sanitize(defaultValue).toSQL({ includeOffset: false }));
+                            break;
+                        
+                        case 'object':
+                        case 'array':
+                            sql += ' DEFAULT ' + Util.quote(JSON.stringify(defaultValue));
+                            break;    
+
+                        default:                        
+                            throw new Error(`Invalid type "${info.type}"`);
+                                   
+                    }
+                }
 
             } else if (!info.hasOwnProperty('auto')) {
                 if (UNSUPPORTED_DEFAULT_VALUE.has(type)) {
@@ -1537,11 +1591,13 @@ class MySQLModeler {
                     sql += ' DEFAULT CURRENT_TIMESTAMP';
                 } else if (info.type === 'enum') {
                     sql += ' DEFAULT ' +  quote(info.values[0]);
+                    info.createByDb = true;
                 }  else {
                     sql += ' DEFAULT ""';
                 } 
 
-                info.createByDb = true;
+                //not explicit specified, will not treated as createByDb
+                //info.createByDb = true;
             }
         }        
     

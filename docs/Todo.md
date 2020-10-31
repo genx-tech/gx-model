@@ -34,3 +34,6 @@ Entity Model is used to operate against the whole collection
 Data Context is used to operate against a record of the core data entity
 
 isDeleted is wrongly added while inserting
+
+applyModifiers
+can remove isNothing check if forceUpdate is known to be true

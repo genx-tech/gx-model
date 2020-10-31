@@ -102,3 +102,7 @@ Index does not include foreign keys which are covered by associations.
         { code: 'CNT', name: 'Contact', desc: 'Only your contacts can see' },
         { code: 'PRI', name: 'Private', desc: 'Only yourself can see' }
     ]  
+
+
+###
+Activators will always applied when forceUpdate is set to true

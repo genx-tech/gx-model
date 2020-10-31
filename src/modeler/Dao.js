@@ -308,6 +308,8 @@ module.exports = ${capitalized} => class extends ${capitalized} {
             let validationSchema = {};
 
             _.forOwn(entity.fields, (field, fieldName) => {
+                if (field.readOnly) return;
+
                 let fieldSchema = {
                     type: field.type
                 };
