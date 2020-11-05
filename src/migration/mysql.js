@@ -199,7 +199,16 @@ class MySQLMigration {
             connOptions.insertIgnore = true;
         }
 
-        return eachAsync_(items, ({ $skipModifiers, ...item }) => this.db.model(entityName).create_(item, { $migration: true, $skipModifiers }, connOptions));  
+        const Entity = this.db.model(entityName);
+
+        return eachAsync_(items, async ({ $skipModifiers, ...item }) => {
+            const opts = { $migration: true, $skipModifiers, $retrieveDbResult: true };
+            const processed = await Entity.create_(item, opts, connOptions);
+            if (opts.$result.affectedRows === 0) {
+                const key = Entity.getUniqueKeyValuePairsFrom(processed);
+                this.app.log('info', `Duplicate record ${JSON.stringify(key)} is ignored.`);
+            }            
+        });  
     }
 }
 
