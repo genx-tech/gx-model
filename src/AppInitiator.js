@@ -6,7 +6,7 @@ const { Validators: { validateObjectBySchema } } = require('@genx/data')
 class AppInitiator {
     constructor(context) {
         this.app = context.app;
-        this.cwd = context.cwd;
+        this.cwd = context.cwd;        
     }
 
     async run(command) {        

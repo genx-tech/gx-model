@@ -1,5 +1,5 @@
 const path = require('path');
-const { _, eachAsync_ } = require('rk-utils');
+const { _, fs } = require('rk-utils');
 const { throwIfFileNotExist, getDateNamedDir } = require('../utils/helpers');
 
 /**
@@ -22,7 +22,12 @@ module.exports = async (app, context) => {
     throwIfFileNotExist("gemlPath", context.gemlPath);
 
     if (!context.export) {
-        throw new Error('Config "geml.export" for  is required.');
+        throw new Error('Config "geml.export" for is required.');
+    }
+
+    if (typeof context.export === "string") {
+        const exportFilePath = path.resolve(app.options.configPath, context.export);
+        context.export = fs.readJsonSync(exportFilePath, "utf8");
     }
 
     let schemaName = app.option('schema');
