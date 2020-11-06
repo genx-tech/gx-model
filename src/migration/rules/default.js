@@ -21,6 +21,8 @@ function applyRule(db, Entity, entity) {
             } 
         } 
     });
+
+    entity.$skipModifiers = true;
 };
 
 module.exports = applyRule;
