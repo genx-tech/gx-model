@@ -138,9 +138,7 @@ class MySQLMigration {
             const Entity = this.db.model(entityName);
             const data = await Entity.findAll_(exportConfig.dataset);
 
-            const rules = { 'default': true, ...exportConfig.rules }; 
-
-            _.forOwn(rules, (enabled, name) => {
+            _.forOwn(exportConfig.rules, (enabled, name) => {
                 if (enabled) {
                     const processRule = require(`./rules/${name}.js`);
                     data.forEach(entity => processRule(this.db, Entity, entity));
