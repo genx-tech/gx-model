@@ -129,7 +129,14 @@ class MySQLMigration {
         }
     }
 
-    async export_(entitiesToExport, outputDir) {
+    writeIndexFile(outputDir, items) {
+        const indexFile = path.join(outputDir, 'index.list');
+
+        fs.writeFileSync(indexFile, items.join('\n'), 'utf8');
+        this.app.log('info', 'Generated data files list: ' + indexFile);
+    }
+
+    async export_(entitiesToExport, outputDir, skipIndexFile) {
         fs.ensureDirSync(outputDir);
 
         const items = [];
@@ -159,10 +166,11 @@ class MySQLMigration {
             this.app.log('info', 'Generated entity data file: ' + dataFile);
         });
 
-        const indexFile = path.join(outputDir, 'index.list');
-
-        fs.writeFileSync(indexFile, items.join('\n'), 'utf8');
-        this.app.log('info', 'Generated data files list: ' + indexFile);
+        if (!skipIndexFile) {
+            this.writeIndexFile(outputDir, items);
+        }
+        
+        return items;
     }
 
     async _loadMultiEntityRecords_(data, ignoreDuplicate) {        

@@ -41,11 +41,15 @@ module.exports = async (app, context) => {
         const exportFilePath = path.resolve(app.options.configPath, context.export);
         context.export = fs.readJsonSync(exportFilePath, "utf8");
     } else if (Array.isArray(context.export)) {
-        return eachAsync_(context.export, (exportFile) => {
+        const items = await eachAsync_(context.export, (exportFile) => {
             const exportFilePath = path.resolve(app.options.configPath, exportFile);
             const exportConfig = fs.readJsonSync(exportFilePath, "utf8");
-            return migrator.export_(exportConfig, exportOutput);     
+            return migrator.export_(exportConfig, exportOutput, true);     
         });
+
+        migrator.writeIndexFile(exportOutput, items);
+
+        return items;
     }
 
     return migrator.export_(context.export, exportOutput);     
