@@ -135,6 +135,8 @@ class MySQLMigration {
         const items = [];
 
         await eachAsync_(entitiesToExport, async (exportConfig, entityName) => {
+            this.app.log('verbose', 'Exporting data of entity: ' + entityName);
+
             const Entity = this.db.model(entityName);
             const data = await Entity.findAll_(exportConfig.dataset);
 
