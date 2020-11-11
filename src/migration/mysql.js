@@ -141,7 +141,8 @@ class MySQLMigration {
 
         const items = [];
 
-        await eachAsync_(entitiesToExport, async (exportConfig, entityName) => {
+        await eachAsync_(entitiesToExport, async (exportConfig, dataFileName) => {
+            const entityName = exportConfig.entityName || dataFileName;
             this.app.log('verbose', 'Exporting data of entity: ' + entityName);
 
             const Entity = this.db.model(entityName);
@@ -154,7 +155,7 @@ class MySQLMigration {
                 }                    
             });
 
-            const baseFileName = `${Entity.meta.name}.json`;
+            const baseFileName = `${dataFileName}.json`;
             items.push(baseFileName);
 
             const dataFile = path.join(outputDir, baseFileName);
@@ -209,13 +210,18 @@ class MySQLMigration {
 
         const Entity = this.db.model(entityName);
 
-        return eachAsync_(items, async ({ $skipModifiers, ...item }) => {
+        return eachAsync_(items, async ({ $skipModifiers, $update, ...item }) => {
             const opts = { $migration: true, $skipModifiers, $retrieveDbResult: true };
-            const processed = await Entity.create_(item, opts, connOptions);
-            if (opts.$result.affectedRows === 0) {
-                const key = Entity.getUniqueKeyValuePairsFrom(processed);
-                this.app.log('info', `Duplicate record ${JSON.stringify(key)} is ignored.`);
-            }            
+
+            if ($update) {
+                await Entity.updateOne_(item, undefined, connOptions);
+            } else {                
+                const processed = await Entity.create_(item, opts, connOptions);
+                if (opts.$result.affectedRows === 0) {
+                    const key = Entity.getUniqueKeyValuePairsFrom(processed);
+                    this.app.log('info', `Duplicate record ${JSON.stringify(key)} is ignored.`);
+                }       
+            }                 
         });  
     }
 }
