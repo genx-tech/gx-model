@@ -1,5 +1,5 @@
 const path = require('path');
-const { _, fs } = require('rk-utils');
+const { _, fs, eachAsync_ } = require('rk-utils');
 const { throwIfFileNotExist, getDateNamedDir } = require('../utils/helpers');
 
 /**
@@ -21,15 +21,6 @@ module.exports = async (app, context) => {
 
     throwIfFileNotExist("gemlPath", context.gemlPath);
 
-    if (!context.export) {
-        throw new Error('Config "geml.export" for is required.');
-    }
-
-    if (typeof context.export === "string") {
-        const exportFilePath = path.resolve(app.options.configPath, context.export);
-        context.export = fs.readJsonSync(exportFilePath, "utf8");
-    }
-
     let schemaName = app.option('schema');
     let override = app.option('override');
 
@@ -42,5 +33,20 @@ module.exports = async (app, context) => {
     const Migrator = require(`../migration/${db.connector.driver}`);
     const migrator = new Migrator(app, context, db);
 
-    await migrator.export_(context.export, exportOutput);     
+    if (!context.export) {
+        throw new Error('Config "geml.export" for is required.');
+    }
+
+    if (typeof context.export === "string") {
+        const exportFilePath = path.resolve(app.options.configPath, context.export);
+        context.export = fs.readJsonSync(exportFilePath, "utf8");
+    } else if (Array.isArray(context.export)) {
+        return eachAsync_(context.export, (exportFile) => {
+            const exportFilePath = path.resolve(app.options.configPath, exportFile);
+            const exportConfig = fs.readJsonSync(exportFilePath, "utf8");
+            return migrator.export_(exportConfig, exportOutput);     
+        });
+    }
+
+    return migrator.export_(context.export, exportOutput);     
 };
