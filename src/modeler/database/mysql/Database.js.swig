@@ -17,7 +17,7 @@ class {{ className }} extends DbModel {
     }
 
     loadModel(modelClassName) {            
-        return require(`./${this.schemaName}/base/${modelClassName}`);
+        return require(`./${this.schemaName}/base/${modelClassName}.js`);
     }
 
     async doTransaction_(transaction, errorHandler, connOptions) {

@@ -65,7 +65,6 @@ function feature(entity, args) {
         entity.once('afterAddingFields', () => {
             entity.addField(revisionField, {
                 type: 'integer',
-                readOnly: true,
                 default: 0
             });
         });
