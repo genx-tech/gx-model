@@ -246,7 +246,7 @@ class Entity extends Clonable {
 
         index.fields = _.map(fields, field => {
 
-            let normalizedField = _.camelCase(field);
+            let normalizedField = field;//_.camelCase(field);
 
             if (!this.hasField(normalizedField)) {
 
