@@ -40,7 +40,6 @@ function feature(entity, args = []) {
 
     let stateSetTimestamp = {
         type: 'datetime',
-        readOnly: true,
         optional: true,
         auto: true
     };
