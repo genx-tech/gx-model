@@ -4,7 +4,7 @@ const winston = require('winston');
 const path = require('path');
 const Linker = require('../lib/lang/Linker');
 
-const SOURCE_PATH = path.resolve(__dirname, './adhoc/special');
+const SOURCE_PATH = path.resolve(__dirname, './adhoc/entity');
 
 let logger = winston.createLogger({
     "level": "debug",
@@ -15,9 +15,9 @@ let logger = winston.createLogger({
     ]
 });
 
-let linker = new Linker({ logger, dslSourcePath: SOURCE_PATH, saveIntermediate: true });
+let linker = new Linker(logger, { gemlPath: SOURCE_PATH, saveIntermediate: true });
 
-let mod = linker.loadModule('user.ool');
+let mod = linker.loadModule('contact.geml');
 
-console.log(mod);
+console.dir(mod, { depth: 10 });
 

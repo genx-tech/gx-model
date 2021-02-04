@@ -6,7 +6,7 @@ const path = require('path');
 const WORKING_FOLDER = path.resolve(__dirname, 'build');
 const GEML_CLI = 'node ../../src/cli/index.js';
 
-describe.only('reverse', function () {
+describe('reverse', function () {
     before(function () {        
         process.chdir(WORKING_FOLDER);
         fs.removeSync(path.join(WORKING_FOLDER, 'models'));

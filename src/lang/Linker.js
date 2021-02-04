@@ -11,7 +11,6 @@ const Entity = require('./Entity');
 const Schema = require('./Schema');
 const View = require('./View');
 const Dataset = require('./Dataset');
-const deepFreeze = require('deep-freeze');
 
 const ELEMENT_CLASS_MAP = {
     [GemlTypes.Element.ENTITY]: Entity,

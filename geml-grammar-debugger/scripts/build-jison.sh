@@ -4,4 +4,4 @@
 cd node_modules/jison
 npm install
 cd -
-./node_modules/.bin/browserify --exports require node_modules/jison/entry.js > src/utils/jison.js
+./node_modules/.bin/browserify --exports require node_modules/jison/entry.js > src/util/jison.js

@@ -1,5 +1,5 @@
 /* global Jison,ebnf,parser */
-importScripts("./jison.js");
+importScripts("./util/jison.js");
 Jison.print = function() {};
 
 export default function compileGrammar(grammar) {

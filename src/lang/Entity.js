@@ -170,6 +170,10 @@ class Entity extends Clonable {
             }
         }
 
+        if (this.info.inputs) {
+            this.inputs = this.info.inputs;
+        }
+
         /**
          * @fires OolongEntity#beforeAddingInterfaces
          */
@@ -490,7 +494,8 @@ class Entity extends Clonable {
         deepCloneField(this, entity, 'fields');    
         deepCloneField(this, entity, 'associations');        
         deepCloneField(this, entity, 'key');        
-        deepCloneField(this, entity, 'indexes');        
+        deepCloneField(this, entity, 'indexes');    
+        deepCloneField(this, entity, 'inputs');        
         deepCloneField(this, entity, 'interfaces');
 
         entity.linked = true;
@@ -579,6 +584,10 @@ class Entity extends Clonable {
             
             overrideInfo.associations = assocs;
         }     
+
+        if (baseEntity.inputs) {
+            overrideInfo.inputs = { ...baseEntity.inputs, ...this.info.inputs };
+        }
 
         if (!_.isEmpty(overrideInfo)) {                    
             this.info = { ...this.info, ...overrideInfo };

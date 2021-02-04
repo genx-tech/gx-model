@@ -1,5 +1,5 @@
 'use strict';
-
+import React from 'react';
 /** @jsx React.DOM */
 var PureRenderMixin = require('React/addons').addons.PureRenderMixin;
 

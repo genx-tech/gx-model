@@ -1,0 +1,108 @@
+{
+    "namespace": [
+        "/Users/rockieguo/Documents/GitHub/genx-suite/packages/model/test/adhoc/entity/common.geml",
+        "/Users/rockieguo/Documents/GitHub/genx-suite/packages/model/test/adhoc/entity/address.geml"
+    ],
+    "entity": {
+        "contact": {
+            "features": [
+                "autoId"
+            ],
+            "fields": {
+                "mobile": {
+                    "name": "mobile",
+                    "type": "mobile",
+                    "optional": true
+                },
+                "phone": {
+                    "name": "phone",
+                    "type": "phone",
+                    "optional": true
+                },
+                "email": {
+                    "name": "email",
+                    "type": "email",
+                    "optional": true
+                }
+            },
+            "associations": [
+                {
+                    "type": "refersTo",
+                    "destEntity": "address",
+                    "fieldProps": {
+                        "optional": true,
+                        "comment": "Residential address"
+                    }
+                },
+                {
+                    "type": "refersTo",
+                    "destEntity": "address",
+                    "srcField": "postalAddress",
+                    "fieldProps": {
+                        "optional": true
+                    }
+                },
+                {
+                    "type": "refersTo",
+                    "destEntity": "address",
+                    "srcField": "billingAddress",
+                    "fieldProps": {
+                        "optional": true
+                    }
+                }
+            ],
+            "inputs": {
+                "new": [
+                    {
+                        "name": "mobile",
+                        "optional": true
+                    },
+                    {
+                        "name": "phone",
+                        "optional": true
+                    },
+                    {
+                        "name": "email",
+                        "optional": true
+                    },
+                    {
+                        "name": ":address",
+                        "optional": true,
+                        "spec": "newTwoLines"
+                    }
+                ],
+                "edit": [
+                    {
+                        "name": "mobile",
+                        "optional": true
+                    },
+                    {
+                        "name": "phone",
+                        "optional": true
+                    },
+                    {
+                        "name": "email",
+                        "optional": true
+                    },
+                    {
+                        "name": ":address",
+                        "optional": true,
+                        "spec": "editTwoLines"
+                    },
+                    {
+                        "name": ":postalAddress",
+                        "optional": true,
+                        "spec": "editTwoLines"
+                    },
+                    {
+                        "name": ":billingAddress",
+                        "optional": true,
+                        "spec": "editTwoLines"
+                    }
+                ]
+            }
+        }
+    },
+    "id": "./contact.geml",
+    "name": "contact"
+}

@@ -1,0 +1,30 @@
+import common
+import address
+
+//----------------------------------------------------------------------------------------------------     
+
+entity contact
+  with
+    autoId
+  has
+    mobile optional
+    phone optional 
+    email optional
+  associations
+    refersTo address optional -- "Residential address"
+    refersTo address as postalAddress optional
+    refersTo address as billingAddress optional
+  input
+    new
+      mobile optional
+      phone optional
+      email optional
+      ':address' optional with newTwoLines
+    edit
+      mobile optional
+      phone optional
+      email optional
+      ':address' optional with editTwoLines
+      ':postalAddress' optional with editTwoLines
+      ':billingAddress' optional with editTwoLines
+

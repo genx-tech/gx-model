@@ -1,0 +1,39 @@
+import common
+import country
+
+//----------------------------------------------------------------------------------------------------     
+
+entity address 
+  -- "Address"
+  with
+    autoId
+  has    
+    unitNo : name optional
+    lotNo : name optional
+    level : name optional
+    building : name optional
+    streetNo : name optional
+    streetName : name optional 
+    streetType : name optional
+    city : name optional    
+    postcode : name optional     
+    line1 : name forceUpdate |=buildLine1(@latest.unitNo, @latest.level, @latest.building) 
+    line2 : name optional forceUpdate |=buildLine2(@latest.line1)
+    localityLine : name forceUpdate |=buildLocalityLine(@latest.city, @latest.state, @latest.postcode)
+    state : name forceUpdate |=fromStateCode(@latest.stateCode)
+    fullText : name forceUpdate |=buildFullAddress(@latest.line1, @latest.line2, @latest.localityLine)    
+  associations
+    refersTo state as stateCode optional
+    refersTo country default('AU')
+  index
+    fullText 
+  input
+    twoLines
+      line1 
+      line2 optional
+      city
+      postcode
+      stateCode
+      country optional
+       
+      

@@ -351,16 +351,6 @@ function astValue(value) {
             };
         }
 
-        /*
-        if (value.type === 'FunctionCall') {
-            return astCall(value.name, value.args);
-        }
-
-        if (value.type === 'Functor') {
-            return astArrowFunction(value.args, astValue(value.body), false, value.async);
-        }
-        */
-
         let props = [];
 
         _.forOwn(value, (any, key) => {

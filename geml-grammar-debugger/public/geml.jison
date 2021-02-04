@@ -1,8 +1,8 @@
 /* Oolong Parser for Jison */
 
 /* JS declaration */
-%{
-    const DBG_MODE = !!process.env.OOL_DBG;
+%{    
+    const DBG_MODE = process && !!process.env.OOL_DBG;
 
     //used to calculate the amount by bytes unit
     const UNITS = new Map([['K', 1024], ['M', 1048576], ['G', 1073741824], ['T', 1099511627776]]);
@@ -17,18 +17,16 @@
     //top level keywords
     const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity', 'dataset', 'view']);
 
-    //const TOP_LEVEL_KEYWORDS = 
-
     //allowed  keywords of differenty state
     const SUB_KEYWORDS = { 
         // level 1
         'schema': new Set(['entities', 'views']),
-        'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'interface', 'code', 'triggers' ]),
+        'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'input', 'interface', 'code', 'triggers' ]),
         'dataset': new Set(['is']),
     
         // level 2
         'entity.associations': new Set(['hasOne', 'hasMany', 'refersTo', 'belongsTo']),
-        'entity.index': new Set(['is', 'unique']),
+        'entity.index': new Set(['is', 'unique']),        
         'entity.interface': new Set(['accept', 'find', 'findOne', 'return']),
         'entity.triggers': new Set(['onCreate', 'onCreateOrUpdate', 'onUpdate', 'onDelete']),          
         'entity.data': new Set(['in']),
@@ -45,13 +43,16 @@
         'entity.associations.item.block': new Set(['when']),           
         'entity.interface.find.when': new Set(['when', 'else', 'otherwise']),           
         'entity.interface.find.else': new Set(['return', 'throw']),
-        'entity.interface.return.when': new Set(['exists', 'null', 'throw']),        
+        'entity.interface.return.when': new Set(['exists', 'null', 'throw']),   
+
+        'entity.input.inputSet.item': new Set(['optional', 'with']),     
 
         // level 5
         'entity.associations.item.block.when': new Set(['being', 'with' ])               
     };
 
     //next state transition table
+    //.* means any char except newline after the parent keyword
     const NEXT_STATE = {        
         'import.*': 'import.item',
         'type.*': 'type.item',
@@ -63,9 +64,13 @@
         'entity.has': 'entity.has', 
         'entity.key': 'entity.key', 
         'entity.index': 'entity.index', 
+        'entity.input': 'entity.input', 
         'entity.data': 'entity.data', 
         'entity.code': 'entity.code', 
 
+        'entity.input.$INDENT': 'entity.input.inputSet',
+        'entity.input.inputSet.$INDENT': 'entity.input.inputSet.item',
+        
         'entity.associations': 'entity.associations',
         'entity.associations.hasOne': 'entity.associations.item',
         'entity.associations.hasMany': 'entity.associations.item',
@@ -101,7 +106,9 @@
         [ 'entity.with', 1 ],
         [ 'entity.has', 1 ],               
         [ 'entity.data', 1 ], 
-        [ 'entity.index', 1 ], 
+        [ 'entity.index', 1 ],           
+        [ 'entity.input.inputSet', 2 ],
+        [ 'entity.input.inputSet.item', 1 ],                  
         [ 'entity.associations', 1 ],
         [ 'entity.associations.item', 2 ],
         [ 'entity.associations.item.block.when', 2 ],        
@@ -116,7 +123,9 @@
         [ 'const.item', 2 ],              
         [ 'entity.code', 1 ],
         [ 'entity.key', 1 ],   
-        [ 'entity.data', 1 ],     
+        [ 'entity.data', 1 ],                
+        [ 'entity.input.inputSet', 1 ],
+        [ 'entity.input.inputSet.item', 1 ],
         [ 'entity.interface.accept', 1 ],       
         [ 'entity.interface.find.when', 1], 
         [ 'entity.interface.find.else', 1], 
@@ -195,8 +204,9 @@
             }
         }
 
-        doDedentExit() {
+        doDedentExit() {            
             let exitRound = DEDENT_STOPPER.get(state.lastState);
+            console.log(state.lastState, exitRound);
             if (exitRound > 0) {
 
                 for (let i = 0; i < exitRound; i++) {                    
@@ -212,7 +222,6 @@
                 }
 
                 let exitRound = NEWLINE_STOPPER.get(state.lastState);
-
                 if (exitRound > 0) {                    
 
                     for (let i = 0; i < exitRound; i++) {                    
@@ -666,7 +675,7 @@ escapeseq               \\.
                                 state.dump('<EMPTY>. same indent');                                       
                             }
                         %}
-<DEDENTED>.|<<EOF>>     %{
+<DEDENTED>.|<<EOF>>     %{                            
                             if (state.dedented > 0 && state.dedentFlip) {
                                 this.unput(yytext);
                                 state.dump('<DEDENTED>.|<<EOF>> DEDENT return NEWLINE');          
@@ -674,7 +683,7 @@ escapeseq               \\.
                                 return 'NEWLINE';
                             }
 
-                            if (state.dedented > 0) {                                
+                            if (state.dedented > 0) {                  
                                 state.dedented--;
 
                                 this.unput(yytext);                                        
@@ -939,7 +948,7 @@ escapeseq               \\.
 
 /** grammar **/
 program
-    : input 
+    : input_source 
         {
             var r = state;
             state = null;
@@ -947,14 +956,14 @@ program
         }
     ;
 
-input
+input_source
     : EOF
-    | input0 EOF
+    | input_source_body EOF
     ;
 
-input0
+input_source_body
     : statement
-    | statement input0
+    | statement input_source_body
     ;
 
 statement
@@ -1180,6 +1189,7 @@ entity_sub_item
     | associations_statement
     | key_statement
     | index_statement
+    | input_statement
     | data_statement
     | code_statement    
     | interfaces_statement
@@ -1253,10 +1263,6 @@ association_type_referee
     | "hasMany"
     ;    
 
-reference_to_field
-    : "on"
-    ;
-
 association_type_referer
     : "refersTo"
     | "belongsTo"
@@ -1301,18 +1307,6 @@ association_qualifiers
     | "default" "(" literal ")" -> { default: $literal }
     ;
 
-/*
-hasone_keywords
-    : "hasOne"
-    | "has" "one"
-    ;
-
-hasmany_keywords
-    : "hasMany"
-    | "has" "one"
-    ;    
-*/
-
 key_statement
     : "key" identifier_or_string NEWLINE -> { key: $2 }
  /* | "key" array_of_identifier_or_string NEWLINE -> { key: $2 } // remove combination key support, too much effort to infer the relationship */ 
@@ -1337,6 +1331,34 @@ index_item_body
     : identifier_or_string -> { fields: $1 }
     | array_of_identifier_or_string -> { fields: $1 }
     ;
+
+input_statement
+    : "input" NEWLINE INDENT input_statement_block DEDENT NEWLINE? -> { inputs: $4 }     
+    ;
+
+input_statement_block
+    : identifier_or_string NEWLINE INDENT input_block DEDENT NEWLINE -> { [$1]: $4 }     
+    | identifier_or_string NEWLINE INDENT input_block DEDENT input_statement_block -> { [$1]: $4, ...$6 }     
+    ;
+
+input_block
+    : input_block_item NEWLINE -> [ $1 ]
+    | input_block_item NEWLINE input_block -> [ $1 ].concat($3)
+    ;   
+
+input_block_item
+    : input_block_item_base
+    | input_block_item_with_spec
+    ;    
+
+input_block_item_base
+    : identifier_or_string -> { name: $1 }
+    | identifier_or_string 'optional' -> { name: $1, optional: true }
+    ;    
+
+input_block_item_with_spec
+    : input_block_item_base 'with' feature_inject -> { ...$1, spec: $3 }
+    ;    
 
 data_statement
     : "data" data_records NEWLINE -> { data: [{ records: $2 }] }
@@ -1370,7 +1392,7 @@ triggers_operation_block
     ;
 
 triggers_operation_item
-    : "when" conditional_expression NEWLINE INDENT triggers_result_block DEDENT NEWLINE? -> { condition: $2, do: $5 }
+    : "when" conditional_expression NEWLINE INDENT triggers_result_block DEDENT NEWLINE? -> { condition: $2, do: $5 }    
     | "always" NEWLINE INDENT triggers_result_block DEDENT NEWLINE? -> { do: $4 }
     ;   
 

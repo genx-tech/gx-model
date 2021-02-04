@@ -1,10 +1,9 @@
-import '<builtins>/types'
-
 entity company
   with
     autoId
 
   has    
+    companyNo : integer
     companyName : text maxLength(100) optional |>upperCase    
 
   associations    
@@ -14,6 +13,13 @@ entity company
 
   index    
     companyName is unique
+
+  input
+    new
+      companyNo
+      companyName
+    edit
+      companyName optional
 
 entity companyRelationType 
   has

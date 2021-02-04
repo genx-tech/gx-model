@@ -1,0 +1,221 @@
+{
+    "namespace": [
+        "/Users/rockieguo/Documents/GitHub/genx-suite/packages/model/test/adhoc/entity/common.geml",
+        "/Users/rockieguo/Documents/GitHub/genx-suite/packages/model/test/adhoc/entity/country.geml"
+    ],
+    "entity": {
+        "address": {
+            "comment": "Address",
+            "features": [
+                "autoId"
+            ],
+            "fields": {
+                "unitNo": {
+                    "name": "unitNo",
+                    "type": "name",
+                    "optional": true
+                },
+                "lotNo": {
+                    "name": "lotNo",
+                    "type": "name",
+                    "optional": true
+                },
+                "level": {
+                    "name": "level",
+                    "type": "name",
+                    "optional": true
+                },
+                "building": {
+                    "name": "building",
+                    "type": "name",
+                    "optional": true
+                },
+                "streetNo": {
+                    "name": "streetNo",
+                    "type": "name",
+                    "optional": true
+                },
+                "streetName": {
+                    "name": "streetName",
+                    "type": "name",
+                    "optional": true
+                },
+                "streetType": {
+                    "name": "streetType",
+                    "type": "name",
+                    "optional": true
+                },
+                "city": {
+                    "name": "city",
+                    "type": "name",
+                    "optional": true
+                },
+                "postcode": {
+                    "name": "postcode",
+                    "type": "name",
+                    "optional": true
+                },
+                "line1": {
+                    "name": "line1",
+                    "type": "name",
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "buildLine1",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.unitNo"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.level"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.building"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "line2": {
+                    "name": "line2",
+                    "type": "name",
+                    "optional": true,
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "buildLine2",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.line1"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "localityLine": {
+                    "name": "localityLine",
+                    "type": "name",
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "buildLocalityLine",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.city"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.state"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.postcode"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "state": {
+                    "name": "state",
+                    "type": "name",
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "fromStateCode",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.stateCode"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "fullText": {
+                    "name": "fullText",
+                    "type": "name",
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "buildFullAddress",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.line1"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.line2"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.localityLine"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "associations": [
+                {
+                    "type": "refersTo",
+                    "destEntity": "state",
+                    "srcField": "stateCode",
+                    "fieldProps": {
+                        "optional": true
+                    }
+                },
+                {
+                    "type": "refersTo",
+                    "destEntity": "country",
+                    "fieldProps": {
+                        "default": [
+                            "AU"
+                        ]
+                    }
+                }
+            ],
+            "indexes": [
+                {
+                    "fields": "fullText"
+                }
+            ],
+            "inputs": {
+                "twoLines": [
+                    {
+                        "name": "line1"
+                    },
+                    {
+                        "name": "line2",
+                        "optional": true
+                    },
+                    {
+                        "name": "city"
+                    },
+                    {
+                        "name": "postcode"
+                    },
+                    {
+                        "name": "stateCode"
+                    },
+                    {
+                        "name": "country",
+                        "optional": true
+                    }
+                ]
+            }
+        }
+    },
+    "id": "./address.geml",
+    "name": "address"
+}
