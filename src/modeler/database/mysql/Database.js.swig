@@ -12,7 +12,7 @@ class {{ className }} extends DbModel {
     }
 
     require(moduleRelativePath) {        
-        return require(path.resolve(__dirname, 'this.schemaName', moduleRelativePath));       
+        return require(path.resolve(__dirname, this.schemaName, moduleRelativePath));       
     }
 
     loadCustomModel(modelClassName) { 
