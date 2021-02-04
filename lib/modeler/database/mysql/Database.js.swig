@@ -11,6 +11,10 @@ class {{ className }} extends DbModel {
         this.entities = {{ entities|safe }};        
     }
 
+    require(moduleRelativePath) {        
+        return require(path.resolve(__dirname, 'this.schemaName', moduleRelativePath));       
+    }
+
     loadCustomModel(modelClassName) { 
         const customModelPath = path.resolve(__dirname, `./${this.schemaName}/${modelClassName}.js`);           
         return fs.existsSync(customModelPath) && require(customModelPath);
