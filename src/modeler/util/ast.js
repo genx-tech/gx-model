@@ -310,7 +310,7 @@ function astObjPat(keys) {
 function astMember(key, any, shorthand = false) {
     return {
         "type": "Property",
-        "key": astId(key),
+        "key": key.startsWith(':') ? astLiteral(key) : astId(key),
         "computed": false,
         "value": any,
         "kind": "init",

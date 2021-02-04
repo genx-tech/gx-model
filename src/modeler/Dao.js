@@ -276,7 +276,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
 
                         if (!input.spec) {
                             throw new Error(
-                                `Input "spec" is required for entity reference. Input set: ${inputSetName}, local: ${assoc}, referencedEntity: ${assocMeta.entity}`
+                                `Input "spec" is required for entity reference. Input set: ${inputSetName}, entity: ${entityInstanceName}, local: ${assoc}, referencedEntity: ${assocMeta.entity}`
                             );
                         }
 
@@ -288,14 +288,14 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                                 type: "array",
                                 elementSchema: {
                                     type: "object",
-                                    schema: JsLang.astCall(_.camelCase(dep)),
+                                    schema: JsLang.astCall(_.camelCase(dep), []),
                                 },
                                 ..._.pick(input, ["optional"]),
                             });
                         } else {
                             validationSchema[input.name] = JsLang.astValue({
                                 type: "object",
-                                schema: JsLang.astCall(_.camelCase(dep)),
+                                schema: JsLang.astCall(_.camelCase(dep), []),
                                 ..._.pick(input, ["optional"]),
                             });
                         }
@@ -313,10 +313,12 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                     }
                 });
 
+                //console.dir(JsLang.astValue(validationSchema), {depth: 20});
+
                 Array.from(dependencies).forEach((dep) =>
                     JsLang.astPushInBody(ast, JsLang.astRequire(_.camelCase(dep), `./${dep}`))
                 );
-
+            
                 JsLang.astPushInBody(
                     ast,
                     JsLang.astAssign(
@@ -334,7 +336,9 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                 fs.ensureFileSync(inputSchemaFilePath);
                 fs.writeFileSync(inputSchemaFilePath, JsLang.astToCode(ast));
 
-                this.linker.log("info", "Generated entity manifest: " + entityOutputFilePath);
+                
+
+                this.linker.log("info", "Generated entity input schema: " + inputSchemaFilePath);
             });
         });
     }
