@@ -307,7 +307,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                         }
 
                         validationSchema[input.name] = JsLang.astValue({
-                            ..._.pick(fields, ["type", "values"]),
+                            ..._.pick(field, ["type", "values"]),
                             ..._.pick(input, ["optional"]),
                         });
                     }
