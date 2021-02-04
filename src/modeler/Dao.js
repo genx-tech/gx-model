@@ -293,11 +293,11 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                                 ..._.pick(input, ["optional"]),
                             });
                         } else {
-                            validationSchema[input.name] = {
+                            validationSchema[input.name] = JsLang.astValue({
                                 type: "object",
                                 schema: JsLang.astCall(_.camelCase(dep)),
-                                ...DaoModeler_.pick(input, ["optional"]),
-                            };
+                                ..._.pick(input, ["optional"]),
+                            });
                         }
                     } else {
                         const field = entity.fields[input.name];
