@@ -1,25 +1,25 @@
 "use strict";
 
-const EventEmitter = require('events');
-const path = require('path');
+const EventEmitter = require("events");
+const path = require("path");
 
-const Util = require('rk-utils');
+const Util = require("rk-utils");
 const { _, fs, quote, putIntoBucket } = Util;
 
-const GemlUtils = require('../../../lang/GemlUtils');
+const GemlUtils = require("../../../lang/GemlUtils");
 const { pluralize, isDotSeparateName, extractDotSeparateName } = GemlUtils;
-const Entity = require('../../../lang/Entity');
-const { Types } = require('@genx/data');
+const Entity = require("../../../lang/Entity");
+const { Types } = require("@genx/data");
 
-const UNSUPPORTED_DEFAULT_VALUE = new Set(['BLOB', 'TEXT', 'JSON', 'GEOMETRY']);
+const UNSUPPORTED_DEFAULT_VALUE = new Set(["BLOB", "TEXT", "JSON", "GEOMETRY"]);
 
 /**
  * Ooolong database modeler for mysql db.
  * @class
  */
 class MySQLModeler {
-    /**     
-     * @param {object} context     
+    /**
+     * @param {object} context
      * @property {OolongLinker} context.linker - Oolong DSL linker
      * @property {string} context.scriptPath - Generated script path
      * @param {object} dbOptions
@@ -33,10 +33,12 @@ class MySQLModeler {
 
         this._events = new EventEmitter();
 
-        this._dbOptions = dbOptions ? {
-            db: _.mapKeys(dbOptions.db, (value, key) => _.upperCase(key)),
-            table: _.mapKeys(dbOptions.table, (value, key) => _.upperCase(key))
-        } : {};
+        this._dbOptions = dbOptions
+            ? {
+                  db: _.mapKeys(dbOptions.db, (value, key) => _.upperCase(key)),
+                  table: _.mapKeys(dbOptions.table, (value, key) => _.upperCase(key)),
+              }
+            : {};
 
         this._references = {};
         this._relationEntities = {};
@@ -45,12 +47,12 @@ class MySQLModeler {
 
     modeling(schema, schemaToConnector, skipGeneration) {
         if (!skipGeneration) {
-            this.linker.log('info', 'Generating mysql scripts for schema "' + schema.name + '"...');
+            this.linker.log("info", 'Generating mysql scripts for schema "' + schema.name + '"...');
         }
 
         let modelingSchema = schema.clone();
 
-        this.linker.log('debug', 'Building relations...');
+        this.linker.log("debug", "Building relations...");
 
         let pendingEntities = Object.keys(modelingSchema.entities);
 
@@ -58,28 +60,32 @@ class MySQLModeler {
             let entityName = pendingEntities.shift();
             let entity = modelingSchema.entities[entityName];
 
-            if (!_.isEmpty(entity.info.associations)) {  
-                this.linker.log('debug', `Processing associations of entity "${entityName}"...`);                
+            if (!_.isEmpty(entity.info.associations)) {
+                this.linker.log("debug", `Processing associations of entity "${entityName}"...`);
 
-                let assocs = this._preProcessAssociations(entity);        
-                
+                let assocs = this._preProcessAssociations(entity);
+
                 let assocNames = assocs.reduce((result, v) => {
                     result[v] = v;
                     return result;
-                }, {});             
+                }, {});
 
-                entity.info.associations.forEach(assoc => this._processAssociation(modelingSchema, entity, assoc, assocNames, pendingEntities));
+                entity.info.associations.forEach((assoc) =>
+                    this._processAssociation(modelingSchema, entity, assoc, assocNames, pendingEntities)
+                );
             }
         }
 
-        this._events.emit('afterRelationshipBuilding');        
+        this._events.emit("afterRelationshipBuilding");
 
-        //build SQL scripts        
-        let sqlFilesDir = path.join('mysql', this.connector.database);
-        let dbFilePath = path.join(sqlFilesDir, 'entities.sql');
-        let fkFilePath = path.join(sqlFilesDir, 'relations.sql');        
-        
-        let tableSQL = '', relationSQL = '', data = {};
+        //build SQL scripts
+        let sqlFilesDir = path.join("mysql", this.connector.database);
+        let dbFilePath = path.join(sqlFilesDir, "entities.sql");
+        let fkFilePath = path.join(sqlFilesDir, "relations.sql");
+
+        let tableSQL = "",
+            relationSQL = "",
+            data = {};
 
         //let mapOfEntityNameToCodeName = {};
 
@@ -91,11 +97,11 @@ class MySQLModeler {
 
             let result = MySQLModeler.complianceCheck(entity);
             if (result.errors.length) {
-                let message = '';
+                let message = "";
                 if (result.warnings.length > 0) {
-                    message += 'Warnings: \n' + result.warnings.join('\n') + '\n';
+                    message += "Warnings: \n" + result.warnings.join("\n") + "\n";
                 }
-                message += result.errors.join('\n');
+                message += result.errors.join("\n");
 
                 throw new Error(message);
             }
@@ -103,35 +109,38 @@ class MySQLModeler {
             if (entity.features) {
                 _.forOwn(entity.features, (f, featureName) => {
                     if (Array.isArray(f)) {
-                        f.forEach(ff => this._featureReducer(modelingSchema, entity, featureName, ff));
+                        f.forEach((ff) => this._featureReducer(modelingSchema, entity, featureName, ff));
                     } else {
                         this._featureReducer(modelingSchema, entity, featureName, f);
                     }
                 });
-            }         
-            
-            if (!skipGeneration) {
+            }
 
-                tableSQL += this._createTableStatement(entityName, entity/*, mapOfEntityNameToCodeName*/) + '\n';
+            if (!skipGeneration) {
+                tableSQL += this._createTableStatement(entityName, entity /*, mapOfEntityNameToCodeName*/) + "\n";
 
                 if (entity.info.data) {
                     entity.info.data.forEach(({ dataSet, runtimeEnv, records }) => {
                         //intiSQL += `-- Initial data for entity: ${entityName}\n`;
-                        
+
                         let entityData = [];
 
                         if (Array.isArray(records)) {
-                            records.forEach(record => {
+                            records.forEach((record) => {
                                 if (!_.isPlainObject(record)) {
                                     let fields = Object.keys(entity.fields);
-                                    if (fields.length !== 2) {                                
-                                        throw new Error(`Invalid data syntax: entity "${entity.name}" has more than 2 fields.`);
+                                    if (fields.length !== 2) {
+                                        throw new Error(
+                                            `Invalid data syntax: entity "${entity.name}" has more than 2 fields.`
+                                        );
                                     }
 
                                     let keyField = entity.fields[fields[0]];
 
                                     if (!keyField.auto && !keyField.defaultByDb) {
-                                        throw new Error(`The key field "${entity.name}" has no default value or auto-generated value.`);
+                                        throw new Error(
+                                            `The key field "${entity.name}" has no default value or auto-generated value.`
+                                        );
                                     }
 
                                     record = { [fields[1]]: this.linker.translateOolValue(entity.gemlModule, record) };
@@ -146,12 +155,20 @@ class MySQLModeler {
                                 if (!_.isPlainObject(record)) {
                                     let fields = Object.keys(entity.fields);
                                     if (fields.length !== 2) {
-                                        throw new Error(`Invalid data syntax: entity "${entity.name}" has more than 2 fields.`);
+                                        throw new Error(
+                                            `Invalid data syntax: entity "${entity.name}" has more than 2 fields.`
+                                        );
                                     }
 
-                                    record = {[entity.key]: key, [fields[1]]: this.linker.translateOolValue(entity.gemlModule, record)};
+                                    record = {
+                                        [entity.key]: key,
+                                        [fields[1]]: this.linker.translateOolValue(entity.gemlModule, record),
+                                    };
                                 } else {
-                                    record = Object.assign({[entity.key]: key}, this.linker.translateOolValue(entity.gemlModule, record));
+                                    record = Object.assign(
+                                        { [entity.key]: key },
+                                        this.linker.translateOolValue(entity.gemlModule, record)
+                                    );
                                 }
 
                                 entityData.push(record);
@@ -160,15 +177,14 @@ class MySQLModeler {
                         }
 
                         if (!_.isEmpty(entityData)) {
+                            dataSet || (dataSet = "_init");
+                            runtimeEnv || (runtimeEnv = "default");
 
-                            dataSet || (dataSet = '_init');
-                            runtimeEnv || (runtimeEnv = 'default');
-
-                            let nodes = [ dataSet, runtimeEnv ];                        
+                            let nodes = [dataSet, runtimeEnv];
 
                             nodes.push(entityName);
 
-                            let key = nodes.join('.');
+                            let key = nodes.join(".");
 
                             putIntoBucket(data, key, entityData, true);
                         }
@@ -181,8 +197,13 @@ class MySQLModeler {
 
         if (!skipGeneration) {
             _.forOwn(this._references, (refs, srcEntityName) => {
-                _.each(refs, ref => {
-                    relationSQL += this._addForeignKeyStatement(srcEntityName, ref, schemaToConnector/*, mapOfEntityNameToCodeName*/) + '\n';
+                _.each(refs, (ref) => {
+                    relationSQL +=
+                        this._addForeignKeyStatement(
+                            srcEntityName,
+                            ref,
+                            schemaToConnector /*, mapOfEntityNameToCodeName*/
+                        ) + "\n";
                 });
             });
 
@@ -191,30 +212,31 @@ class MySQLModeler {
 
             let initIdxFiles = {};
 
-            if (!_.isEmpty(data)) {            
+            if (!_.isEmpty(data)) {
                 _.forOwn(data, (envData, dataSet) => {
                     _.forOwn(envData, (entitiesData, runtimeEnv) => {
                         _.forOwn(entitiesData, (records, entityName) => {
                             let initFileName = `0-${entityName}.json`;
 
-                            let pathNodes = [
-                                sqlFilesDir, 'data', dataSet || '_init'
-                            ];
+                            let pathNodes = [sqlFilesDir, "data", dataSet || "_init"];
 
-                            if (runtimeEnv !== 'default') {
+                            if (runtimeEnv !== "default") {
                                 pathNodes.push(runtimeEnv);
                             }
 
-                            let initFilePath = path.join(...pathNodes, initFileName);    
-                            let idxFilePath = path.join(...pathNodes, 'index.list');                 
-                            
+                            let initFilePath = path.join(...pathNodes, initFileName);
+                            let idxFilePath = path.join(...pathNodes, "index.list");
+
                             putIntoBucket(initIdxFiles, [idxFilePath], initFileName);
 
-                            this._writeFile(path.join(this.outputPath, initFilePath), JSON.stringify({ [entityName]: records }, null, 4));
-                        }) 
+                            this._writeFile(
+                                path.join(this.outputPath, initFilePath),
+                                JSON.stringify({ [entityName]: records }, null, 4)
+                            );
+                        });
                     });
-                })
-            } 
+                });
+            }
 
             //console.dir(initIdxFiles, {depth: 10});
 
@@ -224,19 +246,19 @@ class MySQLModeler {
                 let manual = [];
 
                 if (fs.existsSync(idxFilePath)) {
-                    let lines = fs.readFileSync(idxFilePath, 'utf8').split('\n');
-                    lines.forEach(line => {
-                        if (!line.startsWith('0-')) {
+                    let lines = fs.readFileSync(idxFilePath, "utf8").split("\n");
+                    lines.forEach((line) => {
+                        if (!line.startsWith("0-")) {
                             manual.push(line);
                         }
                     });
                 }
-            
-                this._writeFile(idxFilePath, list.concat(manual).join('\n'));
+
+                this._writeFile(idxFilePath, list.concat(manual).join("\n"));
             });
 
-            let funcSQL = '';
-            
+            let funcSQL = "";
+
             //process view
             /*
             _.each(modelingSchema.views, (view, viewName) => {
@@ -261,41 +283,41 @@ class MySQLModeler {
             });
             */
 
-            let spFilePath = path.join(sqlFilesDir, 'procedures.sql');
+            let spFilePath = path.join(sqlFilesDir, "procedures.sql");
             this._writeFile(path.join(this.outputPath, spFilePath), funcSQL);
         }
 
         return modelingSchema;
-    }    
+    }
 
     _toColumnReference(name) {
-        return { oorType: 'ColumnReference', name };  
+        return { oorType: "ColumnReference", name };
     }
 
     _translateJoinCondition(context, localField, anchor, remoteField) {
         if (Array.isArray(remoteField)) {
-            return remoteField.map(rf => this._translateJoinCondition(context, localField, anchor, rf));
+            return remoteField.map((rf) => this._translateJoinCondition(context, localField, anchor, rf));
         }
 
         if (_.isPlainObject(remoteField)) {
-            let ret = { [localField]: this._toColumnReference(anchor + '.' + remoteField.by) };
+            let ret = { [localField]: this._toColumnReference(anchor + "." + remoteField.by) };
             let withExtra = this._oolConditionToQueryCondition(context, remoteField.with);
-            
+
             if (localField in withExtra) {
-                return { $and: [ ret, withExtra ] };
+                return { $and: [ret, withExtra] };
             }
-            
+
             return { ...ret, ...withExtra };
         }
 
-        return { [localField]: this._toColumnReference(anchor + '.' + remoteField) };
+        return { [localField]: this._toColumnReference(anchor + "." + remoteField) };
     }
 
     _getAllRelatedFields(remoteField) {
         if (!remoteField) return undefined;
 
         if (Array.isArray(remoteField)) {
-            return remoteField.map(rf => this._getAllRelatedFields(rf));
+            return remoteField.map((rf) => this._getAllRelatedFields(rf));
         }
 
         if (_.isPlainObject(remoteField)) {
@@ -306,10 +328,10 @@ class MySQLModeler {
     }
 
     _preProcessAssociations(entity) {
-        return entity.info.associations.map(assoc => {            
+        return entity.info.associations.map((assoc) => {
             if (assoc.srcField) return assoc.srcField;
 
-            if (assoc.type === 'hasMany') {
+            if (assoc.type === "hasMany") {
                 return pluralize(assoc.destEntity);
             }
 
@@ -318,250 +340,298 @@ class MySQLModeler {
     }
 
     /**
-     * hasMany/hasOne - belongsTo      
+     * hasMany/hasOne - belongsTo
      * hasMany/hasOne - hasMany/hasOne [by] [with]
-     * hasMany - semi connection       
+     * hasMany - semi connection
      * refersTo - semi connection
-     *      
+     *
      * remoteField:
      *   1. fieldName
      *   2. array of fieldName
      *   3. { by , with }
      *   4. array of fieldName and { by , with } mixed
-     *  
-     * @param {*} schema 
-     * @param {*} entity 
-     * @param {*} assoc 
+     *
+     * @param {*} schema
+     * @param {*} entity
+     * @param {*} assoc
      */
     _processAssociation(schema, entity, assoc, assocNames, pendingEntities) {
         let entityKeyField = entity.getKeyField();
         assert: !Array.isArray(entityKeyField);
 
-        this.linker.log('debug', `Processing "${entity.name}" ${JSON.stringify(assoc)}`); 
+        this.linker.log("debug", `Processing "${entity.name}" ${JSON.stringify(assoc)}`);
 
-        let destEntityName = assoc.destEntity, destEntity, destEntityNameAsFieldName;
-        
+        let destEntityName = assoc.destEntity,
+            destEntity,
+            destEntityNameAsFieldName;
+
         if (isDotSeparateName(destEntityName)) {
             //cross db reference
-            let [ destSchemaName, actualDestEntityName ] = extractDotSeparateName(destEntityName);
+            let [destSchemaName, actualDestEntityName] = extractDotSeparateName(destEntityName);
 
             let destSchema = schema.linker.schemas[destSchemaName];
             if (!destSchema.linked) {
-                throw new Error(`The destination schema ${destSchemaName} has not been linked yet. Currently only support one-way reference for cross db relation.`)
+                throw new Error(
+                    `The destination schema ${destSchemaName} has not been linked yet. Currently only support one-way reference for cross db relation.`
+                );
             }
 
-            destEntity = destSchema.entities[actualDestEntityName]; 
+            destEntity = destSchema.entities[actualDestEntityName];
             destEntityNameAsFieldName = actualDestEntityName;
         } else {
             destEntity = schema.ensureGetEntity(entity.gemlModule, destEntityName, pendingEntities);
             if (!destEntity) {
-                throw new Error(`Entity "${entity.name}" references to an unexisting entity "${destEntityName}".`)
+                throw new Error(`Entity "${entity.name}" references to an unexisting entity "${destEntityName}".`);
             }
 
             destEntityNameAsFieldName = destEntityName;
-        }   
-         
+        }
+
         if (!destEntity) {
             throw new Error(`Entity "${entity.name}" references to an unexisting entity "${destEntityName}".`);
         }
 
         let destKeyField = destEntity.getKeyField();
-        assert: destKeyField, `Empty key field "${destEntity.keyField}". Dest entity: ${destEntityName}, current entity: ${entity.name}`; 
+        assert: destKeyField,
+            `Empty key field "${destEntity.keyField}". Dest entity: ${destEntityName}, current entity: ${entity.name}`;
 
         if (Array.isArray(destKeyField)) {
             throw new Error(`Destination entity "${destEntityName}" with combination primary key is not supported.`);
         }
 
         switch (assoc.type) {
-            case 'hasOne':
-            case 'hasMany':   
-                let includes;    
-                let excludes = { 
-                    types: [ 'refersTo' ], 
-                    association: assoc 
+            case "hasOne":
+            case "hasMany":
+                let includes;
+                let excludes = {
+                    types: ["refersTo"],
+                    association: assoc,
                 };
 
                 if (assoc.by) {
-                    excludes.types.push('belongsTo');
-                    includes = { 
-                        by: cb => cb && cb.split('.')[0] === assoc.by.split('.')[0] 
+                    excludes.types.push("belongsTo");
+                    includes = {
+                        by: (cb) => cb && cb.split(".")[0] === assoc.by.split(".")[0],
                     };
 
                     if (assoc.with) {
                         includes.with = assoc.with;
                     }
-                } else {                    
+                } else {
                     let remoteFields = this._getAllRelatedFields(assoc.remoteField);
 
-                    includes = { 
-                        srcField: remoteField => {
+                    includes = {
+                        srcField: (remoteField) => {
                             remoteField || (remoteField = entity.name);
 
-                            return _.isNil(remoteFields) || (Array.isArray(remoteFields) ? remoteFields.indexOf(remoteField) > -1 : remoteFields === remoteField);
-                        } 
-                    };                                       
-                }         
-                
+                            return (
+                                _.isNil(remoteFields) ||
+                                (Array.isArray(remoteFields)
+                                    ? remoteFields.indexOf(remoteField) > -1
+                                    : remoteFields === remoteField)
+                            );
+                        },
+                    };
+                }
+
                 let backRef = destEntity.getReferenceTo(entity.name, includes, excludes);
                 if (backRef) {
-                    if (backRef.type === 'hasMany' || backRef.type === 'hasOne') {
+                    if (backRef.type === "hasMany" || backRef.type === "hasOne") {
                         if (!assoc.by) {
-                            throw new Error('"m2n" association requires "by" property. Entity: ' + entity.name + ' destination: ' + destEntityName);
+                            throw new Error(
+                                '"m2n" association requires "by" property. Entity: ' +
+                                    entity.name +
+                                    " destination: " +
+                                    destEntityName
+                            );
                         }
 
                         // one/many to one/many relation
 
-                        let connectedByParts = assoc.by.split('.');
+                        let connectedByParts = assoc.by.split(".");
                         assert: connectedByParts.length <= 2;
 
                         // connected by field is usually a refersTo assoc
-                        let connectedByField = (connectedByParts.length > 1 && connectedByParts[1]) || entity.name; 
+                        let connectedByField = (connectedByParts.length > 1 && connectedByParts[1]) || entity.name;
                         let connEntityName = GemlUtils.entityNaming(connectedByParts[0]);
 
                         assert: connEntityName;
 
-                        let tag1 = `${entity.name}:${ assoc.type === 'hasMany' ? 'm' : '1' }-${destEntityName}:${ backRef.type === 'hasMany' ? 'n' : '1' } by ${connEntityName}`;
-                        let tag2 = `${destEntityName}:${ backRef.type === 'hasMany' ? 'm' : '1' }-${entity.name}:${ assoc.type === 'hasMany' ? 'n' : '1' } by ${connEntityName}`;
+                        let tag1 = `${entity.name}:${assoc.type === "hasMany" ? "m" : "1"}-${destEntityName}:${
+                            backRef.type === "hasMany" ? "n" : "1"
+                        } by ${connEntityName}`;
+                        let tag2 = `${destEntityName}:${backRef.type === "hasMany" ? "m" : "1"}-${entity.name}:${
+                            assoc.type === "hasMany" ? "n" : "1"
+                        } by ${connEntityName}`;
 
                         if (assoc.srcField) {
-                            tag1 += ' ' + assoc.srcField;
+                            tag1 += " " + assoc.srcField;
                         }
 
                         if (backRef.srcField) {
-                            tag2 += ' ' + backRef.srcField;
+                            tag2 += " " + backRef.srcField;
                         }
 
                         if (this._processedRef.has(tag1) || this._processedRef.has(tag2)) {
                             //already processed, skip
                             return;
-                        }           
-                        
-                        let connectedByParts2 = backRef.by.split('.');
-                        let connectedByField2 = (connectedByParts2.length > 1 && connectedByParts2[1]) || destEntityNameAsFieldName;
+                        }
+
+                        let connectedByParts2 = backRef.by.split(".");
+                        let connectedByField2 =
+                            (connectedByParts2.length > 1 && connectedByParts2[1]) || destEntityNameAsFieldName;
 
                         if (connectedByField === connectedByField2) {
                             throw new Error('Cannot use the same "by" field in a relation entity.');
                         }
 
                         let connEntity = schema.ensureGetEntity(entity.gemlModule, connEntityName, pendingEntities);
-                        if (!connEntity) {                        
+                        if (!connEntity) {
                             //create a
-                            connEntity = this._addRelationEntity(schema, connEntityName, entity.name, destEntityName, connectedByField, connectedByField2);
+                            connEntity = this._addRelationEntity(
+                                schema,
+                                connEntityName,
+                                entity.name,
+                                destEntityName,
+                                connectedByField,
+                                connectedByField2
+                            );
                             pendingEntities.push(connEntity.name);
-                            this.linker.log('debug', `New entity "${connEntity.name}" added by association.`);
+                            this.linker.log("debug", `New entity "${connEntity.name}" added by association.`);
                         }
-                            
-                        this._updateRelationEntity(connEntity, entity, destEntity, entity.name, destEntityName, connectedByField, connectedByField2);
 
-                        let localFieldName = assoc.srcField || pluralize(destEntityNameAsFieldName);                           
-
-                        entity.addAssociation(
-                            localFieldName,
-                            {
-                                entity: connEntityName,
-                                key: connEntity.key,
-                                on: this._translateJoinCondition({ ...assocNames, [connEntityName]: localFieldName }, entity.key, localFieldName,
-                                    assoc.with ? {
-                                        by: connectedByField,
-                                        with: assoc.with
-                                    } : connectedByField
-                                ),
-                                field: connectedByField,                                
-                                ...(assoc.type === 'hasMany' ? { list: true } : {}),
-                                assoc: connectedByField2
-                            }
+                        this._updateRelationEntity(
+                            connEntity,
+                            entity,
+                            destEntity,
+                            entity.name,
+                            destEntityName,
+                            connectedByField,
+                            connectedByField2
                         );
 
-                        let remoteFieldName = backRef.srcField || pluralize(entity.name);  
+                        let localFieldName = assoc.srcField || pluralize(destEntityNameAsFieldName);
 
-                        destEntity.addAssociation(
-                            remoteFieldName, 
-                            { 
-                                entity: connEntityName,
-                                key: connEntity.key,
-                                on: this._translateJoinCondition({ ...assocNames, [connEntityName]: remoteFieldName }, destEntity.key, remoteFieldName,
-                                    backRef.with ? {
-                                        by: connectedByField2,
-                                        with: backRef.with
-                                    } : connectedByField2
-                                ),
-                                field: connectedByField2,                                
-                                ...(backRef.type === 'hasMany' ? { list: true } : {}),
-                                assoc: connectedByField
-                            }
-                        );
+                        entity.addAssociation(localFieldName, {
+                            entity: connEntityName,
+                            key: connEntity.key,
+                            on: this._translateJoinCondition(
+                                { ...assocNames, [connEntityName]: localFieldName },
+                                entity.key,
+                                localFieldName,
+                                assoc.with
+                                    ? {
+                                          by: connectedByField,
+                                          with: assoc.with,
+                                      }
+                                    : connectedByField
+                            ),
+                            field: connectedByField,
+                            ...(assoc.type === "hasMany" ? { list: true } : {}),
+                            assoc: connectedByField2,
+                        });
+
+                        let remoteFieldName = backRef.srcField || pluralize(entity.name);
+
+                        destEntity.addAssociation(remoteFieldName, {
+                            entity: connEntityName,
+                            key: connEntity.key,
+                            on: this._translateJoinCondition(
+                                { ...assocNames, [connEntityName]: remoteFieldName },
+                                destEntity.key,
+                                remoteFieldName,
+                                backRef.with
+                                    ? {
+                                          by: connectedByField2,
+                                          with: backRef.with,
+                                      }
+                                    : connectedByField2
+                            ),
+                            field: connectedByField2,
+                            ...(backRef.type === "hasMany" ? { list: true } : {}),
+                            assoc: connectedByField,
+                        });
 
                         this._processedRef.add(tag1);
-                        this.linker.log('verbose', `Processed 2-way reference: ${tag1}`);                        
+                        this.linker.log("verbose", `Processed 2-way reference: ${tag1}`);
 
-                        this._processedRef.add(tag2);                        
-                        this.linker.log('verbose', `Processed 2-way reference: ${tag2}`);                        
-
-                    } else if (backRef.type === 'belongsTo') {
+                        this._processedRef.add(tag2);
+                        this.linker.log("verbose", `Processed 2-way reference: ${tag2}`);
+                    } else if (backRef.type === "belongsTo") {
                         if (assoc.by) {
-                            throw new Error('todo: belongsTo by. entity: ' + entity.name);
+                            throw new Error("todo: belongsTo by. entity: " + entity.name);
                         } else {
-                            //leave it to the referenced entity  
-                            let anchor = assoc.srcField || (assoc.type === 'hasMany' ? pluralize(destEntityNameAsFieldName) : destEntityNameAsFieldName);                            
+                            //leave it to the referenced entity
+                            let anchor =
+                                assoc.srcField ||
+                                (assoc.type === "hasMany"
+                                    ? pluralize(destEntityNameAsFieldName)
+                                    : destEntityNameAsFieldName);
                             let remoteField = assoc.remoteField || backRef.srcField || entity.name;
 
-
                             //check if the target entity has logical deletion feature
-                            if (destEntity.hasFeature('logicalDeletion')) {
-
+                            if (destEntity.hasFeature("logicalDeletion")) {
                                 let deletionCheck = {
-                                    oolType: 'BinaryExpression',
-                                    operator: '!=',
-                                    left: { oolType: 'ObjectReference', name: `${destEntityName}.${destEntity.features['logicalDeletion'].field}` },
-                                    right: true
+                                    oolType: "BinaryExpression",
+                                    operator: "!=",
+                                    left: {
+                                        oolType: "ObjectReference",
+                                        name: `${destEntityName}.${destEntity.features["logicalDeletion"].field}`,
+                                    },
+                                    right: true,
                                 };
 
                                 if (_.isPlainObject(remoteField)) {
                                     remoteField.with = {
-                                        oolType: 'LogicalExpression',
-                                        operator: 'and',
+                                        oolType: "LogicalExpression",
+                                        operator: "and",
                                         left: remoteField.with,
-                                        right: deletionCheck
-                                    };                                    
+                                        right: deletionCheck,
+                                    };
                                 } else if (assoc.with) {
                                     assoc.with = {
-                                        oolType: 'LogicalExpression',
-                                        operator: 'and',
+                                        oolType: "LogicalExpression",
+                                        operator: "and",
                                         left: assoc.with,
-                                        right: deletionCheck
+                                        right: deletionCheck,
                                     };
                                 } else {
                                     assoc.with = deletionCheck;
-                                }                
-                            }                            
-                            
-                            entity.addAssociation(
-                                anchor,                                 
-                                { 
-                                    entity: destEntityName,
-                                    key: destEntity.key,  
-                                    on: this._translateJoinCondition(
-                                        { ...assocNames, [destEntityName]: anchor }, 
-                                        entity.key, 
-                                        anchor,
-                                        assoc.with ? {
-                                            by: remoteField,
-                                            with: assoc.with
-                                        } : remoteField
-                                    ), 
-                                    ...(typeof remoteField === 'string' ? { field: remoteField } : {}),                                    
-                                    ...(assoc.type === 'hasMany' ? { list: true } : {})
                                 }
-                            );
-                            
+                            }
+
+                            entity.addAssociation(anchor, {
+                                entity: destEntityName,
+                                key: destEntity.key,
+                                on: this._translateJoinCondition(
+                                    { ...assocNames, [destEntityName]: anchor },
+                                    entity.key,
+                                    anchor,
+                                    assoc.with
+                                        ? {
+                                              by: remoteField,
+                                              with: assoc.with,
+                                          }
+                                        : remoteField
+                                ),
+                                ...(typeof remoteField === "string" ? { field: remoteField } : {}),
+                                ...(assoc.type === "hasMany" ? { list: true } : {}),
+                            });
                         }
                     } else {
-                        throw new Error('Unexpected path. Entity: ' + entity.name + ', association: ' + JSON.stringify(assoc, null, 2));                    
-                    } 
-                } else {  
-                    // semi association 
+                        throw new Error(
+                            "Unexpected path. Entity: " +
+                                entity.name +
+                                ", association: " +
+                                JSON.stringify(assoc, null, 2)
+                        );
+                    }
+                } else {
+                    // semi association
 
-                    let connectedByParts = assoc.by ? assoc.by.split('.') : [ GemlUtils.prefixNaming(entity.name, destEntityName) ];
+                    let connectedByParts = assoc.by
+                        ? assoc.by.split(".")
+                        : [GemlUtils.prefixNaming(entity.name, destEntityName)];
                     assert: connectedByParts.length <= 2;
 
                     let connectedByField = (connectedByParts.length > 1 && connectedByParts[1]) || entity.name;
@@ -569,225 +639,273 @@ class MySQLModeler {
 
                     assert: connEntityName;
 
-                    let tag1 = `${entity.name}:${ assoc.type === 'hasMany' ? 'm' : '1' }-${destEntityName}:* by ${connEntityName}`;
+                    let tag1 = `${entity.name}:${
+                        assoc.type === "hasMany" ? "m" : "1"
+                    }-${destEntityName}:* by ${connEntityName}`;
 
                     if (assoc.srcField) {
-                        tag1 += ' ' + assoc.srcField;
-                    }                    
+                        tag1 += " " + assoc.srcField;
+                    }
 
-                    assert: !this._processedRef.has(tag1);  
+                    assert: !this._processedRef.has(tag1);
 
                     let connEntity = schema.ensureGetEntity(entity.gemlModule, connEntityName, pendingEntities);
-                    if (!connEntity) {                        
+                    if (!connEntity) {
                         //create a
-                        connEntity = this._addRelationEntity(schema, connEntityName, entity.name, destEntityName, connectedByField, destEntityNameAsFieldName);
+                        connEntity = this._addRelationEntity(
+                            schema,
+                            connEntityName,
+                            entity.name,
+                            destEntityName,
+                            connectedByField,
+                            destEntityNameAsFieldName
+                        );
                         pendingEntities.push(connEntity.name);
-                        this.linker.log('debug', `New entity "${connEntity.name}" added by association.`);
+                        this.linker.log("debug", `New entity "${connEntity.name}" added by association.`);
                     }
 
                     //todo: get back ref from connection entity
-                    let connBackRef1 = connEntity.getReferenceTo(entity.name, { type: 'refersTo', srcField: (f) => _.isNil(f) || f == connectedByField });
+                    let connBackRef1 = connEntity.getReferenceTo(entity.name, {
+                        type: "refersTo",
+                        srcField: (f) => _.isNil(f) || f == connectedByField,
+                    });
 
                     if (!connBackRef1) {
-                        throw new Error(`Cannot find back reference to "${entity.name}" from relation entity "${connEntityName}".`);
+                        throw new Error(
+                            `Cannot find back reference to "${entity.name}" from relation entity "${connEntityName}".`
+                        );
                     }
 
-                    let connBackRef2 = connEntity.getReferenceTo(destEntityName, { type: 'refersTo' }, { association: connBackRef1  });
+                    let connBackRef2 = connEntity.getReferenceTo(
+                        destEntityName,
+                        { type: "refersTo" },
+                        { association: connBackRef1 }
+                    );
 
                     if (!connBackRef2) {
-                        throw new Error(`Cannot find back reference to "${destEntityName}" from relation entity "${connEntityName}".`);
+                        throw new Error(
+                            `Cannot find back reference to "${destEntityName}" from relation entity "${connEntityName}".`
+                        );
                     }
-                    
+
                     let connectedByField2 = connBackRef2.srcField || destEntityNameAsFieldName;
 
                     if (connectedByField === connectedByField2) {
-                        throw new Error('Cannot use the same "by" field in a relation entity. Detail: ' + JSON.stringify({
-                            src: entity.name,
-                            dest: destEntityName,
-                            srcField: assoc.srcField,
-                            by: connectedByField
-                        }));
-                    }          
+                        throw new Error(
+                            'Cannot use the same "by" field in a relation entity. Detail: ' +
+                                JSON.stringify({
+                                    src: entity.name,
+                                    dest: destEntityName,
+                                    srcField: assoc.srcField,
+                                    by: connectedByField,
+                                })
+                        );
+                    }
 
-                    this._updateRelationEntity(connEntity, entity, destEntity, entity.name, destEntityName, connectedByField, connectedByField2);                                       
+                    this._updateRelationEntity(
+                        connEntity,
+                        entity,
+                        destEntity,
+                        entity.name,
+                        destEntityName,
+                        connectedByField,
+                        connectedByField2
+                    );
 
                     let localFieldName = assoc.srcField || pluralize(destEntityNameAsFieldName);
 
-                    entity.addAssociation(
-                        localFieldName,
-                        {
-                            entity: connEntityName,
-                            key: connEntity.key,
-                            on: this._translateJoinCondition({ ...assocNames, [destEntityName]: localFieldName + '.' + connectedByField2, [connEntityName]: localFieldName }, entity.key, localFieldName,
-                                assoc.with ? {
-                                    by: connectedByField,
-                                    with: assoc.with
-                                } : connectedByField
-                            ) ,
-                            field: connectedByField,                            
-                            ...(assoc.type === 'hasMany' ? { list: true } : {}),
-                            assoc: connectedByField2
-                        }
-                    );
+                    entity.addAssociation(localFieldName, {
+                        entity: connEntityName,
+                        key: connEntity.key,
+                        on: this._translateJoinCondition(
+                            {
+                                ...assocNames,
+                                [destEntityName]: localFieldName + "." + connectedByField2,
+                                [connEntityName]: localFieldName,
+                            },
+                            entity.key,
+                            localFieldName,
+                            assoc.with
+                                ? {
+                                      by: connectedByField,
+                                      with: assoc.with,
+                                  }
+                                : connectedByField
+                        ),
+                        field: connectedByField,
+                        ...(assoc.type === "hasMany" ? { list: true } : {}),
+                        assoc: connectedByField2,
+                    });
 
-                    this._processedRef.add(tag1);      
-                    this.linker.log('verbose', `Processed 1-way reference: ${tag1}`); 
+                    this._processedRef.add(tag1);
+                    this.linker.log("verbose", `Processed 1-way reference: ${tag1}`);
                 }
 
-            break;
+                break;
 
-            case 'refersTo':
-            case 'belongsTo':
+            case "refersTo":
+            case "belongsTo":
                 let localField = assoc.srcField || destEntityNameAsFieldName;
                 let destFieldName = destKeyField.name;
                 let referencedField = destKeyField;
 
-                if (assoc.type === 'refersTo') {
+                if (assoc.type === "refersTo") {
                     let tag = `${entity.name}:1-${destEntityName}:* ${localField}`;
 
                     if (assoc.destField) {
                         if (!destEntity.hasField(assoc.destField)) {
-                            throw new Error(`The field "${assoc.destField}" being referenced is not a field of entity "${destEntityName}".`);
+                            throw new Error(
+                                `The field "${assoc.destField}" being referenced is not a field of entity "${destEntityName}".`
+                            );
                         }
 
-                        destFieldName = assoc.destField;  
-                        referencedField = destEntity.fields[destFieldName];               
+                        destFieldName = assoc.destField;
+                        referencedField = destEntity.fields[destFieldName];
                     }
 
-                    tag += '->' + assoc.destField;
+                    tag += "->" + assoc.destField;
 
-                    if (this._processedRef.has(tag)) {                        
+                    if (this._processedRef.has(tag)) {
                         //already processed by connection, skip
                         return;
                     }
 
-                    this._processedRef.add(tag);   
-                    this.linker.log('verbose', `Processed week reference: ${tag}`);
+                    this._processedRef.add(tag);
+                    this.linker.log("verbose", `Processed week reference: ${tag}`);
                 }
 
-                let joinOn = { [localField]: this._toColumnReference(localField + '.' + destFieldName) };
+                let joinOn = { [localField]: this._toColumnReference(localField + "." + destFieldName) };
 
                 if (assoc.with) {
-                    Object.assign(joinOn, this._oolConditionToQueryCondition({ ...assocNames, [destEntityName]: localField }, assoc.with)); 
+                    Object.assign(
+                        joinOn,
+                        this._oolConditionToQueryCondition({ ...assocNames, [destEntityName]: localField }, assoc.with)
+                    );
                 }
 
                 entity.addAssocField(localField, destEntity, referencedField, assoc.fieldProps);
-                entity.addAssociation(
-                    localField,                      
-                    { 
-                        type: assoc.type,
-                        entity: destEntityName, 
-                        key: destEntity.key,
-                        field: destFieldName,
-                        on: joinOn 
-                    }
-                );
+                entity.addAssociation(localField, {
+                    type: assoc.type,
+                    entity: destEntityName,
+                    key: destEntity.key,
+                    field: destFieldName,
+                    on: joinOn,
+                });
 
                 //foreign key constraits
-                let localFieldObj = entity.fields[localField];        
-                
+                let localFieldObj = entity.fields[localField];
+
                 let constraints = {};
 
                 if (localFieldObj.constraintOnUpdate) {
                     constraints.onUpdate = localFieldObj.constraintOnUpdate;
-                } 
+                }
 
                 if (localFieldObj.constraintOnDelete) {
                     constraints.onDelete = localFieldObj.constraintOnDelete;
-                }                
-
-                if (assoc.type === 'belongsTo') {
-                    constraints.onUpdate || (constraints.onUpdate = 'CASCADE');
-                    constraints.onDelete || (constraints.onDelete = 'CASCADE');
-
-                } else if (localFieldObj.optional) {
-                    constraints.onUpdate || (constraints.onUpdate = 'SET NULL');
-                    constraints.onDelete || (constraints.onDelete = 'SET NULL');
                 }
 
-                constraints.onUpdate || (constraints.onUpdate = 'NO ACTION');
-                constraints.onDelete || (constraints.onDelete = 'NO ACTION');
+                if (assoc.type === "belongsTo") {
+                    constraints.onUpdate || (constraints.onUpdate = "CASCADE");
+                    constraints.onDelete || (constraints.onDelete = "CASCADE");
+                } else if (localFieldObj.optional) {
+                    constraints.onUpdate || (constraints.onUpdate = "SET NULL");
+                    constraints.onDelete || (constraints.onDelete = "SET NULL");
+                }
+
+                constraints.onUpdate || (constraints.onUpdate = "NO ACTION");
+                constraints.onDelete || (constraints.onDelete = "NO ACTION");
 
                 this._addReference(entity.name, localField, destEntityName, destFieldName, constraints);
-            break;
+                break;
         }
     }
 
     _oolConditionToQueryCondition(context, oolCon) {
         assert: oolCon.oolType;
 
-        if (oolCon.oolType === 'BinaryExpression') {
-            if (oolCon.operator === '==') {
+        if (oolCon.oolType === "BinaryExpression") {
+            if (oolCon.operator === "==") {
                 let left = oolCon.left;
-                if (left.oolType && left.oolType === 'ObjectReference') {
+                if (left.oolType && left.oolType === "ObjectReference") {
                     left = this._translateReference(context, left.name, true);
                 }
 
                 let right = oolCon.right;
-                if (right.oolType && right.oolType === 'ObjectReference') {
+                if (right.oolType && right.oolType === "ObjectReference") {
                     right = this._translateReference(context, right.name);
                 }
 
                 return {
-                    [left]: { '$eq': right }
-                }; 
-            } else if (oolCon.operator === '!=') {
+                    [left]: { $eq: right },
+                };
+            } else if (oolCon.operator === "!=") {
                 let left = oolCon.left;
-                if (left.oolType && left.oolType === 'ObjectReference') {
+                if (left.oolType && left.oolType === "ObjectReference") {
                     left = this._translateReference(context, left.name, true);
                 }
 
                 let right = oolCon.right;
-                if (right.oolType && right.oolType === 'ObjectReference') {
+                if (right.oolType && right.oolType === "ObjectReference") {
                     right = this._translateReference(context, right.name);
                 }
 
                 return {
-                    [left]: { '$ne': right }
-                }; 
+                    [left]: { $ne: right },
+                };
             }
-        } else if (oolCon.oolType === 'UnaryExpression') {
+        } else if (oolCon.oolType === "UnaryExpression") {
             let arg;
 
             switch (oolCon.operator) {
-                case 'is-null':
+                case "is-null":
                     arg = oolCon.argument;
-                    if (arg.oolType && arg.oolType === 'ObjectReference') {
+                    if (arg.oolType && arg.oolType === "ObjectReference") {
                         arg = this._translateReference(context, arg.name, true);
                     }
 
                     return {
-                        [arg]: { '$eq': null }
-                    }; 
+                        [arg]: { $eq: null },
+                    };
 
-                case 'is-not-null':
+                case "is-not-null":
                     arg = oolCon.argument;
-                    if (arg.oolType && arg.oolType === 'ObjectReference') {
+                    if (arg.oolType && arg.oolType === "ObjectReference") {
                         arg = this._translateReference(context, arg.name, true);
                     }
 
                     return {
-                        [arg]: { '$ne': null }
-                    };     
+                        [arg]: { $ne: null },
+                    };
 
                 default:
-                throw new Error('Unknown UnaryExpression operator: ' + oolCon.operator);
+                    throw new Error("Unknown UnaryExpression operator: " + oolCon.operator);
             }
-        } else if (oolCon.oolType === 'LogicalExpression') {
+        } else if (oolCon.oolType === "LogicalExpression") {
             switch (oolCon.operator) {
-                case 'and':
-                    return { $and: [ this._oolConditionToQueryCondition(context, oolCon.left), this._oolConditionToQueryCondition(context, oolCon.right) ] };
-                    
-                case 'or':
-                        return { $or: [ this._oolConditionToQueryCondition(context, oolCon.left), this._oolConditionToQueryCondition(context, oolCon.right) ] };
+                case "and":
+                    return {
+                        $and: [
+                            this._oolConditionToQueryCondition(context, oolCon.left),
+                            this._oolConditionToQueryCondition(context, oolCon.right),
+                        ],
+                    };
+
+                case "or":
+                    return {
+                        $or: [
+                            this._oolConditionToQueryCondition(context, oolCon.left),
+                            this._oolConditionToQueryCondition(context, oolCon.right),
+                        ],
+                    };
             }
         }
 
-        throw new Error('Unknown syntax: ' + JSON.stringify(oolCon));
+        throw new Error("Unknown syntax: " + JSON.stringify(oolCon));
     }
 
     _translateReference(context, ref, asKey) {
-        let [ base, ...other ] = ref.split('.');
+        let [base, ...other] = ref.split(".");
 
         let translated = context[base];
         if (!translated) {
@@ -795,7 +913,7 @@ class MySQLModeler {
             throw new Error(`Referenced object "${ref}" not found in context.`);
         }
 
-        let refName = [ translated, ...other ].join('.');
+        let refName = [translated, ...other].join(".");
 
         if (asKey) {
             return refName;
@@ -806,30 +924,31 @@ class MySQLModeler {
 
     _addReference(left, leftField, right, rightField, constraints) {
         if (Array.isArray(leftField)) {
-            leftField.forEach(lf => this._addReference(left, lf, right, rightField, constraints));
+            leftField.forEach((lf) => this._addReference(left, lf, right, rightField, constraints));
             return;
         }
 
         if (_.isPlainObject(leftField)) {
-            this._addReference(left, leftField.by, right. rightField, constraints);
+            this._addReference(left, leftField.by, right.rightField, constraints);
             return;
         }
 
-        assert: typeof leftField === 'string';
+        assert: typeof leftField === "string";
 
         let refs4LeftEntity = this._references[left];
         if (!refs4LeftEntity) {
             refs4LeftEntity = [];
             this._references[left] = refs4LeftEntity;
         } else {
-            let found = _.find(refs4LeftEntity,
-                item => (item.leftField === leftField && item.right === right && item.rightField === rightField)
+            let found = _.find(
+                refs4LeftEntity,
+                (item) => item.leftField === leftField && item.right === right && item.rightField === rightField
             );
-    
-            if (found) return;
-        }        
 
-        refs4LeftEntity.push({leftField, right, rightField, constraints }); 
+            if (found) return;
+        }
+
+        refs4LeftEntity.push({ leftField, right, rightField, constraints });
     }
 
     _getReferenceOfField(left, leftField) {
@@ -838,9 +957,7 @@ class MySQLModeler {
             return undefined;
         }
 
-        let reference = _.find(refs4LeftEntity,
-            item => (item.leftField === leftField)
-        );
+        let reference = _.find(refs4LeftEntity, (item) => item.leftField === leftField);
 
         if (!reference) {
             return undefined;
@@ -853,9 +970,7 @@ class MySQLModeler {
         let refs4LeftEntity = this._references[left];
         if (!refs4LeftEntity) return false;
 
-        return (undefined !== _.find(refs4LeftEntity,
-            item => (item.leftField === leftField)
-        ));
+        return undefined !== _.find(refs4LeftEntity, (item) => item.leftField === leftField);
     }
 
     _getReferenceBetween(left, right) {
@@ -864,9 +979,7 @@ class MySQLModeler {
             return undefined;
         }
 
-        let reference = _.find(refs4LeftEntity,
-            item => (item.right === right)
-        );
+        let reference = _.find(refs4LeftEntity, (item) => item.right === right);
 
         if (!reference) {
             return undefined;
@@ -879,61 +992,61 @@ class MySQLModeler {
         let refs4LeftEntity = this._references[left];
         if (!refs4LeftEntity) return false;
 
-        return (undefined !== _.find(refs4LeftEntity,
-            item => (item.right === right)
-        ));
+        return undefined !== _.find(refs4LeftEntity, (item) => item.right === right);
     }
 
     _featureReducer(schema, entity, featureName, feature) {
         let field;
 
         switch (featureName) {
-            case 'autoId':
+            case "autoId":
                 field = entity.fields[feature.field];
 
-                if (field.type === 'integer' && !field.generator) {
+                if (field.type === "integer" && !field.generator) {
                     field.autoIncrementId = true;
-                    if ('startFrom' in feature) {
-                        this._events.once('setTableOptions:' + entity.name, extraOpts => {
-                            extraOpts['AUTO_INCREMENT'] = feature.startFrom;
+                    if ("startFrom" in feature) {
+                        this._events.once("setTableOptions:" + entity.name, (extraOpts) => {
+                            extraOpts["AUTO_INCREMENT"] = feature.startFrom;
                         });
                     }
-                } 
+                }
                 break;
 
-            case 'createTimestamp':
-                field = entity.fields[feature.field];                
+            case "createTimestamp":
+                field = entity.fields[feature.field];
                 field.isCreateTimestamp = true;
                 break;
 
-            case 'updateTimestamp':
+            case "updateTimestamp":
                 field = entity.fields[feature.field];
                 field.isUpdateTimestamp = true;
                 break;
 
-            case 'userEditTracking':
+            case "userEditTracking":
                 break;
 
-            case 'logicalDeletion':
+            case "logicalDeletion":
                 break;
 
-            case 'atLeastOneNotNull':
+            case "atLeastOneNotNull":
                 break;
 
-            case 'validateAllFieldsOnCreation':
-                break;
-            
-            case 'stateTracking':
+            case "validateAllFieldsOnCreation":
                 break;
 
-            case 'i18n':
+            case "stateTracking":
                 break;
 
-            case 'changeLog':
-                let changeLogSettings = Util.getValueByPath(schema.deploymentSettings, 'features.changeLog');
+            case "i18n":
+                break;
+
+            case "changeLog":
+                let changeLogSettings = Util.getValueByPath(schema.deploymentSettings, "features.changeLog");
 
                 if (!changeLogSettings) {
-                    throw new Error(`Missing "changeLog" feature settings in deployment config for schema [${schema.name}].`);
+                    throw new Error(
+                        `Missing "changeLog" feature settings in deployment config for schema [${schema.name}].`
+                    );
                 }
 
                 if (!changeLogSettings.dataSource) {
@@ -952,30 +1065,37 @@ class MySQLModeler {
         fs.ensureFileSync(filePath);
         fs.writeFileSync(filePath, content);
 
-        this.linker.log('info', 'Generated db script: ' + filePath);
+        this.linker.log("info", "Generated db script: " + filePath);
     }
 
-    _addRelationEntity(schema, relationEntityName, entity1Name/* for cross db */, entity2Name/* for cross db */, entity1RefField, entity2RefField) {
+    _addRelationEntity(
+        schema,
+        relationEntityName,
+        entity1Name /* for cross db */,
+        entity2Name /* for cross db */,
+        entity1RefField,
+        entity2RefField
+    ) {
         let entityInfo = {
-            features: [ 'autoId', 'createTimestamp' ],
+            features: ["autoId", "createTimestamp"],
             indexes: [
                 {
-                    "fields": [ entity1RefField, entity2RefField ],
-                    "unique": true
-                }
+                    fields: [entity1RefField, entity2RefField],
+                    unique: true,
+                },
             ],
             associations: [
                 {
-                    "type": "refersTo",
-                    "destEntity": entity1Name,
-                    "srcField": entity1RefField
+                    type: "refersTo",
+                    destEntity: entity1Name,
+                    srcField: entity1RefField,
                 },
                 {
-                    "type": "refersTo",
-                    "destEntity": entity2Name,
-                    "srcField": entity2RefField
-                }
-            ]
+                    type: "refersTo",
+                    destEntity: entity2Name,
+                    srcField: entity2RefField,
+                },
+            ],
         };
 
         let entity = new Entity(this.linker, relationEntityName, schema.gemlModule, entityInfo);
@@ -987,30 +1107,47 @@ class MySQLModeler {
     }
 
     /**
-     * 
-     * @param {*} relationEntity 
-     * @param {*} entity1 
-     * @param {*} entity2 
-     * @param {*} entity1Name 
-     * @param {*} entity2Name 
-     * @param {*} connectedByField 
-     * @param {*} connectedByField2 
+     *
+     * @param {*} relationEntity
+     * @param {*} entity1
+     * @param {*} entity2
+     * @param {*} entity1Name
+     * @param {*} entity2Name
+     * @param {*} connectedByField
+     * @param {*} connectedByField2
      */
-    _updateRelationEntity(relationEntity, entity1, entity2, entity1Name/* for cross db */, entity2Name/* for cross db */, connectedByField, connectedByField2) {
+    _updateRelationEntity(
+        relationEntity,
+        entity1,
+        entity2,
+        entity1Name /* for cross db */,
+        entity2Name /* for cross db */,
+        connectedByField,
+        connectedByField2
+    ) {
         let relationEntityName = relationEntity.name;
 
         this._relationEntities[relationEntityName] = true;
 
-        if (relationEntity.info.associations) {      
-            // check if the relation entity has the refersTo both side of associations        
-            let hasRefToEntity1 = false, hasRefToEntity2 = false;              
+        if (relationEntity.info.associations) {
+            // check if the relation entity has the refersTo both side of associations
+            let hasRefToEntity1 = false,
+                hasRefToEntity2 = false;
 
-            _.each(relationEntity.info.associations, assoc => {
-                if (assoc.type === 'refersTo' && assoc.destEntity === entity1Name && (assoc.srcField || entity1Name) === connectedByField) {
-                    hasRefToEntity1 = true; 
+            _.each(relationEntity.info.associations, (assoc) => {
+                if (
+                    assoc.type === "refersTo" &&
+                    assoc.destEntity === entity1Name &&
+                    (assoc.srcField || entity1Name) === connectedByField
+                ) {
+                    hasRefToEntity1 = true;
                 }
 
-                if (assoc.type === 'refersTo' && assoc.destEntity === entity2Name && (assoc.srcField || entity2Name) === connectedByField2) {
+                if (
+                    assoc.type === "refersTo" &&
+                    assoc.destEntity === entity2Name &&
+                    (assoc.srcField || entity2Name) === connectedByField2
+                ) {
                     hasRefToEntity2 = true;
                 }
             });
@@ -1029,18 +1166,18 @@ class MySQLModeler {
 
             //already processed, skip
             return;
-        }         
-        
-        this._processedRef.add(tag1);   
-        this.linker.log('verbose', `Processed bridging reference: ${tag1}`);
+        }
 
-        this._processedRef.add(tag2);   
-        this.linker.log('verbose', `Processed bridging reference: ${tag2}`);
+        this._processedRef.add(tag1);
+        this.linker.log("verbose", `Processed bridging reference: ${tag1}`);
+
+        this._processedRef.add(tag2);
+        this.linker.log("verbose", `Processed bridging reference: ${tag2}`);
 
         let keyEntity1 = entity1.getKeyField();
         if (Array.isArray(keyEntity1)) {
             throw new Error(`Combination primary key is not supported. Entity: ${entity1Name}`);
-        }        
+        }
 
         let keyEntity2 = entity2.getKeyField();
         if (Array.isArray(keyEntity2)) {
@@ -1050,40 +1187,34 @@ class MySQLModeler {
         relationEntity.addAssocField(connectedByField, entity1, keyEntity1);
         relationEntity.addAssocField(connectedByField2, entity2, keyEntity2);
 
-        relationEntity.addAssociation(
-            connectedByField, 
-            { entity: entity1Name }
-        );
-        relationEntity.addAssociation(
-            connectedByField2, 
-            { entity: entity2Name }
-        );
+        relationEntity.addAssociation(connectedByField, { entity: entity1Name });
+        relationEntity.addAssociation(connectedByField2, { entity: entity2Name });
 
-        let allCascade = { onUpdate: 'RESTRICT', onDelete: 'RESTRICT' };
+        let allCascade = { onUpdate: "RESTRICT", onDelete: "RESTRICT" };
 
         this._addReference(relationEntityName, connectedByField, entity1Name, keyEntity1.name, allCascade);
-        this._addReference(relationEntityName, connectedByField2, entity2Name, keyEntity2.name, allCascade);        
+        this._addReference(relationEntityName, connectedByField2, entity2Name, keyEntity2.name, allCascade);
     }
-    
+
     static oolOpToSql(op) {
         switch (op) {
-            case '=':
-                return '=';
-            
+            case "=":
+                return "=";
+
             default:
-                throw new Error('oolOpToSql to be implemented.');                
+                throw new Error("oolOpToSql to be implemented.");
         }
     }
-    
+
     static oolToSql(schema, doc, ool, params) {
         if (!ool.oolType) {
             return ool;
         }
 
         switch (ool.oolType) {
-            case 'BinaryExpression':
+            case "BinaryExpression":
                 let left, right;
-                
+
                 if (ool.left.oolType) {
                     left = MySQLModeler.oolToSql(schema, doc, ool.left, params);
                 } else {
@@ -1095,63 +1226,78 @@ class MySQLModeler {
                 } else {
                     right = ool.right;
                 }
-                
-                return left + ' ' + MySQLModeler.oolOpToSql(ool.operator) + ' ' + right;
-            
-            case 'ObjectReference':
+
+                return left + " " + MySQLModeler.oolOpToSql(ool.operator) + " " + right;
+
+            case "ObjectReference":
                 if (!GemlUtils.isMemberAccess(ool.name)) {
-                    if (params && _.find(params, p => p.name === ool.name) !== -1) {
-                        return 'p' + _.upperFirst(ool.name);
+                    if (params && _.find(params, (p) => p.name === ool.name) !== -1) {
+                        return "p" + _.upperFirst(ool.name);
                     }
-                    
+
                     throw new Error(`Referencing to a non-existing param "${ool.name}".`);
-                }                
-                
+                }
+
                 let { entityNode, entity, field } = GemlUtils.parseReferenceInDocument(schema, doc, ool.name);
 
-                return entityNode.alias + '.' + MySQLModeler.quoteIdentifier(field.name);
-            
+                return entityNode.alias + "." + MySQLModeler.quoteIdentifier(field.name);
+
             default:
-                throw new Error('oolToSql to be implemented.'); 
+                throw new Error("oolToSql to be implemented.");
         }
     }
 
     static _orderByToSql(schema, doc, ool) {
-        return MySQLModeler.oolToSql(schema, doc, { oolType: 'ObjectReference', name: ool.field }) + (ool.ascend ? '' : ' DESC');
+        return (
+            MySQLModeler.oolToSql(schema, doc, { oolType: "ObjectReference", name: ool.field }) +
+            (ool.ascend ? "" : " DESC")
+        );
     }
 
     _viewDocumentToSQL(modelingSchema, view) {
-        let sql = '  ';
+        let sql = "  ";
         //console.log('view: ' + view.name);
         let doc = _.cloneDeep(view.getDocumentHierarchy(modelingSchema));
         //console.dir(doc, {depth: 8, colors: true});
 
         //let aliasMapping = {};
-        let [ colList, alias, joins ] = this._buildViewSelect(modelingSchema, doc, 0);
-        
-        sql += 'SELECT ' + colList.join(', ') + ' FROM ' + MySQLModeler.quoteIdentifier(doc.entity) + ' AS ' + alias;
+        let [colList, alias, joins] = this._buildViewSelect(modelingSchema, doc, 0);
+
+        sql += "SELECT " + colList.join(", ") + " FROM " + MySQLModeler.quoteIdentifier(doc.entity) + " AS " + alias;
 
         if (!_.isEmpty(joins)) {
-            sql += ' ' + joins.join(' ');
+            sql += " " + joins.join(" ");
         }
-        
+
         if (!_.isEmpty(view.selectBy)) {
-            sql += ' WHERE ' + view.selectBy.map(select => MySQLModeler.oolToSql(modelingSchema, doc, select, view.params)).join(' AND ');
+            sql +=
+                " WHERE " +
+                view.selectBy
+                    .map((select) => MySQLModeler.oolToSql(modelingSchema, doc, select, view.params))
+                    .join(" AND ");
         }
-        
+
         if (!_.isEmpty(view.groupBy)) {
-            sql += ' GROUP BY ' + view.groupBy.map(col => MySQLModeler._orderByToSql(modelingSchema, doc, col)).join(', ');
+            sql +=
+                " GROUP BY " +
+                view.groupBy.map((col) => MySQLModeler._orderByToSql(modelingSchema, doc, col)).join(", ");
         }
 
         if (!_.isEmpty(view.orderBy)) {
-            sql += ' ORDER BY ' + view.orderBy.map(col => MySQLModeler._orderByToSql(modelingSchema, doc, col)).join(', ');
+            sql +=
+                " ORDER BY " +
+                view.orderBy.map((col) => MySQLModeler._orderByToSql(modelingSchema, doc, col)).join(", ");
         }
 
         let skip = view.skip || 0;
         if (view.limit) {
-            sql += ' LIMIT ' + MySQLModeler.oolToSql(modelingSchema, doc, skip, view.params) + ', ' + MySQLModeler.oolToSql(modelingSchema, doc, view.limit, view.params);
+            sql +=
+                " LIMIT " +
+                MySQLModeler.oolToSql(modelingSchema, doc, skip, view.params) +
+                ", " +
+                MySQLModeler.oolToSql(modelingSchema, doc, view.limit, view.params);
         } else if (view.skip) {
-            sql += ' OFFSET ' + MySQLModeler.oolToSql(modelingSchema, doc, view.skip, view.params);
+            sql += " OFFSET " + MySQLModeler.oolToSql(modelingSchema, doc, view.skip, view.params);
         }
 
         return sql;
@@ -1185,67 +1331,79 @@ class MySQLModeler {
         return [ colList, alias, joins, startIndex ];
     }*/
 
-    _createTableStatement(entityName, entity/*, mapOfEntityNameToCodeName*/) {
-        let sql = 'CREATE TABLE IF NOT EXISTS `' + entityName + '` (\n';
+    _createTableStatement(entityName, entity /*, mapOfEntityNameToCodeName*/) {
+        let sql = "CREATE TABLE IF NOT EXISTS `" + entityName + "` (\n";
 
         //column definitions
         _.each(entity.fields, (field, name) => {
-            sql += '  ' + MySQLModeler.quoteIdentifier(name) + ' ' + MySQLModeler.columnDefinition(field) + ',\n';
+            sql += "  " + MySQLModeler.quoteIdentifier(name) + " " + MySQLModeler.columnDefinition(field) + ",\n";
         });
 
         //primary key
-        sql += '  PRIMARY KEY (' + MySQLModeler.quoteListOrValue(entity.key) + '),\n';
+        sql += "  PRIMARY KEY (" + MySQLModeler.quoteListOrValue(entity.key) + "),\n";
 
         //other keys
         if (entity.indexes && entity.indexes.length > 0) {
-            entity.indexes.forEach(index => {
-                sql += '  ';
+            entity.indexes.forEach((index) => {
+                sql += "  ";
                 if (index.unique) {
-                    sql += 'UNIQUE ';
+                    sql += "UNIQUE ";
                 }
-                sql += 'KEY (' + MySQLModeler.quoteListOrValue(index.fields) + '),\n';
+                sql += "KEY (" + MySQLModeler.quoteListOrValue(index.fields) + "),\n";
             });
         }
 
         let lines = [];
-        this._events.emit('beforeEndColumnDefinition:' + entityName, lines);
+        this._events.emit("beforeEndColumnDefinition:" + entityName, lines);
         if (lines.length > 0) {
-            sql += '  ' + lines.join(',\n  ');
+            sql += "  " + lines.join(",\n  ");
         } else {
-            sql = sql.substr(0, sql.length-2);
+            sql = sql.substr(0, sql.length - 2);
         }
 
-        sql += '\n)';
+        sql += "\n)";
 
         //table options
         let extraProps = {};
-        this._events.emit('setTableOptions:' + entityName, extraProps);
+        this._events.emit("setTableOptions:" + entityName, extraProps);
         let props = Object.assign({}, this._dbOptions.table, extraProps);
 
-        sql = _.reduce(props, function(result, value, key) {
-            return result + ' ' + key + '=' + value;
-        }, sql);
+        sql = _.reduce(
+            props,
+            function (result, value, key) {
+                return result + " " + key + "=" + value;
+            },
+            sql
+        );
 
-        sql += ';\n';
+        sql += ";\n";
 
         return sql;
     }
-    
-    _addForeignKeyStatement(entityName, relation, schemaToConnector/*, mapOfEntityNameToCodeName*/) {
+
+    _addForeignKeyStatement(entityName, relation, schemaToConnector /*, mapOfEntityNameToCodeName*/) {
         let refTable = relation.right;
 
-        if (refTable.indexOf('.') > 0) {
-            let [ schemaName, refEntityName ] = refTable.split('.');         
+        if (refTable.indexOf(".") > 0) {
+            let [schemaName, refEntityName] = refTable.split(".");
 
             let targetConnector = schemaToConnector[schemaName];
             assert: targetConnector;
 
-            refTable = targetConnector.database + '`.`' + refEntityName;
-        }       
+            refTable = targetConnector.database + "`.`" + refEntityName;
+        }
 
-        let sql = 'ALTER TABLE `' + entityName +
-            '` ADD FOREIGN KEY (`' + relation.leftField + '`) ' +
-            'REFERENCES `' + refTable + '` (`' + relation.rightField + '`) ';
+        let sql =
+            "ALTER TABLE `" +
+            entityName +
+            "` ADD FOREIGN KEY (`" +
+            relation.leftField +
+            "`) " +
+            "REFERENCES `" +
+            refTable +
+            "` (`" +
+            relation.rightField +
+            "`) ";
 
         sql += `ON UPDATE ${relation.constraints.onUpdate} ON DELETE ${relation.constraints.onDelete};\n`;
 
@@ -1272,16 +1430,16 @@ class MySQLModeler {
     }
 
     static quoteListOrValue(obj) {
-        return _.isArray(obj) ?
-            obj.map(v => MySQLModeler.quoteIdentifier(v)).join(', ') :
-            MySQLModeler.quoteIdentifier(obj);
+        return _.isArray(obj)
+            ? obj.map((v) => MySQLModeler.quoteIdentifier(v)).join(", ")
+            : MySQLModeler.quoteIdentifier(obj);
     }
 
     static complianceCheck(entity) {
         let result = { errors: [], warnings: [] };
 
         if (!entity.key) {
-            result.errors.push('Primary key is not specified.');
+            result.errors.push("Primary key is not specified.");
         }
 
         return result;
@@ -1289,49 +1447,49 @@ class MySQLModeler {
 
     static columnDefinition(field, isProc) {
         let col;
-        
+
         switch (field.type) {
-            case 'integer':
-            col = MySQLModeler.intColumnDefinition(field);
+            case "integer":
+                col = MySQLModeler.intColumnDefinition(field);
                 break;
 
-            case 'number':
-            col =  MySQLModeler.floatColumnDefinition(field);
+            case "number":
+                col = MySQLModeler.floatColumnDefinition(field);
                 break;
 
-            case 'text':
-            col =  MySQLModeler.textColumnDefinition(field);
+            case "text":
+                col = MySQLModeler.textColumnDefinition(field);
                 break;
 
-            case 'boolean':
-            col =  MySQLModeler.boolColumnDefinition(field);
+            case "boolean":
+                col = MySQLModeler.boolColumnDefinition(field);
                 break;
 
-            case 'binary':
-            col =  MySQLModeler.binaryColumnDefinition(field);
+            case "binary":
+                col = MySQLModeler.binaryColumnDefinition(field);
                 break;
 
-            case 'datetime':
-            col =  MySQLModeler.datetimeColumnDefinition(field);
+            case "datetime":
+                col = MySQLModeler.datetimeColumnDefinition(field);
                 break;
 
-            case 'object':
-            col =  MySQLModeler.textColumnDefinition(field);
-                break;            
-
-            case 'enum':
-            col =  MySQLModeler.enumColumnDefinition(field);
+            case "object":
+                col = MySQLModeler.textColumnDefinition(field);
                 break;
 
-            case 'array':
-            col =  MySQLModeler.textColumnDefinition(field);
+            case "enum":
+                col = MySQLModeler.enumColumnDefinition(field);
+                break;
+
+            case "array":
+                col = MySQLModeler.textColumnDefinition(field);
                 break;
 
             default:
                 throw new Error('Unsupported type "' + field.type + '".');
         }
 
-        let { sql, type } = col;        
+        let { sql, type } = col;
 
         if (!isProc) {
             sql += this.columnNullable(field);
@@ -1346,63 +1504,63 @@ class MySQLModeler {
 
         if (info.digits) {
             if (info.digits > 10) {
-                type = sql = 'BIGINT';
+                type = sql = "BIGINT";
             } else if (info.digits > 7) {
-                type = sql = 'INT';
+                type = sql = "INT";
             } else if (info.digits > 4) {
-                type = sql = 'MEDIUMINT';
+                type = sql = "MEDIUMINT";
             } else if (info.digits > 2) {
-                type = sql = 'SMALLINT';
+                type = sql = "SMALLINT";
             } else {
-                type = sql = 'TINYINT';
+                type = sql = "TINYINT";
             }
 
-            sql += `(${info.digits})`
+            sql += `(${info.digits})`;
         } else {
-            type = sql = 'INT';
+            type = sql = "INT";
         }
 
         if (info.unsigned) {
-            sql += ' UNSIGNED';
+            sql += " UNSIGNED";
         }
 
         return { sql, type };
     }
 
     static floatColumnDefinition(info) {
-        let sql = '', type;
+        let sql = "",
+            type;
 
-        if (info.type == 'number' && info.exact) {
-            type = sql = 'DECIMAL';
+        if (info.type == "number" && info.exact) {
+            type = sql = "DECIMAL";
 
             if (info.totalDigits > 65) {
-                throw new Error('Total digits exceed maximum limit.');
+                throw new Error("Total digits exceed maximum limit.");
             }
         } else {
             if (info.totalDigits > 23) {
-                type = sql = 'DOUBLE';
+                type = sql = "DOUBLE";
 
                 if (info.totalDigits > 53) {
-                    throw new Error('Total digits exceed maximum limit.');
+                    throw new Error("Total digits exceed maximum limit.");
                 }
             } else {
-                type = sql = 'FLOAT';
+                type = sql = "FLOAT";
             }
         }
 
-        if ('totalDigits' in info) {
-            sql += '(' + info.totalDigits;
-            if ('decimalDigits' in info) {
-                sql += ', ' +info.decimalDigits;
+        if ("totalDigits" in info) {
+            sql += "(" + info.totalDigits;
+            if ("decimalDigits" in info) {
+                sql += ", " + info.decimalDigits;
             }
-            sql += ')';
-
+            sql += ")";
         } else {
-            if ('decimalDigits' in info) {
+            if ("decimalDigits" in info) {
                 if (info.decimalDigits > 23) {
-                    sql += '(53, ' +info.decimalDigits + ')';
-                } else  {
-                    sql += '(23, ' +info.decimalDigits + ')';
+                    sql += "(53, " + info.decimalDigits + ")";
+                } else {
+                    sql += "(23, " + info.decimalDigits + ")";
                 }
             }
         }
@@ -1411,196 +1569,196 @@ class MySQLModeler {
     }
 
     static textColumnDefinition(info) {
-        let sql = '', type;
+        let sql = "",
+            type;
 
         if (info.fixedLength && info.fixedLength <= 255) {
-            sql = 'CHAR(' + info.fixedLength + ')';
-            type = 'CHAR';
+            sql = "CHAR(" + info.fixedLength + ")";
+            type = "CHAR";
         } else if (info.maxLength) {
             if (info.maxLength > 16777215) {
-                type = sql = 'LONGTEXT';
+                type = sql = "LONGTEXT";
             } else if (info.maxLength > 65535) {
-                type = sql = 'MEDIUMTEXT';
+                type = sql = "MEDIUMTEXT";
             } else if (info.maxLength > 2000) {
-                type = sql = 'TEXT';
+                type = sql = "TEXT";
             } else {
-                type = sql = 'VARCHAR';
+                type = sql = "VARCHAR";
                 if (info.fixedLength) {
-                    sql += '(' + info.fixedLength + ')';
+                    sql += "(" + info.fixedLength + ")";
                 } else {
-                    sql += '(' + info.maxLength + ')';
+                    sql += "(" + info.maxLength + ")";
                 }
             }
         } else {
-            type = sql = 'TEXT';
+            type = sql = "TEXT";
         }
 
         return { sql, type };
     }
 
     static binaryColumnDefinition(info) {
-        let sql = '', type;
+        let sql = "",
+            type;
 
         if (info.fixedLength <= 255) {
-            sql = 'BINARY(' + info.fixedLength + ')';
-            type = 'BINARY';
+            sql = "BINARY(" + info.fixedLength + ")";
+            type = "BINARY";
         } else if (info.maxLength) {
             if (info.maxLength > 16777215) {
-                type = sql = 'LONGBLOB';
+                type = sql = "LONGBLOB";
             } else if (info.maxLength > 65535) {
-                type = sql = 'MEDIUMBLOB';
+                type = sql = "MEDIUMBLOB";
             } else {
-                type = sql = 'VARBINARY';
+                type = sql = "VARBINARY";
                 if (info.fixedLength) {
-                    sql += '(' + info.fixedLength + ')';
+                    sql += "(" + info.fixedLength + ")";
                 } else {
-                    sql += '(' + info.maxLength + ')';
+                    sql += "(" + info.maxLength + ")";
                 }
             }
         } else {
-            type = sql = 'BLOB';
+            type = sql = "BLOB";
         }
 
         return { sql, type };
     }
 
     static boolColumnDefinition() {
-        return { sql: 'TINYINT(1)', type: 'TINYINT' };
+        return { sql: "TINYINT(1)", type: "TINYINT" };
     }
 
     static datetimeColumnDefinition(info) {
         let sql;
 
-        if (!info.range || info.range === 'datetime') {
-            sql = 'DATETIME';
-        } else if (info.range === 'date') {
-            sql = 'DATE';
-        } else if (info.range === 'time') {
-            sql = 'TIME';
-        } else if (info.range === 'year') {
-            sql = 'YEAR';
-        } else if (info.range === 'timestamp') {
-            sql = 'TIMESTAMP';
+        if (!info.range || info.range === "datetime") {
+            sql = "DATETIME";
+        } else if (info.range === "date") {
+            sql = "DATE";
+        } else if (info.range === "time") {
+            sql = "TIME";
+        } else if (info.range === "year") {
+            sql = "YEAR";
+        } else if (info.range === "timestamp") {
+            sql = "TIMESTAMP";
         }
 
         return { sql, type: sql };
     }
 
     static enumColumnDefinition(info) {
-        return { sql: 'ENUM(' + _.map(info.values, (v) => MySQLModeler.quoteString(v)).join(', ') + ')', type: 'ENUM' };
+        return { sql: "ENUM(" + _.map(info.values, (v) => MySQLModeler.quoteString(v)).join(", ") + ")", type: "ENUM" };
     }
 
     static columnNullable(info) {
-        if (info.hasOwnProperty('optional') && info.optional) {
-            return ' NULL';
+        if (info.hasOwnProperty("optional") && info.optional) {
+            return " NULL";
         }
 
-        return ' NOT NULL';
+        return " NOT NULL";
     }
 
     static defaultValue(info, type) {
         if (info.isCreateTimestamp) {
             info.createByDb = true;
-            return ' DEFAULT CURRENT_TIMESTAMP';
+            return " DEFAULT CURRENT_TIMESTAMP";
         }
 
         if (info.autoIncrementId) {
             info.createByDb = true;
-            return ' AUTO_INCREMENT';
-        }        
-
-        if (info.isUpdateTimestamp) {            
-            info.updateByDb = true;
-            return ' ON UPDATE CURRENT_TIMESTAMP';
+            return " AUTO_INCREMENT";
         }
 
-        let sql = '';
+        if (info.isUpdateTimestamp) {
+            info.updateByDb = true;
+            return " ON UPDATE CURRENT_TIMESTAMP";
+        }
 
-        if (!info.optional) {      
-            if (info.hasOwnProperty('default')) {
-                let defaultValue = info['default'];
+        let sql = "";
 
-                if (typeof defaultValue === 'object' && defaultValue.oorType === 'SymbolToken') {
+        if (!info.optional) {
+            if (info.hasOwnProperty("default")) {
+                let defaultValue = info["default"];
+
+                if (typeof defaultValue === "object" && defaultValue.oorType === "SymbolToken") {
                     const tokenName = defaultValue.name.toUpperCase();
 
                     switch (tokenName) {
-                        case 'NOW':
-                        sql += ' DEFAULT NOW()';
-                        info.createByDb = true;
-                        break;
+                        case "NOW":
+                            sql += " DEFAULT NOW()";
+                            info.createByDb = true;
+                            break;
 
                         default:
                             throw new Error(`Unsupported symbol token "${tokenName}".`);
-                    }                 
-                     
+                    }
                 } else {
-
                     switch (info.type) {
-                        case 'boolean':
-                            sql += ' DEFAULT ' + (Types.BOOLEAN.sanitize(defaultValue) ? '1' : '0');                        
+                        case "boolean":
+                            sql += " DEFAULT " + (Types.BOOLEAN.sanitize(defaultValue) ? "1" : "0");
                             break;
 
-                        case 'integer':
+                        case "integer":
                             if (_.isInteger(defaultValue)) {
-                                sql += ' DEFAULT ' + defaultValue.toString();
+                                sql += " DEFAULT " + defaultValue.toString();
                             } else {
-                                sql += ' DEFAULT ' + parseInt(defaultValue).toString();
+                                sql += " DEFAULT " + parseInt(defaultValue).toString();
                             }
                             break;
 
-                        case 'text':
-                        case 'enum':
-                            sql += ' DEFAULT ' + Util.quote(defaultValue);
+                        case "text":
+                        case "enum":
+                            sql += " DEFAULT " + Util.quote(defaultValue);
                             break;
-                        
-                        case 'number':
+
+                        case "number":
                             if (_.isNumber(defaultValue)) {
-                                sql += ' DEFAULT ' + defaultValue.toString();
+                                sql += " DEFAULT " + defaultValue.toString();
                             } else {
-                                sql += ' DEFAULT ' + parseFloat(defaultValue).toString();
+                                sql += " DEFAULT " + parseFloat(defaultValue).toString();
                             }
                             break;
-                        
-                        case 'binary':
-                            sql += ' DEFAULT ' + Util.bin2Hex(defaultValue);
+
+                        case "binary":
+                            sql += " DEFAULT " + Util.bin2Hex(defaultValue);
                             break;
 
-                        case 'datetime':
-                            sql += ' DEFAULT ' + Util.quote(Types.DATETIME.sanitize(defaultValue).toSQL({ includeOffset: false }));
+                        case "datetime":
+                            sql +=
+                                " DEFAULT " +
+                                Util.quote(Types.DATETIME.sanitize(defaultValue).toSQL({ includeOffset: false }));
                             break;
-                        
-                        case 'object':
-                        case 'array':
-                            sql += ' DEFAULT ' + Util.quote(JSON.stringify(defaultValue));
-                            break;    
 
-                        default:                        
+                        case "object":
+                        case "array":
+                            sql += " DEFAULT " + Util.quote(JSON.stringify(defaultValue));
+                            break;
+
+                        default:
                             throw new Error(`Invalid type "${info.type}"`);
-                                   
                     }
                 }
-
-            } else if (!info.hasOwnProperty('auto')) {
+            } else if (!info.hasOwnProperty("auto")) {
                 if (UNSUPPORTED_DEFAULT_VALUE.has(type)) {
-                    return '';
+                    return "";
                 }
 
-                if (info.type === 'boolean' || info.type === 'integer' || info.type === 'number') {
-                    sql += ' DEFAULT 0';
-                } else if (info.type === 'datetime') {
-                    sql += ' DEFAULT CURRENT_TIMESTAMP';
-                } else if (info.type === 'enum') {
-                    sql += ' DEFAULT ' +  quote(info.values[0]);
+                if (info.type === "boolean" || info.type === "integer" || info.type === "number") {
+                    sql += " DEFAULT 0";
+                } else if (info.type === "datetime") {
+                    sql += " DEFAULT CURRENT_TIMESTAMP";
+                } else if (info.type === "enum") {
+                    sql += " DEFAULT " + quote(info.values[0]);
                     info.createByDb = true;
-                }  else {
+                } else {
                     sql += ' DEFAULT ""';
-                } 
+                }
 
                 //not explicit specified, will not treated as createByDb
                 //info.createByDb = true;
             }
-        }        
-    
+        }
+
         /*
         if (info.hasOwnProperty('default') && typeof info.default === 'object' && info.default.oolType === 'SymbolToken') {
             let defaultValue = info.default;
@@ -1657,8 +1815,8 @@ class MySQLModeler {
                 throw new Error('Unexpected path');
             }            
         }    
-        */    
-        
+        */
+
         return sql;
     }
 
@@ -1666,7 +1824,7 @@ class MySQLModeler {
         if (removeTablePrefix) {
             entityName = _.trim(_.snakeCase(entityName));
 
-            removeTablePrefix = _.trimEnd(_.snakeCase(removeTablePrefix), '_') + '_';
+            removeTablePrefix = _.trimEnd(_.snakeCase(removeTablePrefix), "_") + "_";
 
             if (_.startsWith(entityName, removeTablePrefix)) {
                 entityName = entityName.substr(removeTablePrefix.length);
@@ -1674,7 +1832,7 @@ class MySQLModeler {
         }
 
         return GemlUtils.entityNaming(entityName);
-    };
+    }
 }
 
 module.exports = MySQLModeler;
