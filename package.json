@@ -49,10 +49,12 @@
   },
   "peerDependencies": {
     "@genx/app": "*",
+    "@genx/data": "*",
     "rk-utils": "*"
   },
   "devDependencies": {
-    "@genx/app": "*",
+    "@genx/app": "genx-tech/gx-app",
+    "@genx/data": "genx-tech/gx-data#v2",
     "allure-commandline": "^2.13.0",
     "jison": "^0.4.18",
     "mocha-allure-reporter": "^1.4.0",
@@ -62,8 +64,7 @@
     "rk-utils": "*"
   },
   "dependencies": {
-    "@genx/algorithm": "*",
-    "@genx/data": "*",
+    "@genx/algorithm": "*",    
     "deep-freeze": "0.0.1",
     "escodegen": "^2.0.0",
     "exceljs": "^1.7.0",
