@@ -1,5 +1,5 @@
 const path = require('path');
-const { _, pascalCase, fs } = require('rk-utils');
+const { fs } = require('@genx/sys');
 
 const { DbModel } = require('@genx/data');
 

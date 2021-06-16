@@ -315,15 +315,15 @@ module.exports = ${capitalized} => class extends ${capitalized} {
 
                 //console.dir(JsLang.astValue(validationSchema), {depth: 20});
 
-                Array.from(dependencies).forEach((dep) =>
-                    JsLang.astPushInBody(ast, JsLang.astRequire(_.camelCase(dep), `./${dep}`))
+                const exportBody = Array.from(dependencies).map((dep) =>
+                    JsLang.astRequire(_.camelCase(dep), `./${dep}`)
                 );
-            
+
                 JsLang.astPushInBody(
                     ast,
                     JsLang.astAssign(
                         JsLang.astVarRef("module.exports"),
-                        JsLang.astArrowFunction([], JsLang.astValue(validationSchema))
+                        JsLang.astAnonymousFunction([], exportBody.concat(JsLang.astReturn(validationSchema)))
                     )
                 );
 
@@ -335,8 +335,6 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                 );
                 fs.ensureFileSync(inputSchemaFilePath);
                 fs.writeFileSync(inputSchemaFilePath, JsLang.astToCode(ast));
-
-                
 
                 this.linker.log("info", "Generated entity input schema: " + inputSchemaFilePath);
             });
