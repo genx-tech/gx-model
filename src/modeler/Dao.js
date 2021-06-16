@@ -72,6 +72,7 @@ class DaoModeler {
 
         this._generateSchemaModel(schema);
         this._generateEntityModel(schema);
+        //this._generateEntityEnumTypes(schema);
         this._generateEntityInputSchema(schema);
         //this._generateEnumTypes(schema);
         //this._generateViewModel();

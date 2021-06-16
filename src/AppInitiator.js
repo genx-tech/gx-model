@@ -79,7 +79,7 @@ class AppInitiator {
             'gemlPath': { type: 'text', default: 'geml' },
             'modelPath': { type: 'text', default: 'src/models' },
             'scriptPath': { type: 'text', default: 'src/scripts' },
-            'manifestPath': { type: 'text', default: 'manifests' },
+            'manifestPath': { type: 'text', optional: true },
             'useJsonSource': { type: 'boolean', default: false },
             'saveIntermediate': { type: 'boolean', default: false }
         });
