@@ -1,6 +1,6 @@
 {
   "name": "@genx/model",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Meta programming DSL specially for automating database structure creation and data access.",
   "main": "lib/index.js",

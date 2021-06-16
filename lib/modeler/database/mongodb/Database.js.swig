@@ -1,4 +1,4 @@
-const { pascalCase } = require('rk-utils');
+const { naming } = require('@genx/july');
 
 const { Connector, getEntityModelOfDriver, Errors: { BusinessError } } = require('@k-suite/oolong');
 const BaseEntityModel = getEntityModelOfDriver('{{ driver }}');
@@ -21,7 +21,7 @@ class {{ className }} {
     model(entityName) {
         if (this._modelCache[entityName]) return this._modelCache[entityName];
 
-        let modelClassName = pascalCase(entityName);
+        let modelClassName = naming.pascalCase(entityName);
         if (this._modelCache[modelClassName]) return this._modelCache[modelClassName];
 
         let entitySpecMixin;
