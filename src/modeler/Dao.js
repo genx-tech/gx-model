@@ -342,13 +342,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
         });
     }
 
-    _generateEntityManifest(schema) {
-        let entities = Object.keys(schema.entities)
-            .sort()
-            .reduce((result, v) => {
-                result[v] = {};
-                return result;
-            }, {});
+    _generateEntityManifest(schema) {        
         /*
         let manifest = {};
 
@@ -400,6 +394,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
             }
         });
         */
+        
         /*
         let outputFilePath = path.resolve(this.manifestPath, schema.name + '.manifest.json');
         fs.ensureFileSync(outputFilePath);
@@ -407,6 +402,8 @@ module.exports = ${capitalized} => class extends ${capitalized} {
 
         this.linker.log('info', 'Generated schema manifest: ' + outputFilePath);
         */
+
+        const diagram = {};
 
         //generate validator config
         _.forOwn(schema.entities, (entity, entityInstanceName) => {
@@ -430,6 +427,8 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                 validationSchema[fieldName] = fieldSchema;
             });
 
+            diagram[entityInstanceName] = entity.toJSON();
+
             let entityOutputFilePath = path.resolve(
                 this.manifestPath,
                 schema.name,
@@ -441,7 +440,17 @@ module.exports = ${capitalized} => class extends ${capitalized} {
 
             this.linker.log("info", "Generated entity manifest: " + entityOutputFilePath);
         });
-    }
+
+        let diagramOutputFilePath = path.resolve(
+            this.manifestPath,
+            schema.name,
+            "diagram.json"
+        );
+        fs.ensureFileSync(diagramOutputFilePath);
+        fs.writeFileSync(diagramOutputFilePath, JSON.stringify(diagram, null, 4));
+    
+        this.linker.log("info", "Generated schema manifest: " + diagramOutputFilePath);
+    }    
 
     /*
     _generateViewModel(schema, dbService) {        
