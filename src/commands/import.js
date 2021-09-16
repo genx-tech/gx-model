@@ -1,4 +1,3 @@
-const { _, eachAsync_ } = require('rk-utils');
 const { throwIfFileNotExist, importDataFiles } = require('../utils/helpers');
 
 /**
@@ -15,7 +14,7 @@ const { throwIfFileNotExist, importDataFiles } = require('../utils/helpers');
  * @returns {Promise}
  */
 module.exports = async (app, context) => {
-    app.log('verbose', 'geml import');
+    app.log('verbose', `${app.name} import`);
 
     throwIfFileNotExist("modelPath", context.modelPath);
     throwIfFileNotExist("scriptPath", context.scriptPath);

@@ -5,7 +5,7 @@
  * @ignore
  */
 
-const { _ } = require('rk-utils');
+const { _ } = require('@genx/july');
 const { TopoSort } = require('@genx/algorithm');
 
 const JsLang = require('./ast.js');

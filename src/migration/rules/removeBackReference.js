@@ -1,6 +1,4 @@
-const { auto } = require("async");
-
-const { _ } = require('rk-utils');
+const { _ } = require('@genx/july');
 
 function applyRule(db, Entity, entity) {
     //remove back reference

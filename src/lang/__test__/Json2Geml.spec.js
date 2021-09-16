@@ -1,6 +1,6 @@
 'use strict';
 
-const { fs, glob } = require('rk-utils');
+const { fs, glob } = require('@genx/sys');
 const path = require('path');
 const winston = require('winston');
 

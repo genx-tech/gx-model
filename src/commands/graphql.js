@@ -1,4 +1,4 @@
-const { _, eachAsync_ } = require('rk-utils');
+const { _, eachAsync_ } = require('@genx/july');
 const { throwIfFileNotExist, getSchemaConnectors } = require('../utils/helpers');
 const Linker = require('../lang/Linker');
 
@@ -16,7 +16,7 @@ const Linker = require('../lang/Linker');
  * @returns {Promise}
  */
 module.exports = async (app, context) => {
-    app.log('verbose', 'geml graphql');
+    app.log('verbose', `${app.name} graphql`);
 
     throwIfFileNotExist("gemlPath", context.gemlPath);
 

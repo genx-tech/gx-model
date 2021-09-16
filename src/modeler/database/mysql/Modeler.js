@@ -3,8 +3,8 @@
 const EventEmitter = require("events");
 const path = require("path");
 
-const Util = require("rk-utils");
-const { _, fs, quote, putIntoBucket } = Util;
+const { _, quote, pushIntoBucket, get, naming, bin2Hex } = require('@genx/july');
+const { fs } = require('@genx/sys');
 
 const GemlUtils = require("../../../lang/GemlUtils");
 const { pluralize, isDotSeparateName, extractDotSeparateName } = GemlUtils;
@@ -186,7 +186,7 @@ class MySQLModeler {
 
                             let key = nodes.join(".");
 
-                            putIntoBucket(data, key, entityData, true);
+                            pushIntoBucket(data, key, entityData, true);
                         }
                     });
 
@@ -227,7 +227,7 @@ class MySQLModeler {
                             let initFilePath = path.join(...pathNodes, initFileName);
                             let idxFilePath = path.join(...pathNodes, "index.list");
 
-                            putIntoBucket(initIdxFiles, [idxFilePath], initFileName);
+                            pushIntoBucket(initIdxFiles, [idxFilePath], initFileName);
 
                             this._writeFile(
                                 path.join(this.outputPath, initFilePath),
@@ -1041,7 +1041,7 @@ class MySQLModeler {
                 break;
 
             case "changeLog":
-                let changeLogSettings = Util.getValueByPath(schema.deploymentSettings, "features.changeLog");
+                let changeLogSettings = get(schema.deploymentSettings, "features.changeLog");
 
                 if (!changeLogSettings) {
                     throw new Error(
@@ -1411,8 +1411,8 @@ class MySQLModeler {
     }
 
     static foreignKeyFieldNaming(entityName, entity) {
-        let leftPart = Util._.camelCase(entityName);
-        let rightPart = Util.pascalCase(entity.key);
+        let leftPart = naming.camelCase(entityName);
+        let rightPart = naming.pascalCase(entity.key);
 
         if (_.endsWith(leftPart, rightPart)) {
             return leftPart;
@@ -1708,7 +1708,7 @@ class MySQLModeler {
 
                         case "text":
                         case "enum":
-                            sql += " DEFAULT " + Util.quote(defaultValue);
+                            sql += " DEFAULT " + quote(defaultValue);
                             break;
 
                         case "number":
@@ -1720,18 +1720,18 @@ class MySQLModeler {
                             break;
 
                         case "binary":
-                            sql += " DEFAULT " + Util.bin2Hex(defaultValue);
+                            sql += " DEFAULT " + bin2Hex(defaultValue);
                             break;
 
                         case "datetime":
                             sql +=
                                 " DEFAULT " +
-                                Util.quote(Types.DATETIME.sanitize(defaultValue).toSQL({ includeOffset: false }));
+                                quote(Types.DATETIME.sanitize(defaultValue).toSQL({ includeOffset: false }));
                             break;
 
                         case "object":
                         case "array":
-                            sql += " DEFAULT " + Util.quote(JSON.stringify(defaultValue));
+                            sql += " DEFAULT " + quote(JSON.stringify(defaultValue));
                             break;
 
                         default:
@@ -1757,65 +1757,7 @@ class MySQLModeler {
                 //not explicit specified, will not treated as createByDb
                 //info.createByDb = true;
             }
-        }
-
-        /*
-        if (info.hasOwnProperty('default') && typeof info.default === 'object' && info.default.oolType === 'SymbolToken') {
-            let defaultValue = info.default;
-            let defaultByDb = false;
-
-            switch (defaultValue.name) {
-                case 'now':
-                sql += ' DEFAULT NOW'
-                break;
-            }
-
-            if (defaultByDb) {
-                delete info.default;
-                info.defaultByDb = true;
-            }
-
-            if (info.type === 'bool') {
-                if (_.isString(defaultValue)) {
-                    sql += ' DEFAULT ' + (S(defaultValue).toBoolean() ? '1' : '0');
-                } else {
-                    sql += ' DEFAULT ' + (defaultValue ? '1' : '0');
-                }
-            } else if (info.type === 'int') {
-                if (_.isInteger(defaultValue)) {
-                    sql += ' DEFAULT ' + defaultValue.toString();
-                } else {
-                    sql += ' DEFAULT ' + parseInt(defaultValue).toString();
-                }
-            } else if (info.type === 'text') {
-                sql += ' DEFAULT ' + Util.quote(defaultValue);
-            } else if (info.type === 'float') {
-                if (_.isNumber(defaultValue)) {
-                    sql += ' DEFAULT ' + defaultValue.toString();
-                } else {
-                    sql += ' DEFAULT ' + parseFloat(defaultValue).toString();
-                }
-            } else if (info.type === 'binary') {
-                sql += ' DEFAULT ' + Util.bin2Hex(defaultValue);
-            } else if (info.type === 'datetime') {
-                if (_.isInteger(defaultValue)) {
-                    sql += ' DEFAULT ' + defaultValue.toString();
-                } else {
-                    sql += ' DEFAULT ' + Util.quote(defaultValue);
-                }
-            } else if (info.type === 'json') {
-                if (typeof defaultValue === 'string') {
-                    sql += ' DEFAULT ' + Util.quote(defaultValue);
-                } else {
-                    sql += ' DEFAULT ' + Util.quote(JSON.stringify(defaultValue));
-                }
-            } else if (info.type === 'xml' || info.type === 'enum' || info.type === 'csv') {
-                sql += ' DEFAULT ' + Util.quote(defaultValue);
-            } else {
-                throw new Error('Unexpected path');
-            }            
-        }    
-        */
+        }     
 
         return sql;
     }

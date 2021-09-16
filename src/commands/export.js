@@ -1,5 +1,6 @@
 const path = require('path');
-const { _, fs, eachAsync_ } = require('rk-utils');
+const { _, eachAsync_ } = require('@genx/july');
+const { fs } = require('@genx/sys');
 const { throwIfFileNotExist, getDateNamedDir } = require('../utils/helpers');
 
 /**
@@ -17,7 +18,7 @@ const { throwIfFileNotExist, getDateNamedDir } = require('../utils/helpers');
  * @returns {Promise}
  */
 module.exports = async (app, context) => {
-    app.log('verbose', 'geml export');
+    app.log('verbose', `${app.name} export`);
 
     throwIfFileNotExist("gemlPath", context.gemlPath);
 

@@ -1,14 +1,13 @@
 "use strict";
 
-const Util = require('rk-utils');
-const { pascalCase } = Util;
+const { naming } = require('@genx/july');
 
 const FEATURE_NAME = 'stateTracking';
 
 const FIELD_NAME_SUFFIX = 'Timestamp';
 
 function timestampFieldNaming(field, state) {
-    return field + pascalCase(state) + FIELD_NAME_SUFFIX;
+    return field + naming.pascalCase(state) + FIELD_NAME_SUFFIX;
 }
 
 /**

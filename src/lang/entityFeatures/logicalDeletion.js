@@ -1,7 +1,6 @@
 "use strict";
 
-const Util = require('rk-utils');
-const _ = Util._;
+const { _ } = require('@genx/july')
 
 const FEATURE_NAME = 'logicalDeletion';
 

@@ -1,6 +1,7 @@
 "use strict";
 
 exports.Commands = {    
+    'init': 'Initialize geml configuration.',
     'build': 'Generate database scripts and entity models.',
     'graphql': 'Generate graphql schemas.',
     'migrate': 'Create database structure.',            
@@ -17,6 +18,21 @@ exports.getCommandOptions = (cli, command) => {
     let cmdOptions = {};
 
     switch (command) {
+        case 'init':
+            cmdOptions['module'] = {
+                desc: 'App module name, set this to add geml to an app module instead of the server', 
+                alias: [ 'm' ]
+            };
+            cmdOptions['schema'] = {
+                desc: 'Default schema to initialize',
+                promptMessage: 'Schema name?',
+                promptDefault: 'sample',
+                inquire: true,
+                required: true,
+                silentModeDefault: 'sample'
+            };
+            break;
+
         case 'build':
             break;
 

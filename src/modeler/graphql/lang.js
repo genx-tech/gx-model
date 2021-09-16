@@ -1,5 +1,5 @@
 const { Types } = require('@genx/data');
-const { _, pascalCase }  = require('rk-utils');
+const { _, pascalCase }  = require('@genx/july');
 
 const mapOfGemlTypesToGraphQL = {
     'integer': 'Int',

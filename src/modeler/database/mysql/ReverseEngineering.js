@@ -1,6 +1,6 @@
 const path = require('path');
-const Util = require('rk-utils');
-const { _, fs } = Util;
+const { _, eachAsync_, pushIntoBucket } = require('@genx/july');
+const { fs } = require('@genx/sys');
 const GemlCodeGen = require('../../../lang/GemlCodeGen');
 const GemlUtils = require('../../../lang/GemlUtils');
 
@@ -30,7 +30,7 @@ class MySQLReverseEngineering {
         let entitiesOolPath = path.join(outputDir, 'entities');
         fs.ensureDirSync(entitiesOolPath);
 
-        await Util.eachAsync_(tables, async table => {
+        await eachAsync_(tables, async table => {
             let entityName = this._entityNaming(table.TABLE_NAME);
 
             entities.push({ entity: entityName });            
@@ -165,7 +165,7 @@ class MySQLReverseEngineering {
         let mapNameToIndex = {};
 
         indexInfo.forEach(i => {
-            Util.putIntoBucket(mapNameToIndex, i.Key_name, i);
+            pushIntoBucket(mapNameToIndex, i.Key_name, i);
         });
 
         _.forOwn(mapNameToIndex, (fields, name) => {
@@ -400,7 +400,7 @@ class MySQLReverseEngineering {
 
                     if (!backRef) {
                         //one-side relation
-                        Util.putIntoBucket(entityAssoc, name, { type: 'refersTo', srcField, destEntity });
+                        pushIntoBucket(entityAssoc, name, { type: 'refersTo', srcField, destEntity });
                         return;
                     }
 
@@ -409,11 +409,11 @@ class MySQLReverseEngineering {
                     throw new Error(`Back reference: ${backRef.entity} ${backRef.type} ${name}`);                    
                 } else if (type === 'belongsTo') {
 
-                    Util.putIntoBucket(entityAssoc, name, { type, srcField, destEntity });
+                    pushIntoBucket(entityAssoc, name, { type, srcField, destEntity });
 
                     if (!backRef) {
                         //one-side relation                        
-                        Util.putIntoBucket(entityAssoc, entity, { type: 'hasMany', destEntity: name });
+                        pushIntoBucket(entityAssoc, entity, { type: 'hasMany', destEntity: name });
                         return;
                     }
                     
@@ -452,8 +452,8 @@ class MySQLReverseEngineering {
     }
 
     _makeEntityManyToMany(entityName1, entityName2, entityAssoc) {
-        Util.putIntoBucket(entityAssoc, entityName1, { type: 'hasMany', destEntity: entityName2 });
-        Util.putIntoBucket(entityAssoc, entityName2, { type: 'hasMany', destEntity: entityName1 });
+        pushIntoBucket(entityAssoc, entityName1, { type: 'hasMany', destEntity: entityName2 });
+        pushIntoBucket(entityAssoc, entityName2, { type: 'hasMany', destEntity: entityName1 });
     }
 }
 

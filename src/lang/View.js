@@ -1,6 +1,6 @@
 "use strict";
 
-const { _ } = require('rk-utils');
+const { _ } = require('@genx/july');
 const { generateDisplayName, deepCloneField, Clonable } = require('./GemlUtils');
 
 const Dataset = require('./Dataset');

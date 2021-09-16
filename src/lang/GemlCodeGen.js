@@ -1,7 +1,6 @@
 "use strict";
 
-const Util = require('rk-utils');
-const { _ } = Util;
+const { _, quote } = require('@genx/july');
 const { generateDisplayName } = require('./GemlUtils');
 const { isNothing, isQuotedWith } = require('../utils/lang');
 
@@ -87,7 +86,7 @@ class GemlCodeGen {
             this.appendLine(KW_NAMESPACE).indent();
 
             namespaces.forEach(ns => {
-                this.appendLine(Util.quote(ns, "'"));
+                this.appendLine(quote(ns, "'"));
             });
 
             this.dedent().appendLine();
@@ -102,7 +101,7 @@ class GemlCodeGen {
         }
 
         _.forOwn(schema, (schemaInfo, name) => {
-            this.appendLine(KW_SCHEMA, Util.quote(name, "'")).indent();
+            this.appendLine(KW_SCHEMA, quote(name, "'")).indent();
 
             if (schemaInfo.entities) {
                 this.appendLine(KW_ENTITIES).indent();
@@ -173,10 +172,10 @@ class GemlCodeGen {
             this.appendLine(KW_ENTITY, enityName).indent();
 
             if (entity.source) {
-                this.appendLine(KW_CODE, Util.quote(entity.source));
+                this.appendLine(KW_CODE, quote(entity.source));
             }
 
-            this.appendLine(KW_COMMENT, Util.quote(entity.comment || generateDisplayName(enityName)));
+            this.appendLine(KW_COMMENT, quote(entity.comment || generateDisplayName(enityName)));
 
             let hasAutoId = false;
 
@@ -209,7 +208,7 @@ class GemlCodeGen {
                     assert: field.type;                    
 
                     let lineInfo = [];
-                    lineInfo.push(Types.Builtin.has(name) ? Util.quote(name) : name);                    
+                    lineInfo.push(Types.Builtin.has(name) ? quote(name) : name);                    
                     
                     if (field.type !== name) {
                         lineInfo.push(':');
@@ -218,7 +217,7 @@ class GemlCodeGen {
 
                     this._translateType(field, lineInfo);
 
-                    lineInfo.push(KW_COMMENT + ' ' + Util.quote(field.comment || this.generate_field_comment(enityName, name)));
+                    lineInfo.push(KW_COMMENT + ' ' + quote(field.comment || this.generate_field_comment(enityName, name)));
 
                     this.appendLine(...lineInfo);
                 });
@@ -231,11 +230,11 @@ class GemlCodeGen {
 
                 entity.associations.forEach(({ type, srcField, destEntity, connectedBy }) => {
                     if (srcField) {
-                        this.appendLine(type, Util.quote(destEntity, "'"), 'as', Util.quote(srcField, "'"));
+                        this.appendLine(type, quote(destEntity, "'"), 'as', quote(srcField, "'"));
                     } else if (connectedBy) {
-                        this.appendLine(type, Util.quote(destEntity, "'"), 'connectedBy', Util.quote(connectedBy, "'"));
+                        this.appendLine(type, quote(destEntity, "'"), 'connectedBy', quote(connectedBy, "'"));
                     } else {
-                        this.appendLine(type, Util.quote(destEntity, "'"));
+                        this.appendLine(type, quote(destEntity, "'"));
                     }                    
                 });
 

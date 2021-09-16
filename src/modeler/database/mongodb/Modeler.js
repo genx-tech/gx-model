@@ -1,8 +1,7 @@
 "use strict";
 
 const path = require('path');
-const Util = require('rk-utils');
-const { _, fs, quote } = Util;
+const { fs } = require('@genx/sys');
 
 /**
  * Ooolong database modeler for mongodb.

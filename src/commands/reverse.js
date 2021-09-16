@@ -1,5 +1,4 @@
 const path = require('path');
-const { _, eachAsync_ } = require('rk-utils');
 const { throwIfFileNotExist, getSchemaConnectors, getDateNamedDir } = require('../utils/helpers');
 
 /**
@@ -16,7 +15,7 @@ const { throwIfFileNotExist, getSchemaConnectors, getDateNamedDir } = require('.
  * @returns {Promise}
  */
 module.exports = async (app, context) => {
-    app.log('verbose', 'geml reverse');
+    app.log('verbose', `${app.name} reverse`);
 
     let schemaName = app.option('schema');
     let override = app.option('override');

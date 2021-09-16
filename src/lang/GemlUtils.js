@@ -1,6 +1,6 @@
 "use strict";
 
-const { _ } = require('rk-utils');
+const { _ } = require('@genx/july');
 const pluralize = require('pluralize');
 
 class Clonable {

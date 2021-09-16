@@ -1,7 +1,8 @@
 "use strict";
 
 const path = require('path');
-const { _, fs, eachAsync_, pascalCase, quote } = require('rk-utils');
+const { _, eachAsync_ } = require('@genx/july');
+const { fs } = require('@genx/sys');
 
 /**
  * MySQL migration.

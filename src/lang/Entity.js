@@ -3,7 +3,7 @@
 const EventEmitter = require('events');
 const path = require('path');
 
-const { _ } = require('rk-utils');
+const { _ } = require('@genx/july');
 const { generateDisplayName, deepCloneField, deepClone, Clonable, entityNaming } = require('./GemlUtils');
 
 const Field = require('./Field');

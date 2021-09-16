@@ -1,7 +1,6 @@
-"use strict";
-
 const path = require("path");
-const { _, fs, pascalCase, replaceAll, putIntoBucket } = require("rk-utils");
+const { _, naming, text, putIntoBucket } = require("@genx/july");
+const { fs } = require("@genx/sys");
 const swig = require("swig-templates");
 
 const GemlTypes = require("../lang/GemlTypes");
@@ -83,7 +82,7 @@ class DaoModeler {
     }
 
     _generateSchemaModel(schema) {
-        let capitalized = pascalCase(schema.name);
+        let capitalized = naming.pascalCase(schema.name);
 
         let locals = {
             driver: this.connector.driver,
@@ -113,7 +112,7 @@ class DaoModeler {
 
     _generateEntityModel(schema) {
         _.forOwn(schema.entities, (entity, entityInstanceName) => {
-            let capitalized = pascalCase(entityInstanceName);
+            let capitalized = naming.pascalCase(entityInstanceName);
 
             //shared information with model CRUD and customized interfaces
             let sharedContext = {
@@ -187,41 +186,6 @@ class DaoModeler {
                     this._generateFunctionTemplateFile(schema, entry);
                 });
             }
-
-            /*
-            let mixins = [];
-
-            if (!_.isEmpty(entity.info.mixins)) {
-                let mixinsDirPath = path.resolve(this.outputPath, schema.name, 'mixins');
-                fs.ensureDirSync(mixinsDirPath);
-
-                entity.info.mixins.forEach(m => {
-                    let mixinName = pascalCase(m);
-
-                    let mixinFilePath = path.join(mixinsDirPath, mixinName + '.js');
-                    if (!fs.pathExistsSync(mixinFilePath)) {
-                        fs.writeFileSync(mixinFilePath, `const {
-    Errors: { ValidationError, DatabaseError },
-    Processors,
-    Validators
-} = require("@genx/data");
-const { _ } = require("rk-utils");
-
-module.exports = ${capitalized} => class extends ${capitalized} {
-    //todo: add staic methods
-};`);
-                    }
-
-                    let mixinVarName = 'mixin' + mixinName;
-                    importLines.push(JsLang.astToCode(JsLang.astRequire(mixinVarName, './mixins/' + mixinName)));
-                    mixins.push(mixinVarName);
-                });
-            }*/
-
-            //assemble the source code file
-            //JsLang.astPushInBody(ast, astClassMain);
-
-            //JsLang.astPushInBody(ast, entity.fields.map((v, k) => JsLang.astAssign(capitalized + '.F_' + _.snakeCase(k).toUpperCase(), k)));
 
             let locals = {
                 imports: importLines.join("\n"),
@@ -846,7 +810,7 @@ module.exports = ${capitalized} => class extends ${capitalized} {
                     false,
                     true,
                     true,
-                    replaceAll(_.kebabCase(name), "-", " ")
+                    text.replaceAll(_.kebabCase(name), "-", " ")
                 )
             );
         });

@@ -1,6 +1,6 @@
 "use strict";
 
-const { _ } = require('rk-utils');
+const { _ } = require('@genx/july');
 const { generateDisplayName, deepCloneField, Clonable, schemaNaming } = require('./GemlUtils');
 
 /**
@@ -32,7 +32,7 @@ class Schema extends Clonable {
      * @param {object} gemlModule
      * @param {object} info
      */
-    constructor(linker, name, gemlModule, info, deploymentSettings) {
+    constructor(linker, name, gemlModule, info) {
         super();
 
         /**
@@ -58,12 +58,6 @@ class Schema extends Clonable {
          * @member {object}
          */
         this.info = info;        
-
-        /**
-         * Deployment settings
-         * @member {object}
-         */
-        this.deploymentSettings = deploymentSettings;
     }
 
     /**
@@ -215,7 +209,7 @@ class Schema extends Clonable {
     clone() {
         super.clone();
         
-        let schema = new Schema(this.linker, this.name, this.gemlModule, this.info, this.deploymentSettings);
+        let schema = new Schema(this.linker, this.name, this.gemlModule, this.info);
         
         deepCloneField(this, schema, 'displayName');
         deepCloneField(this, schema, 'comment');        

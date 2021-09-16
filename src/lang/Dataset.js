@@ -1,6 +1,6 @@
 "use strict";
 
-const { _ } = require('rk-utils');
+const { _ } = require('@genx/july');
 const { deepCloneField, Clonable, isDotSeparateName } = require('./GemlUtils');
 
 /**

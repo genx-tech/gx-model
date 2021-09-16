@@ -1,5 +1,6 @@
 const path = require('path');
-const { _, fs, eachAsync_ } = require('rk-utils');
+const { _, eachAsync_ } = require('@genx/july');
+const { fs } = require('@genx/sys');
 
 exports.throwIfFileNotExist = (name, filePath) => {
     if (!fs.existsSync(filePath)) {

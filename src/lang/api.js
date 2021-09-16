@@ -2,8 +2,8 @@
 
 const path = require('path');
 
-const Util = require('rk-utils');
-const { _, fs, eachAsync_ } = Util;
+const { _, eachAsync_ } = require('@genx/july');
+const { fs } = require('@genx/sys');
 
 const Linker = require('./Linker');
 const { Connector, Validators } = require('@genx/data');

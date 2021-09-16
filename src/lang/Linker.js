@@ -1,7 +1,8 @@
 "use strict";
 
 const path = require('path');
-const { _, fs, glob } = require('rk-utils');
+const { _ } = require('@genx/july');
+const { fs, glob } = require('@genx/sys');
 const { Types } = require('@genx/data');
 
 const Oolong = require('./grammar/geml');
@@ -150,11 +151,8 @@ class Linker {
             throw new Error('No schema defined in entry file.');
         }
 
-        _.forOwn(entryModule.schema, (schemaInfo, schemaName) => {
-            let deploymentSettings = this.schemaDeployment[schemaName];
-            //assert: deploymentSettings, `"deploymentSettings" of schema [${schemaName}] not found.`;
-            
-            let schema = new Schema(this, schemaName, entryModule, schemaInfo, deploymentSettings);
+        _.forOwn(entryModule.schema, (schemaInfo, schemaName) => {            
+            let schema = new Schema(this, schemaName, entryModule, schemaInfo);
             schema.link();
 
             if (this.schemas.hasOwnProperty(schemaName)) {

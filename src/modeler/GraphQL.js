@@ -1,7 +1,8 @@
 "use strict";
 
 const path = require('path');
-const { _, fs, pascalCase, replaceAll, putIntoBucket }  = require('rk-utils');
+const { _, naming }  = require('@genx/july');
+const { fs } = require('@genx/sys');
 
 const { toGraphQLType } = require('./graphql/lang');
 
@@ -69,7 +70,7 @@ class GraphQLModeler {
         const typeDefs = [];
 
         _.forOwn(schema.entities, (entity, entityInstanceName) => {            
-            let capitalized = pascalCase(entityInstanceName);                  
+            let capitalized = naming.pascalCase(entityInstanceName);                  
 
             let fields = _.map(entity.fields, (field, fieldName) => {  
                 if (fieldName === entity.key) {
@@ -104,7 +105,7 @@ class GraphQLModeler {
 
             if (_.isEmpty(!entity.associations)) {
                 _.each(entity.associations, (assoc, anchor) => {
-                    const typeName = pascalCase(assoc.entity);
+                    const typeName = naming.pascalCase(assoc.entity);
 
                     if (assoc.list) {
                         fields.push(`${anchor}_: [${typeName}!]`);

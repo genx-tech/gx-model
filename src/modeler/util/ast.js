@@ -5,7 +5,7 @@
  * @ignore
  */
 
-const { _ } = require('rk-utils');
+const { _ } = require('@genx/july');
 const escodegen = require('escodegen');
 const esprima = require('esprima');
 

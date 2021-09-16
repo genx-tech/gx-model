@@ -1,4 +1,4 @@
-const { _, eachAsync_ } = require('rk-utils');
+const { _, eachAsync_ } = require('@genx/july');
 const { throwIfFileNotExist, getSchemaConnectors, importDataFiles } = require('../utils/helpers');
 
 /**
@@ -15,7 +15,7 @@ const { throwIfFileNotExist, getSchemaConnectors, importDataFiles } = require('.
  * @returns {Promise}
  */
 module.exports = async (app, context) => {
-    app.log('verbose', 'geml migrate');
+    app.log('verbose', `${app.name} migrate`);
 
     throwIfFileNotExist("modelPath", context.modelPath);
     throwIfFileNotExist("scriptPath", context.scriptPath);

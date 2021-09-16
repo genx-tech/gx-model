@@ -1,6 +1,6 @@
 "use strict";
 
-const { _, quote } = require("rk-utils");
+const { _, quote } = require("@genx/july");
 const { extractDotSeparateName } = require("../../lang/GemlUtils");
 const JsLang = require("../util/ast");
 
