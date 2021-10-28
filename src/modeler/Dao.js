@@ -1,5 +1,5 @@
 const path = require("path");
-const { _, naming, text, putIntoBucket } = require("@genx/july");
+const { _, naming, text, pushIntoBucket } = require("@genx/july");
 const { fs } = require("@genx/sys");
 const swig = require("swig-templates");
 
@@ -7,6 +7,7 @@ const GemlTypes = require("../lang/GemlTypes");
 const JsLang = require("./util/ast.js");
 const GemlToAst = require("./util/gemlToAst.js");
 const Snippets = require("./dao/snippets");
+const { Types } = require("@genx/data");
 
 const ChainableType = [
     GemlToAst.AST_BLK_VALIDATOR_CALL,
@@ -47,7 +48,7 @@ const OOL_MODIFIER_RETURN = {
 };
 
 /**
- * Oolong database access object (DAO) modeler.
+ * Geml database access object (DAO) modeler.
  * @class
  */
 class DaoModeler {
@@ -71,9 +72,9 @@ class DaoModeler {
 
         this._generateSchemaModel(schema);
         this._generateEntityModel(schema);
-        //this._generateEntityEnumTypes(schema);
+        this._generateEnumTypes(schema);
         this._generateEntityInputSchema(schema);
-        //this._generateEnumTypes(schema);
+        //
         //this._generateViewModel();
 
         if (this.manifestPath) {
@@ -102,11 +103,24 @@ class DaoModeler {
     }
 
     _generateEnumTypes(schema) {
-        _.forOwn(schema.entities, (entity, entityInstanceName) => {
-            _.forOwn(entity.fields, (field, fieldName) => {
-                if (field.type === "enum") {
-                }
-            });
+        //build types defined outside of entity
+        _.forOwn(schema.types, (location, type) => {
+            const typeInfo = schema.linker.getTypeInfo(type, location);
+            if (typeInfo.type === Types.ENUM.name) {
+                const capitalized = naming.pascalCase(type);
+
+                const content = `module.exports = {
+    ${typeInfo.values
+        .map((val) => `${naming.snakeCase(val).toUpperCase()}: '${val}'`)
+        .join(",\n    ")}                    
+};`;
+
+                const modelFilePath = path.resolve(this.outputPath, schema.name, "types", capitalized + ".js");
+                fs.ensureFileSync(modelFilePath);
+                fs.writeFileSync(modelFilePath, content);
+
+                this.linker.log("info", "Generated enum type definition: " + modelFilePath);
+            }
         });
     }
 
@@ -306,7 +320,7 @@ class DaoModeler {
         });
     }
 
-    _generateEntityManifest(schema) {        
+    _generateEntityManifest(schema) {
         /*
         let manifest = {};
 
@@ -358,7 +372,7 @@ class DaoModeler {
             }
         });
         */
-        
+
         /*
         let outputFilePath = path.resolve(this.manifestPath, schema.name + '.manifest.json');
         fs.ensureFileSync(outputFilePath);
@@ -371,6 +385,7 @@ class DaoModeler {
 
         //generate validator config
         _.forOwn(schema.entities, (entity, entityInstanceName) => {
+            /*
             let validationSchema = {};
 
             _.forOwn(entity.fields, (field, fieldName) => {
@@ -390,9 +405,11 @@ class DaoModeler {
 
                 validationSchema[fieldName] = fieldSchema;
             });
+            */
 
             diagram[entityInstanceName] = entity.toJSON();
 
+            /*
             let entityOutputFilePath = path.resolve(
                 this.manifestPath,
                 schema.name,
@@ -403,18 +420,15 @@ class DaoModeler {
             fs.writeFileSync(entityOutputFilePath, JSON.stringify(validationSchema, null, 4));
 
             this.linker.log("info", "Generated entity manifest: " + entityOutputFilePath);
+            */
         });
 
-        let diagramOutputFilePath = path.resolve(
-            this.manifestPath,
-            schema.name,
-            "diagram.json"
-        );
+        let diagramOutputFilePath = path.resolve(this.manifestPath, schema.name, "diagram.json");
         fs.ensureFileSync(diagramOutputFilePath);
         fs.writeFileSync(diagramOutputFilePath, JSON.stringify(diagram, null, 4));
-    
+
         this.linker.log("info", "Generated schema manifest: " + diagramOutputFilePath);
-    }    
+    }
 
     /*
     _generateViewModel(schema, dbService) {        
@@ -536,7 +550,7 @@ class DaoModeler {
             GemlToAst.dependsOn(compileContext, topoId, allFinished);
 
             if (field.writeOnce || field.freezeAfterNonDefault) {
-                putIntoBucket(fieldReferences, fieldName, { reference: fieldName, writeProtect: true });
+                pushIntoBucket(fieldReferences, fieldName, { reference: fieldName, writeProtect: true });
             }
         });
 

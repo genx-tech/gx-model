@@ -4,13 +4,19 @@ const { _ } = require('@genx/july');
 const { generateDisplayName, deepCloneField, Clonable, schemaNaming } = require('./GemlUtils');
 
 /**
- * Oolong schema class.
- * @class OolongSchema
+ * Geml schema class.
+ * @class Schema
  */
 class Schema extends Clonable {
     /**
+     * Types in this schema, map of <typeName, typeInfo>
+     * @member {object.<String, Object>}
+     */
+     types = {};
+
+    /**
      * Entities in this schema, map of <entityName, entityObject>
-     * @member {object.<string, OolongEntity>}
+     * @member {object.<string, Entity>}
      */
     entities = {};
 
@@ -27,7 +33,7 @@ class Schema extends Clonable {
     views = {};    
 
     /**     
-     * @param {OolongLinker} linker
+     * @param {Linker} linker
      * @param {string} name
      * @param {object} gemlModule
      * @param {object} info
@@ -37,7 +43,7 @@ class Schema extends Clonable {
 
         /**
          * Linker to process this schema
-         * @member {OolongLinker}
+         * @member {Linker}
          */
         this.linker = linker;
 
@@ -67,7 +73,7 @@ class Schema extends Clonable {
     link() {
         pre: !this.linked;
 
-        this.linker.log('debug', 'Linking schema [' + this.name + '] ...');
+        this.linker.log('verbose', 'Linking schema [' + this.name + '] ...');
 
         if (this.info.comment) {
             /**
@@ -86,21 +92,45 @@ class Schema extends Clonable {
 
         this.info.entities.forEach(entityEntry => {            
             let entity = this.linker.loadEntity(this.gemlModule, entityEntry.entity);
-            assert: entity.linked;
+            if (!entity.linked) {
+                throw new Error(`Entity [${entity.name}] not linked after loading.`);
+            }
 
             this.addEntity(entity);
         });
 
         if (!_.isEmpty(this.info.views)) {
             this.info.views.forEach(viewName => {
-                this.linker.loadView(this.gemlModule, viewName);
-                assert: view.linked;
+                let view = this.linker.loadView(this.gemlModule, viewName);
+                if (!view.linked) {
+                    throw new Error(`View [${entity.name}] not linked after loading.`);
+                }
 
                 this.addView(view);
             });
         }
 
         this.linked = true;
+
+        return this;
+    }
+
+    /**
+     * Add an type into the schema
+     * @param {*} type 
+     * @param {*} typeLocation 
+     * @returns 
+     */
+    addType(type, typeLocation) {
+        const existing = this.types[type];
+        if (existing == null) {
+            this.types[type] = typeLocation;
+        } else {
+            if (existing !== typeLocation) {
+                //should never happen
+                throw new Error('Different used types appear in the same entity!');
+            }
+        }
 
         return this;
     }
@@ -116,13 +146,17 @@ class Schema extends Clonable {
 
     /**
      * Add an entity into the schema
-     * @param {OolongEntity} entity
-     * @returns {OolongSchema}
+     * @param {Entity} entity
+     * @returns {Schema}
      */
     addEntity(entity) {
-        pre: !this.hasEntity(entity.name), `Entity name [${entity.name}] conflicts in schema [${this.name}].`;
+        if (this.hasEntity(entity.name)) {
+            throw new Error(`Entity name [${entity.name}] conflicts in schema [${this.name}].`);
+        }
 
         this.entities[entity.name] = entity;
+
+        _.each(entity.types, (info, type) => this.addType(type, info));
 
         return this;
     }
@@ -138,8 +172,8 @@ class Schema extends Clonable {
 
     /**
      * Add a view into the schema
-     * @param {OolongView} view 
-     * @returns {OolongSchema}
+     * @param {View} view 
+     * @returns {Schema}
      */
     addView(view) {
         pre: !this.hasView(view.name), `View name [${view.name}] conflicts in schema [${this.name}].`;
@@ -168,7 +202,7 @@ class Schema extends Clonable {
      * Get the referenced entity, add it into schema if not in schema
      * @param {object} refererModule
      * @param {string} entityName
-     * @returns {OolongEntity}
+     * @returns {Entity}
      */
     getReferencedEntity(refererModule, entityName) {
         let entity = this.linker.loadEntity(refererModule, entityName);
@@ -213,7 +247,8 @@ class Schema extends Clonable {
         
         deepCloneField(this, schema, 'displayName');
         deepCloneField(this, schema, 'comment');        
-        deepCloneField(this, schema, 'entities');        
+        deepCloneField(this, schema, 'entities');   
+        deepCloneField(this, schema, 'types');        
         deepCloneField(this, schema, 'datasets');
         deepCloneField(this, schema, 'views');        
 
@@ -231,7 +266,8 @@ class Schema extends Clonable {
             name: this.name,
             displayName: this.displayName,
             comment: this.comment,        
-            entities: _.mapValues(this.entities, entity => entity.toJSON()),            
+            entities: _.mapValues(this.entities, entity => entity.toJSON()),   
+            types: this.types,         
             datasets: _.mapValues(this.datasets, dataset => dataset.toJSON()), 
             views: _.mapValues(this.views, view => view.toJSON()) 
         };

@@ -4,27 +4,32 @@ const EventEmitter = require('events');
 const path = require('path');
 
 const { _ } = require('@genx/july');
-const { generateDisplayName, deepCloneField, deepClone, Clonable, entityNaming } = require('./GemlUtils');
+const { generateDisplayName, deepCloneField, Clonable, entityNaming } = require('./GemlUtils');
 
 const Field = require('./Field');
 const { Types: { FunctionalQualifiers } } = require('@genx/data');
 
 /**
  * Entity event listener
- * @callback OolongEntity.eventListener
+ * @callback Entity.eventListener
  * returns {*}
  */
 
 /**
- * Oolong entity
- * @class OolongEntity
+ * Geml entity
+ * @class Entity
  */
 class Entity extends Clonable {
     /**
      * Fields of the entity, map of <fieldName, fieldObject>
-     * @member {object.<string, OolongField>}
+     * @member {object.<string, Field>}
      */
     fields = {};
+
+    /**
+     * Referenced types
+     */
+    types = {};
 
     /**     
      * @param {Linker} linker
@@ -40,7 +45,7 @@ class Entity extends Clonable {
 
         /**
          * Linker to process this entity
-         * @member {OolongLinker}
+         * @member {Linker}
          */
         this.linker = linker;
 
@@ -66,7 +71,7 @@ class Entity extends Clonable {
     /**
      * Listen on an event
      * @param {string} eventName
-     * @param {OolongEntity.eventListener} listener
+     * @param {Entity.eventListener} listener
      * @returns {EventEmitter}
      */
     once(eventName, listener) {
@@ -119,7 +124,7 @@ class Entity extends Clonable {
         this.displayName = generateDisplayName(this.name);
 
         /**
-         * @fires OolongEntity#featuresMixingIn
+         * @fires Entity#featuresMixingIn
          */
         this._events.emit('featuresMixingIn');
 
@@ -140,7 +145,7 @@ class Entity extends Clonable {
                     fn = require(path.resolve(__dirname, `./entityFeatures/${featureName}.js`));
                 } catch (err) {
                     if (err.code === 'MODULE_NOT_FOUND') {
-                        throw new Error(`Unknow feature "${featureName}" reference in entity "${this.name}"`);
+                        throw new Error(`Unknown feature "${featureName}" reference in entity "${this.name}"`);
                     }
                 }
                 fn(this, this.linker.translateOolValue(this.gemlModule, feature.args));
@@ -148,7 +153,7 @@ class Entity extends Clonable {
         }
 
         /**
-         * @fires OolongEntity#beforeAddingFields
+         * @fires Entity#beforeAddingFields
          */
         this._events.emit('beforeAddingFields');
 
@@ -158,7 +163,7 @@ class Entity extends Clonable {
         }
 
         /**
-         * @fires OolongEntity#afterAddingFields
+         * @fires Entity#afterAddingFields
          */
         this._events.emit('afterAddingFields');   
 
@@ -175,7 +180,7 @@ class Entity extends Clonable {
         }
 
         /**
-         * @fires OolongEntity#beforeAddingInterfaces
+         * @fires Entity#beforeAddingInterfaces
          */
         this._events.emit('beforeAddingInterfaces');        
         
@@ -184,21 +189,38 @@ class Entity extends Clonable {
 
             _.forOwn(this.interfaces, (intf) => {
                 if (!_.isEmpty(intf.accept)) {
-                    intf.accept = _.map(intf.accept, param => {
-                        return this.linker.trackBackType(this.gemlModule, param);
+                    intf.accept = _.map(intf.accept, param => {                        
+                        const [ typeInfo, baseInfo ] = this.linker.trackBackType(this.gemlModule, param);
+                        if (baseInfo != null) {
+                            this.addUsedType(param.type, baseInfo.gemlModule.id);
+                        }                        
+                        return typeInfo;
+
                     });
                 }
             });
         }
 
         /**
-         * @fires OolongEntity#afterAddingInterfaces
+         * @fires Entity#afterAddingInterfaces
          */
         this._events.emit('afterAddingInterfaces');        
 
         this.linked = true;
 
         return this;
+    }
+
+    addUsedType(type, typeLocation) {
+        const existing = this.types[type];
+        if (existing == null) {
+            this.types[type] = typeLocation;
+        } else {
+            if (existing !== typeLocation) {
+                //should never happen
+                throw new Error('Different used types appear in the same entity!');
+            }
+        }
     }
 
     /**
@@ -274,7 +296,7 @@ class Entity extends Clonable {
     /**
      * Get a field object by field name or entity meta accesor (e.g. $key, $feature).
      * @param fieldId
-     * @returns {OolongField}
+     * @returns {Field}
      */
     getEntityAttribute(fieldId) {
         if (fieldId[0] === '$') {
@@ -347,8 +369,8 @@ class Entity extends Clonable {
     /**
      * Add a association field.
      * @param {string} name
-     * @param {OolongEntity} destEntity
-     * @param {OolongField} destField
+     * @param {Entity} destEntity
+     * @param {Field} destField
      */
     addAssocField(name, destEntity, destField, extraProps) {
         let localField = this.fields[name];
@@ -383,7 +405,10 @@ class Entity extends Clonable {
             field = rawInfo.clone();
             field.name = name; // todo: displayName
         } else {            
-            let fullRawInfo = this.linker.trackBackType(this.gemlModule, rawInfo);            
+            let [ fullRawInfo, baseInfo ] = this.linker.trackBackType(this.gemlModule, rawInfo);      
+            if (baseInfo != null) {      
+                this.addUsedType(rawInfo.type, baseInfo.gemlModule.id);
+            }
 
             field = new Field(name, fullRawInfo);
             field.link();
@@ -491,7 +516,8 @@ class Entity extends Clonable {
         deepCloneField(this, entity, 'displayName');
         deepCloneField(this, entity, 'comment');
         deepCloneField(this, entity, 'features');
-        deepCloneField(this, entity, 'fields');    
+        deepCloneField(this, entity, 'fields');
+        deepCloneField(this, entity, 'types');    
         deepCloneField(this, entity, 'associations');        
         deepCloneField(this, entity, 'key');        
         deepCloneField(this, entity, 'indexes');    
@@ -515,6 +541,7 @@ class Entity extends Clonable {
             comment: this.comment,            
             ...(this.baseClasses ? { baseClasses: this.baseClasses } : {}),
             features: this.features,            
+            types: this.types,  
             fields: _.mapValues(this.fields, field => field.toJSON()),
             associations: this.associations,
             key: this.key,

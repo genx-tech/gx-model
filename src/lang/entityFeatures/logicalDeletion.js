@@ -11,7 +11,7 @@ const FEATURE_NAME = 'logicalDeletion';
 
 /**
  * Initialize the feature
- * @param {OolongEntity} entity - Entity to apply this feature
+ * @param {Entity} entity - Entity to apply this feature
  * @param {object} options - Field options, can be a string as a new status field or an object reference to a certain status of an existing field
  */
 function feature(entity, args = []) {

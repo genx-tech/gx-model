@@ -11,7 +11,7 @@ const { TopoSort } = require('@genx/algorithm');
 const JsLang = require('./ast.js');
 const GemlTypes = require('../../lang/GemlTypes');
 const { isDotSeparateName, extractDotSeparateName, extractReferenceBaseName } = require('../../lang/GemlUtils');
-const {  Types, Validators: OolongValidators, Processors: OolongProcessors, Activators: OolongActivators } = require('@genx/data');
+const { Types, Validators, Processors, Activators } = require('@genx/data');
 
 const defaultError = 'InvalidRequest';
 
@@ -45,9 +45,9 @@ const OOL_MODIFIER_PATH = {
 };
 
 const OOL_MODIFIER_BUILTIN = {
-    [GemlTypes.Modifier.VALIDATOR]: OolongValidators,
-    [GemlTypes.Modifier.PROCESSOR]: OolongProcessors,
-    [GemlTypes.Modifier.ACTIVATOR]: OolongActivators 
+    [GemlTypes.Modifier.VALIDATOR]: Validators,
+    [GemlTypes.Modifier.PROCESSOR]: Processors,
+    [GemlTypes.Modifier.ACTIVATOR]: Activators 
 };
 
 const OPERATOR_TOKEN = {

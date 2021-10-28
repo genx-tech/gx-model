@@ -25,6 +25,10 @@ module.exports = async (app, context) => {
     let schemaFiles = Linker.getGemlFiles(context.gemlPath, context.useJsonSource);
     schemaFiles.forEach(schemaFile => linker.link(schemaFile));  
 
+    if (_.isEmpty(context.schemas)) {
+        throw new Error(`Missing schema data source setting. Please run "${app.name} connect" to configure data source first.`);
+    }
+
     let schemaToConnector = getSchemaConnectors(app, context.schemas);
 
     return eachAsync_(context.schemas, async (deploymentSetting, schemaName) => {      

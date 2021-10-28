@@ -20,7 +20,7 @@ const UNSUPPORTED_DEFAULT_VALUE = new Set(["BLOB", "TEXT", "JSON", "GEOMETRY"]);
 class MySQLModeler {
     /**
      * @param {object} context
-     * @property {OolongLinker} context.linker - Oolong DSL linker
+     * @property {Linker} context.linker - Geml DSL linker
      * @property {string} context.scriptPath - Generated script path
      * @param {object} dbOptions
      * @property {object} dbOptions.db

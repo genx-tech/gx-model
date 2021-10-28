@@ -16,12 +16,26 @@ class AppInitiator {
         let gemlConfig;
 
         if (command !== "init") {
-            let configFile = this.app.commandLine.option("config") || "geml.json";
-            let configFullPath = path.resolve(this.cwd, configFile);
+            let configFile = this.app.commandLine.option("config");
+            let configFullPath;
 
-            if (!fs.existsSync(configFullPath)) {
-                throw new Error(`Config "${configFile}" not found!`);
+            if (configFile) {
+                configFullPath = path.resolve(this.cwd, configFile);
+
+                if (!fs.existsSync(configFullPath)) {
+                    throw new Error(`Config "${configFile}" not found!`);
+                }
+            } else {
+                configFullPath = path.resolve(this.cwd, 'conf/app.default.json');
+
+                if (!fs.existsSync(configFullPath)) {
+                    configFullPath = path.resolve(this.cwd, 'conf/server.default.json');
+                    if (!fs.existsSync(configFullPath)) {
+                        throw new Error('Either "conf/app.default.json" or "conf/server.default.json" not found.');
+                    }
+                }
             }
+            
 
             let extName = path.extname(configFullPath);
             if (extName !== ".json") {
@@ -37,7 +51,7 @@ class AppInitiator {
                 configName = configName.substr(0, configName.length - 8);
             }
 
-            this.container = new ServiceContainer("GemlCore", {
+            this.container = new ServiceContainer(this.app.name, {
                 workingPath: this.cwd,
                 configPath,
                 configName,
@@ -93,7 +107,7 @@ class AppInitiator {
             scriptPath = this.container.toAbsolutePath(scriptPath);
             manifestPath = this.container.toAbsolutePath(manifestPath);
 
-            gemlConfig = {
+            gemlConfig = {                
                 ...config,
                 gemlPath,
                 modelPath,
@@ -101,6 +115,7 @@ class AppInitiator {
                 manifestPath,
                 useJsonSource,
                 saveIntermediate,
+                configFullPath
             };
 
             if (!_.isEmpty(gemlConfig.schemas)) {
@@ -116,7 +131,8 @@ class AppInitiator {
         try {
             await cmdMethod_(this.container, gemlConfig);
         } catch (error) {
-            this.app.log('error', error.message);
+            throw error;
+            //this.app.log('error', error.message);
             process.exit(1);
         }
     }

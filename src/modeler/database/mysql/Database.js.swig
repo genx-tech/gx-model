@@ -33,7 +33,7 @@ class {{ className }} extends DbModel {
 
         try {
             connection = await this.connector.beginTransaction_();
-            let ret = await transaction({...connOptions, connection});
+            const ret = await transaction({...connOptions, connection});
             await this.connector.commit_(connection);
             return ret;
         } catch(error) {

@@ -11,7 +11,7 @@ class MongoDbModeler {
     /**     
      * @param {object} context
      * @property {Logger} context.logger - Logger object     
-     * @property {OolongLinker} context.linker - Oolong DSL linker
+     * @property {Linker} context.linker - Geml DSL linker
      * @property {string} context.scriptOutputPath - Generated script path
      * @param {object} dbOptions
      * @property {object} dbOptions.db

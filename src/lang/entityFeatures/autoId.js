@@ -11,7 +11,7 @@ const FEATURE_NAME = 'autoId';
 
 /**
  * Initialize the feature
- * @param {OolongEntity} entity - Entity to apply this feature
+ * @param {Entity} entity - Entity to apply this feature
  * @param {array} options - Auto id field options
  * @property {string} [options.name='id'] - Field name
  * @property {string} [options.type='integer'] - Field type

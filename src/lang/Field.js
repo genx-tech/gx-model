@@ -6,7 +6,7 @@ const { Types } = require('@genx/data');
 const RESERVED_KEYS = new Set(['name', 'type', 'modifiers', 'subClass', 'values']);
 
 /**
- * Oolong entity field class.
+ * Geml entity field class.
  * @class
  */
 class Field extends Clonable {

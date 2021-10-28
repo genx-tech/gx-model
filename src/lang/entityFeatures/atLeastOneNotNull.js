@@ -9,7 +9,7 @@ const FEATURE_NAME = 'atLeastOneNotNull';
 
 /**
  * Initialize the feature
- * @param {OolongEntity} entity - Entity to apply this feature
+ * @param {Entity} entity - Entity to apply this feature
  * @param {array} fields - List of field names
  */
 function feature(entity, [ fields ]) {

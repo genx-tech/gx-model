@@ -17,7 +17,7 @@ function timestampFieldNaming(field, state) {
 
 /**
  * Initialize the feature
- * @param {OolongEntity} entity - Entity to apply this feature
+ * @param {Entity} entity - Entity to apply this feature
  * @param {object} options - Tracking field options
  * @property {string} options.field - State field to track
  * @property {bool} [options.reversible=false] - Specify whether the field can be set to a previous state again

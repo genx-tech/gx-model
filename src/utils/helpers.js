@@ -11,7 +11,7 @@ exports.throwIfFileNotExist = (name, filePath) => {
 exports.getSchemaConnectors = (app, schemas) => _.mapValues(schemas, (schemaConfig, name) => {
     let connector = app.getService(schemaConfig.dataSource);
     if (!connector) {
-        throw new Error(`Connector service not found for data source [${schemaConfig.dataSource}] of schmea "${name}".`);
+        throw new Error(`Connector service not found for data source [${schemaConfig.dataSource}] of schema "${name}".`);
     } 
     return connector;
 });

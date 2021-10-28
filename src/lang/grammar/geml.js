@@ -967,7 +967,7 @@ parse: function parse(input) {
 
         doDedentExit() {            
             let exitRound = DEDENT_STOPPER.get(state.lastState);
-            console.log(state.lastState, exitRound);
+            
             if (exitRound > 0) {
 
                 for (let i = 0; i < exitRound; i++) {                    

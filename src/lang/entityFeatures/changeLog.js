@@ -11,7 +11,7 @@ const FEATURE_NAME = 'changeLog';
 
 /**
  * Initialize the feature
- * @param {OolongEntity} entity - Entity to apply this feature
+ * @param {Entity} entity - Entity to apply this feature
  */
 function feature(entity, args = []) {
     let [ options ] = args;

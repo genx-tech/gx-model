@@ -2,6 +2,8 @@
 
 exports.Commands = {    
     'init': 'Initialize geml configuration.',
+    'clean': 'Remove auto-generated files.',
+    'connect': 'Set data source connection.',
     'build': 'Generate database scripts and entity models.',
     'graphql': 'Generate graphql schemas.',
     'migrate': 'Create database structure.',            
@@ -19,10 +21,6 @@ exports.getCommandOptions = (cli, command) => {
 
     switch (command) {
         case 'init':
-            cmdOptions['module'] = {
-                desc: 'App module name, set this to add geml to an app module instead of the server', 
-                alias: [ 'm' ]
-            };
             cmdOptions['schema'] = {
                 desc: 'Default schema to initialize',
                 promptMessage: 'Schema name?',
@@ -32,6 +30,39 @@ exports.getCommandOptions = (cli, command) => {
                 silentModeDefault: 'sample'
             };
             break;
+
+        case 'connect':
+            cmdOptions['schema'] = {
+                desc: 'Schema to set up connection',
+                promptMessage: 'Schema name?',                
+                inquire: true,
+                required: true
+            };
+            cmdOptions['dbms'] = {
+                alias: [ 'data-source-type' ],
+                desc: 'Data source type to connect',
+                promptMessage: 'Data source type?',                
+                promptType: "list",
+                inquire: true,                
+                required: true,
+                choicesProvider: [ 'mysql', 'mongodb', 'rabbitmq'  ]
+            };
+            cmdOptions['ds'] = {
+                alias: [ 'data-source-name' ],
+                desc: 'Data source name',
+                promptMessage: 'Data source name?',                
+                promptDefault: cli => cli.argv['schema'],                
+                inquire: true,                
+                required: true
+            };
+            cmdOptions['conn'] = {
+                alias: [ 'connection-string' ],
+                desc: 'Data source connection string (like URL), e.g. mysql://localhost',
+                promptMessage: 'Connection string?',                     
+                inquire: true,                
+                required: true
+            };
+            break;    
 
         case 'build':
             break;

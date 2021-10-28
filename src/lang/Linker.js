@@ -5,8 +5,8 @@ const { _ } = require('@genx/july');
 const { fs, glob } = require('@genx/sys');
 const { Types } = require('@genx/data');
 
-const Oolong = require('./grammar/geml');
-const OolongParser = Oolong.parser;
+const Geml = require('./grammar/geml');
+const GemlParser = Geml.parser;
 const GemlTypes = require('./GemlTypes');
 const Entity = require('./Entity');
 const Schema = require('./Schema');
@@ -72,12 +72,6 @@ class Linker {
          * @member {bool}
          */
         this.saveIntermediate = context.saveIntermediate;
-
-        /**
-         * Schema deployment settings
-         * @member {object}
-         */
-        this.schemaDeployment = context.schemas;
 
         /**
          * Linked schemas
@@ -164,7 +158,7 @@ class Linker {
                 let jsFile = path.resolve(this.sourcePath, entryFileName + '-linked.json');
                 fs.writeFileSync(jsFile, JSON.stringify(schema.toJSON(), null, 4));
             }
-        });        
+        });     
     }
 
     /**
@@ -190,15 +184,20 @@ class Linker {
         return (this._gemlModules[id] = gemlModule);
     }
 
+    getTypeInfo(name, location) {
+        const gemlModule = this.getModuleById(location);
+        return gemlModule.type[name];
+    }
+
     /**
      * Track back the type derived chain.
      * @param {object} gemlModule
      * @param {object} info
-     * @returns {object}
+     * @returns {Array} [ derivedInfo, baseInfo ]
      */
     trackBackType(gemlModule, info) {
         if (Types.Builtin.has(info.type)) {
-            return info;
+            return [ info ];
         }
 
         let baseInfo = this.loadElement(gemlModule, GemlTypes.Element.TYPE, info.type, true);
@@ -207,7 +206,7 @@ class Linker {
             //the base type is not a builtin type
             let ownerModule = baseInfo.gemlModule;  
 
-            let rootTypeInfo = this.trackBackType(ownerModule, baseInfo);
+            let [ rootTypeInfo ] = this.trackBackType(ownerModule, baseInfo);
             ownerModule.type[baseInfo.type] = rootTypeInfo;
             baseInfo = rootTypeInfo;
         }
@@ -221,7 +220,7 @@ class Linker {
             derivedInfo.subClass = [];
         }
         derivedInfo.subClass.push(info.type);
-        return derivedInfo;
+        return [ derivedInfo, baseInfo ];
     }    
     
     /**
@@ -396,7 +395,7 @@ class Linker {
             //this.log('debug', 'Compiling ' + oolFile + ' ...');        
             
             try {
-                ool = OolongParser.parse(fs.readFileSync(oolFile, 'utf8'));
+                ool = GemlParser.parse(fs.readFileSync(oolFile, 'utf8'));
             } catch (error) {
                 throw error;
                 //throw new Error(`Failed to compile "${ oolFile }".\n${ error.message || error }`)

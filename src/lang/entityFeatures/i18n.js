@@ -10,7 +10,7 @@ const FEATURE_NAME = 'i18n';
 
 /**
  * Initialize the feature
- * @param {OolongEntity} entity - Entity to apply this feature
+ * @param {Entity} entity - Entity to apply this feature
  * @param {object} options - Tracking field options
  * @property {string} options.field - State field to apply this feature
  * @property {object} [options.locales] - Specify the locale mapping rule

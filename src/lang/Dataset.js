@@ -4,12 +4,12 @@ const { _ } = require('@genx/july');
 const { deepCloneField, Clonable, isDotSeparateName } = require('./GemlUtils');
 
 /**
- * Oolong dataset class.
- * @class OolongDataset
+ * Geml dataset class.
+ * @class Dataset
  */
 class Dataset extends Clonable {
     /**     
-     * @param {OolongLinker} linker
+     * @param {Linker} linker
      * @param {string} name - Dataset name
      * @param {object} gemlModule - Source ool module
      * @param {object} info - Dataset info
@@ -17,7 +17,7 @@ class Dataset extends Clonable {
     constructor(linker, name, gemlModule, info) {
         /**
          * Linker to process this document
-         * @member {OolongLinker}
+         * @member {Linker}
          */
         this.linker = linker;
 
@@ -42,7 +42,7 @@ class Dataset extends Clonable {
 
     /**
      * Start linking this dataset
-     * @returns {OolongDataset}
+     * @returns {Dataset}
      */
     link() {
         pre: !this.linked;
@@ -159,7 +159,7 @@ class Dataset extends Clonable {
 
     /**
      * Clone the document
-     * @returns {OolongDataset}
+     * @returns {Dataset}
      */
     clone() {
         super.clone();

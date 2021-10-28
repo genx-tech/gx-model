@@ -6,15 +6,15 @@ const { generateDisplayName, deepCloneField, Clonable } = require('./GemlUtils')
 const Dataset = require('./Dataset');
 
 /**
- * Oolong view class.
- * @class OolongView
+ * Geml view class.
+ * @class View
  */
 class View extends Clonable {
 
     isList = false;
 
     /**          
-     * @param {OolongLinker} linker
+     * @param {Linker} linker
      * @param {string} name - View name
      * @param {object} gemlModule - Source ool module
      * @param {object} info - View info
@@ -22,7 +22,7 @@ class View extends Clonable {
     constructor(linker, name, gemlModule, info) {
         /**
          * Linker to process this view
-         * @member {OolongLinker}
+         * @member {Linker}
          */
         this.linker = linker;
 
@@ -47,7 +47,7 @@ class View extends Clonable {
 
     /**
      * Start linking this view
-     * @returns {OolongView}
+     * @returns {View}
      */
     link() {
         pre: !this.linked;
@@ -114,7 +114,8 @@ class View extends Clonable {
                     let field = entity.getEntityAttribute(fieldName);
                     inferredParams.push(Object.assign(_.omit(_.toPlainObject(field), ['isReference', 'optional', 'displayName']), {name: param.name}));
                 } else {
-                    inferredParams.push(this.linker.trackBackType(this.gemlModule, param));
+                    const [ typeInfo, baseInfo ] = this.linker.trackBackType(this.gemlModule, param);
+                    inferredParams.push(typeInfo);
                 }
             });
 
@@ -128,7 +129,7 @@ class View extends Clonable {
 
     /**
      * Clone the view     
-     * @returns {OolongView}
+     * @returns {View}
      */
     clone() {
         super.clone();

@@ -9,7 +9,7 @@ const FEATURE_NAME = 'createTimestamp';
 
 /**
  * Initialize the feature
- * @param {OolongEntity} entity - Entity to apply this feature
+ * @param {Entity} entity - Entity to apply this feature
  * @param {array} options - Field options
  */
 function feature(entity, args = []) {

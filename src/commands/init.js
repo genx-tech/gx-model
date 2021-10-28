@@ -3,6 +3,10 @@ const { _, eachAsync_ } = require('@genx/july');
 const { fs } = require('@genx/sys');
 const { throwIfFileNotExist, getSchemaConnectors } = require('../utils/helpers');
 const copyFileFromTemplate_ = require('../utils/copyFileFromTemplate_');
+const npmInstall_ = require('../utils/npmInstall_');
+
+const gxDataPkg = 'genx-tech/gx-data#v2';
+const gxModelPkg = 'genx-tech/gx-model#v2';
 
 /**
  * Build database scripts and entity models from oolong files.
@@ -20,21 +24,17 @@ const copyFileFromTemplate_ = require('../utils/copyFileFromTemplate_');
 module.exports = async (app, context) => {
     app.log('verbose', `${app.name} init`);
 
-    const moduleName = app.commandLine.option('module');
     const schemaName = app.commandLine.option('schema');
 
     let workingPath = app.workingPath;
-    let configName;
 
-    if (moduleName) {
-        workingPath = path.join(workingPath, 'app_modules', moduleName);
-        configName = 'app';
-    } else {
-        configName = 'server';
-    }
-
-    const configFile = path.join(workingPath, 'conf', `${configName}.default.json`);
-    throwIfFileNotExist('config', configFile);
+    let configFile = path.join(workingPath, 'conf', `app.default.json`);
+    if (!fs.existsSync(configFile)) {
+        configFile = path.join(workingPath, 'conf', `server.default.json`);
+        if (!fs.existsSync(configFile)) {
+            throw new Error('Either "conf/app.default.json" or "conf/server.default.json" not found.');
+        }
+    }    
 
     const config = await fs.readJson(configFile);
     if (config.settings?.geml) {
@@ -68,4 +68,7 @@ module.exports = async (app, context) => {
 
     await fs.copyFile(entitySource, entityFile);
     app.log('info', `Created ${entityFile}`);
+
+    await npmInstall_(app, workingPath, [gxDataPkg]);
+    await npmInstall_(app, workingPath, ['-D', gxModelPkg]);    
 };
