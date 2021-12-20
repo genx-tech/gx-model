@@ -1,7 +1,5 @@
 "use strict";
 
-const { _ } = require('@genx/july');
-
 const FEATURE_NAME = 'changeLog';
 
 /**

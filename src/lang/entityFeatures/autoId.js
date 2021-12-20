@@ -70,14 +70,16 @@ function feature(entity, args = []) {
                 break;
 
                 case 'hyperid':
-                    typeInfo['type'] = 'text';                       
-                    typeInfo['fixedLength'] = 33;
+                    typeInfo['type'] = 'text';                                           
 
                     let args = [ 'hyperid' ];
                     let opt = {};
 
                     if (options.fixedLength) {
                         opt.fixedLength = options.fixedLength;
+                        typeInfo['fixedLength'] = 33;
+                    } else {
+                        typeInfo['maxLength'] = 40;
                     }
 
                     if (options.urlSafe) {

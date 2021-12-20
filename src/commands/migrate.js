@@ -1,5 +1,5 @@
 const { _, eachAsync_ } = require('@genx/july');
-const { throwIfFileNotExist, getSchemaConnectors, importDataFiles } = require('../utils/helpers');
+const { throwIfFileNotExist, importDataFiles } = require('../utils/helpers');
 
 /**
  * Build database scripts and entity models from oolong files.

@@ -80,6 +80,12 @@ class Linker {
         this.schemas = {};
 
         /**
+         * Dependent packages
+         * @member {object.<string, string>}
+         */
+        this.dependencies = context.dependencies ?? {};
+
+        /**
          * Parsed oolong files, path => module
          * @member {object}
          * @private
@@ -166,7 +172,7 @@ class Linker {
      * @param {string} modulePath
      * @returns {*}
      */
-    loadModule(modulePath) {        
+    loadModule(modulePath, packageName) {        
         modulePath = path.resolve(this.sourcePath, modulePath);
 
         let id = this.getModuleIdByPath(modulePath);
@@ -179,7 +185,7 @@ class Linker {
             return undefined;
         }       
 
-        let gemlModule = this._compile(modulePath);
+        let gemlModule = this._compile(modulePath, packageName);
 
         return (this._gemlModules[id] = gemlModule);
     }
@@ -321,10 +327,19 @@ class Linker {
 
             let index = _.findLastIndex(refererModule.namespace, modulePath => {
                 //this.log('debug', `Looking for ${elementType} "${elementName}" in "${modulePath}" ...`);
+                let packageName;
 
-                targetModule = this.loadModule(modulePath);
-
-                return targetModule && targetModule[elementType] && (elementName in targetModule[elementType]);
+                if (Array.isArray(modulePath)) {
+                    packageName = modulePath[1]; 
+                    modulePath = modulePath[0];     
+                }
+                
+                targetModule = this.loadModule(modulePath, packageName);
+                if (!targetModule) {
+                    return undefined;
+                }
+      
+                return targetModule[elementType] && (elementName in targetModule[elementType]);                
             });
 
             if (index === -1) {   
@@ -371,7 +386,7 @@ class Linker {
         return element;
     }
 
-    _compile(oolFile) {
+    _compile(oolFile, packageName) {
         let jsFile;
         
         if (oolFile.endsWith('.json')) {
@@ -391,14 +406,10 @@ class Linker {
             ool = fs.readJsonSync(jsFile);
             searchExt = GEML_SOURCE_EXT + '.json';
         } else {
-
-            //this.log('debug', 'Compiling ' + oolFile + ' ...');        
-            
             try {
                 ool = GemlParser.parse(fs.readFileSync(oolFile, 'utf8'));
             } catch (error) {
-                throw error;
-                //throw new Error(`Failed to compile "${ oolFile }".\n${ error.message || error }`)
+                throw new Error(`Failed to compile "${ oolFile }".\n${ error.message || error }`)
             }
 
             if (!ool) {
@@ -420,42 +431,60 @@ class Linker {
          * @param {string} ns - Import line
          * @param {*} recursive 
          */
-        function expandNs(namespaces, ns, recursive) {
+        function expandNs(namespaces, ns, recursive, packageName) {
             let stats = fs.statSync(ns);
 
             //import '/path/user.ool'
             if (stats.isFile() && ns.endsWith(searchExt)) {
-                namespaces.push(ns);
+                if (packageName) {
+                    namespaces.push([ns, packageName]);
+                } else {
+                    namespaces.push(ns);
+                }
+                
                 return;
             }
 
             if (stats.isDirectory() && recursive) {
                 //resursive expand sub-directory
                 let files = fs.readdirSync(ns);
-                files.forEach(f => expandNs(namespaces, path.join(ns, f), true));
+                files.forEach(f => expandNs(namespaces, path.join(ns, f), true, packageName));
             }
         }
 
         if (ool.namespace) {
             ool.namespace.forEach(ns => {
                 let p;
-                
-                if (ns.startsWith('<builtins>/')) {
-                    ns = path.join(BUILTINS_PATH, ns.substr(11));   
-                } else if (ns.startsWith('<source>/')) {
-                    ns = path.join(this.sourcePath, ns.substr(9));   
-                }               
+                let packageName;
+
+                const packageSep = ns.indexOf(':');
+                if (packageSep > 0) {
+                    //reference to a package
+                    packageName = ns.substring(0, packageSep);
+                    const pkgPath = this.dependencies[packageName];
+
+                    if (pkgPath == null) {
+                        throw new Error(`Package "${packageName}" not found in geml dependencies settings.`);
+                    }     
+                    
+                    ns = path.join(pkgPath, ns.substring(packageSep+1));
+                }
 
                 if (ns.endsWith('/*')) {
                     p = path.resolve(currentPath, ns.substr(0, ns.length - 2));
                     let files = fs.readdirSync(p);
-                    files.forEach(f => expandNs(namespace, path.join(p, f), false));
+                    files.forEach(f => expandNs(namespace, path.join(p, f), false, packageName));
                 } else if (ns.endsWith('/**')) {
                     p = path.resolve(currentPath, ns.substr(0, ns.length - 3));
                     let files = fs.readdirSync(p);
-                    files.forEach(f => expandNs(namespace, path.join(p, f), true));
+                    files.forEach(f => expandNs(namespace, path.join(p, f), true, packageName));
                 } else {
-                    namespace.push(path.resolve(currentPath, _.endsWith(ns, GEML_SOURCE_EXT) ? ns : ns + GEML_SOURCE_EXT));
+                    ns = path.resolve(currentPath, _.endsWith(ns, GEML_SOURCE_EXT) ? ns : ns + GEML_SOURCE_EXT);
+                    if (packageName) {
+                        namespace.push([ns, packageName]);
+                    } else {
+                        namespace.push(ns);
+                    }                    
                 }
             });
         }
@@ -463,6 +492,9 @@ class Linker {
         ool.namespace = namespace;
 
         ool.id = this.getModuleIdByPath(oolFile);        
+        if (packageName) {
+            ool.packageName = packageName;
+        }
         ool.name = baseName;       
         
         if (!this.useJsonSource && this.saveIntermediate) {                 

@@ -26,16 +26,15 @@ class AppInitiator {
                     throw new Error(`Config "${configFile}" not found!`);
                 }
             } else {
-                configFullPath = path.resolve(this.cwd, 'conf/app.default.json');
+                configFullPath = path.resolve(this.cwd, "conf/app.default.json");
 
                 if (!fs.existsSync(configFullPath)) {
-                    configFullPath = path.resolve(this.cwd, 'conf/server.default.json');
+                    configFullPath = path.resolve(this.cwd, "conf/server.default.json");
                     if (!fs.existsSync(configFullPath)) {
                         throw new Error('Either "conf/app.default.json" or "conf/server.default.json" not found.');
                     }
                 }
             }
-            
 
             let extName = path.extname(configFullPath);
             if (extName !== ".json") {
@@ -98,6 +97,14 @@ class AppInitiator {
                     manifestPath: { type: "text", optional: true },
                     useJsonSource: { type: "boolean", optional: true, default: false },
                     saveIntermediate: { type: "boolean", optional: true, default: false },
+                    schemas: {
+                        type: "object",
+                        optional: true,
+                    },
+                    dependencies: {
+                        type: "object",
+                        optional: true,
+                    },
                 });
 
             this.container.options.modelPath = modelPath;
@@ -107,7 +114,7 @@ class AppInitiator {
             scriptPath = this.container.toAbsolutePath(scriptPath);
             manifestPath = this.container.toAbsolutePath(manifestPath);
 
-            gemlConfig = {                
+            gemlConfig = {
                 ...config,
                 gemlPath,
                 modelPath,
@@ -115,12 +122,32 @@ class AppInitiator {
                 manifestPath,
                 useJsonSource,
                 saveIntermediate,
-                configFullPath
+                configFullPath,
             };
 
             if (!_.isEmpty(gemlConfig.schemas)) {
                 const { load_: useDb } = require("@genx/app/lib/features/useDb");
                 await useDb(this.container, gemlConfig.schemas);
+            }
+
+            if (!_.isEmpty(gemlConfig.dependencies)) {
+                gemlConfig.dependencies = _.mapValues(gemlConfig.dependencies, (pkgPath) => {
+                    const pkgRoot = this.container.toAbsolutePath(pkgPath);
+                    if (!fs.pathExistsSync(pkgRoot)) {
+                        throw new Error(`Dependency package "${pkgRoot}" not found.`);
+                    }
+
+                    const pkgDefaultConfig = path.resolve(pkgRoot, 'conf/app.default.config');
+
+                    let pkgGemlPath;
+
+                    if (fs.existsSync(pkgDefaultConfig)) {
+                        const pkgConfig = fs.readJsonSync(pkgDefaultConfig);
+                        pkgGemlPath = pkgConfig.settings?.geml?.gemlPath;    
+                    }
+
+                    return path.join(pkgRoot, pkgGemlPath || 'geml');                    
+                });
             }
         } else {
             this.container = this.app;

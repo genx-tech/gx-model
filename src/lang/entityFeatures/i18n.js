@@ -11,9 +11,7 @@ const FEATURE_NAME = 'i18n';
 /**
  * Initialize the feature
  * @param {Entity} entity - Entity to apply this feature
- * @param {object} options - Tracking field options
- * @property {string} options.field - State field to apply this feature
- * @property {object} [options.locales] - Specify the locale mapping rule
+ * @param {object} options - Tracking field options 
  */
 function feature(entity, args = []) {
     let [ options ] = args;
@@ -22,15 +20,13 @@ function feature(entity, args = []) {
         throw new Error('Missing feature options!');
     }
 
-    if (!_.isPlainObject(options)) {
-        throw new Error('Invalid feature options. Plain object expected!');
-    }
+    const [ field, locales ] = options;
 
-    if (!options.field) {
+    if (!field) {
         throw new Error('Missing field name in options!');
     }
 
-    if (!options.locales) {
+    if (!locales) {
         throw new Error('Missing locale mapping in options!');
     }
 
@@ -39,12 +35,12 @@ function feature(entity, args = []) {
     }
 
     entity.addFeature(FEATURE_NAME, options, true).once('afterAddingFields', () => {
-        if (!entity.hasField(options.field)) {
-            throw new Error('Field "' + options.field + '" does not exist!');
+        if (!entity.hasField(field)) {
+            throw new Error('Field "' + field + '" does not exist!');
         }
 
-        let fieldInfo = entity.fields[options.field];
-        let suffixSet = new Set(Object.values(options.locales));
+        let fieldInfo = entity.fields[field];
+        let suffixSet = new Set(Object.values(locales));
 
         for (let suffix of suffixSet) {
             if (suffix === 'default') continue;

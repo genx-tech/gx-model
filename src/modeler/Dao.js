@@ -201,6 +201,13 @@ class DaoModeler {
                 });
             }
 
+            //add package path
+            const packageName = entity.gemlModule.packageName;
+            if (packageName) {                
+                modelMeta.fromPackage = packageName;                
+                modelMeta.packagePath = this.linker.app.settings.geml.dependencies[packageName]; //path.relative(this.linker.dependencies[packageName], this.linker.app.workingPath);
+            }
+
             let locals = {
                 imports: importLines.join("\n"),
                 className: capitalized,
