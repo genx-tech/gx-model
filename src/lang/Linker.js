@@ -413,7 +413,7 @@ class Linker {
             }
 
             if (!ool) {
-                throw new Error('Unknown error occurred while compiling.');
+                throw new Error('Unknown error occurred while compiling: ' + oolFile);
             }       
             
             searchExt = GEML_SOURCE_EXT;
