@@ -207,14 +207,18 @@ class Linker {
         }
 
         let baseInfo = this.loadElement(gemlModule, GemlTypes.Element.TYPE, info.type, true);
+        let backupBaseInfo = baseInfo.type !== info.type ? baseInfo : null;
 
         if (!Types.Builtin.has(baseInfo.type)) {
             //the base type is not a builtin type
             let ownerModule = baseInfo.gemlModule;  
 
             let [ rootTypeInfo ] = this.trackBackType(ownerModule, baseInfo);
+
             ownerModule.type[baseInfo.type] = rootTypeInfo;
-            baseInfo = rootTypeInfo;
+            baseInfo = rootTypeInfo;            
+        } else {
+            backupBaseInfo = null;
         }
 
         let derivedInfo = { ..._.cloneDeep(_.omit(baseInfo, ['gemlModule', 'modifiers'])), ..._.omit(info, ['gemlModule', 'type', 'modifiers'])};
@@ -226,7 +230,7 @@ class Linker {
             derivedInfo.subClass = [];
         }
         derivedInfo.subClass.push(info.type);
-        return [ derivedInfo, baseInfo ];
+        return [ derivedInfo, backupBaseInfo ];
     }    
     
     /**
