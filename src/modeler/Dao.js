@@ -42,9 +42,9 @@ const indentLines = (lines, indentation) =>
         .join("\n");
 
 const OOL_MODIFIER_RETURN = {
-    [GemlTypes.Modifier.VALIDATOR]: () => [JsLang.astReturn(true)],
-    [GemlTypes.Modifier.PROCESSOR]: (args) => [JsLang.astReturn(JsLang.astId(args[0]))],
-    [GemlTypes.Modifier.ACTIVATOR]: () => [JsLang.astReturn(JsLang.astId("undefined"))],
+    [GemlTypes.Modifier.VALIDATOR]: () => [JsLang.astThrow('Error', ['To be implemented!']), JsLang.astReturn(true)],
+    [GemlTypes.Modifier.PROCESSOR]: (args) => [JsLang.astThrow('Error', ['To be implemented!']), JsLang.astReturn(JsLang.astId(args[0]))],
+    [GemlTypes.Modifier.ACTIVATOR]: () => [JsLang.astThrow('Error', ['To be implemented!']), JsLang.astReturn(JsLang.astId("undefined"))],
 };
 
 /**

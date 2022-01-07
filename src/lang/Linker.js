@@ -468,7 +468,7 @@ class Linker {
                     const pkgPath = this.dependencies[packageName];
 
                     if (pkgPath == null) {
-                        throw new Error(`Package "${packageName}" not found in geml dependencies settings.`);
+                        throw new Error(`Package "${packageName}" not found in geml dependencies settings. Failed to compile ${oolFile}`);
                     }     
                     
                     ns = path.join(pkgPath, ns.substring(packageSep+1));
