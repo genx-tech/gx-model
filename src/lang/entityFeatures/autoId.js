@@ -74,12 +74,20 @@ function feature(entity, args = []) {
 
                     let args = [ 'hyperid' ];
                     let opt = {};
+                    let prefixLength;
+
+                    if (options.prefix) {
+                        prefixLength = options.prefix.length;
+                        opt.prefix = options.prefix;
+                    } else {
+                        prefixLength = 0;
+                    }
 
                     if (options.fixedLength) {
                         opt.fixedLength = options.fixedLength;
-                        typeInfo['fixedLength'] = 33;
+                        typeInfo['fixedLength'] = 33 + prefixLength;
                     } else {
-                        typeInfo['maxLength'] = 40;
+                        typeInfo['maxLength'] = 40 + prefixLength;
                     }
 
                     if (options.urlSafe) {
