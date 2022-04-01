@@ -15,9 +15,9 @@
     };
 
     //top level keywords
-    const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity', 'dataset', 'view']);
+    const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity']);
 
-    //allowed  keywords of differenty state
+    //allowed keywords of different state
     const SUB_KEYWORDS = { 
         // level 1
         'schema': new Set(['entities', 'views']),
@@ -30,6 +30,7 @@
         'entity.interface': new Set(['accept', 'find', 'findOne', 'return']),
         'entity.triggers': new Set(['onCreate', 'onCreateOrUpdate', 'onUpdate', 'onDelete']),          
         'entity.data': new Set(['in']),
+        'entity.input': new Set(['extends']),     
 
         'dataset.body': new Set(['with']),
 
@@ -44,7 +45,7 @@
         'entity.interface.find.when': new Set(['when', 'else', 'otherwise']),           
         'entity.interface.find.else': new Set(['return', 'throw']),
         'entity.interface.return.when': new Set(['exists', 'null', 'throw']),   
-
+        
         'entity.input.inputSet.item': new Set(['optional', 'with']),     
 
         // level 5
@@ -971,9 +972,7 @@ statement
     | const_statement
     | type_statement
     | schema_statement    
-    | entity_statement
-    | view_statement
-    | dataset_statement
+    | entity_statement        
     ;
 
 import_statement
@@ -1337,8 +1336,13 @@ input_statement
     ;
 
 input_statement_block
-    : identifier_or_string NEWLINE INDENT input_block DEDENT NEWLINE -> { [$1]: $4 }     
-    | identifier_or_string NEWLINE INDENT input_block DEDENT input_statement_block -> { [$1]: $4, ...$6 }     
+    : input_statement_def NEWLINE INDENT input_block DEDENT NEWLINE -> { [$1.name]: $4 }     
+    | input_statement_def NEWLINE INDENT input_block DEDENT input_statement_block -> { [$1.name]: $4, ...$6 }     
+    ;
+
+input_statement_def
+    : identifier_or_string -> { name: $1 }
+    | identifier_or_string "extends" identifier_or_string -> { name: $1, extends: $3 }
     ;
 
 input_block
@@ -1554,52 +1558,6 @@ assign_operation
 entity_fields_selections
     : identifier_or_string -> { entity: $1 }     
     | identifier_or_string "->" inline_array -> { entity: $1, projection: $3 }
-    ;
-
-dataset_statement
-    : "dataset" identifier_or_string NEWLINE INDENT dataset_statement_block DEDENT NEWLINE? -> state.defineDataset($2, $5)
-    ;
-
-dataset_statement_block
-    : "is" article_keyword_or_not dataset_join_with_item -> $3
-    ;
-
-dataset_join_with_block
-    : dataset_join_with_item -> [ $1 ]
-    | dataset_join_with_item dataset_join_with_block -> [ $1 ].concat($2)
-    ;
-
-dataset_join_with_item
-    : entity_fields_selections NEWLINE -> $1
-    | entity_fields_selections "with" ":" NEWLINE INDENT dataset_join_with_block DEDENT NEWLINE? -> { ...$1, with: $6 }
-    ;
-
-view_statement
-    : "view" identifier_or_string NEWLINE INDENT view_statement_block DEDENT NEWLINE? -> state.defineView($2, $5)
-    ;
-
-view_statement_block
-    : view_main_entity NEWLINE accept_or_not view_selection_or_not group_by_or_not having_or_not order_by_or_not skip_or_not limit_or_not
-        -> Object.assign({}, $1, $3, $4, $5, $6, $7, $8, $9)
-    ;
-
-view_main_entity
-    : "is" article_keyword_or_not identifier_or_string -> { dataset: $3 }
-    | "is" article_keyword_or_not identifier_or_string "list" -> { dataset: $3, isList: true }
-    ;
-
-view_selection_or_not
-    :
-    | view_selection
-    ;
-
-view_selection
-    : selection_inline_keywords conditional_expression NEWLINE -> { condition: $2 }
-    ;
-
-article_keyword_or_not
-    :
-    | article_keyword
     ;
 
 article_keyword

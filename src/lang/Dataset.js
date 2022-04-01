@@ -15,6 +15,8 @@ class Dataset extends Clonable {
      * @param {object} info - Dataset info
      */
     constructor(linker, name, gemlModule, info) {
+        super();
+        
         /**
          * Linker to process this document
          * @member {Linker}

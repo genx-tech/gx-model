@@ -583,8 +583,27 @@ class Entity extends Clonable {
         
         if (baseEntity.info.indexes) {
             let indexes = _.cloneDeep(baseEntity.info.indexes);
+            let uniqueIndexes = indexes.filter(index => index.unique);
 
             if (this.info.indexes) {
+                this.info.indexes.forEach(index => {
+                    //if unique scope changed
+                    if (index.unique) {
+                        uniqueIndexes.forEach(inheritedIndex => {                            
+                            const fields1 = _.castArray(index.fields);
+                            const fields2 = _.castArray(inheritedIndex.fields);
+
+                            if (_.intersection(fields1, fields2).length === fields2.length) {
+                                //fully included
+                                const pos = indexes.indexOf(inheritedIndex);
+                                if (pos !== -1) {
+                                    indexes.splice(pos, 1);
+                                }                                
+                            }
+                        });
+                    }
+                })
+
                 indexes = indexes.concat(this.info.indexes);
             }
 

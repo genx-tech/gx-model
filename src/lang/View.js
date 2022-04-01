@@ -20,6 +20,8 @@ class View extends Clonable {
      * @param {object} info - View info
      */
     constructor(linker, name, gemlModule, info) {
+        super();
+
         /**
          * Linker to process this view
          * @member {Linker}
