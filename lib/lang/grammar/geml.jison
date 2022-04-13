@@ -15,11 +15,13 @@
     };
 
     //top level keywords
-    const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity']);
+    const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity', 'overrides', 'override']);
 
     //allowed keywords of different state
     const SUB_KEYWORDS = { 
         // level 1
+        'overrides': new Set(['entities']),
+        'override': new Set(['entity']),
         'schema': new Set(['entities', 'views']),
         'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'input', 'interface', 'code', 'triggers' ]),
         'dataset': new Set(['is']),
@@ -60,7 +62,10 @@
         'const.*': 'const.item',
         'import.$INDENT': 'import.block',
         'type.$INDENT': 'type.block',
-        'const.$INDENT': 'const.block',        
+        'const.$INDENT': 'const.block', 
+
+        'override.entity': 'entity',       
+
         'entity.with': 'entity.with', 
         'entity.has': 'entity.has', 
         'entity.key': 'entity.key', 
@@ -445,6 +450,10 @@
             this.define('entity', name, value, line);
         }
 
+        defineEntityOverride(name, value, line) {
+            this.define('entityOverride', name, value, line);
+        }
+
         isEntityExist(entity) {
             return this.state.entity && (entity in this.state.entity);
         }
@@ -459,6 +468,10 @@
 
         defineSchema(name, value, line) {
             this.define('schema', name, value, line);    
+        }
+
+        defineOverrides(name, value, line) {
+            this.define('overrides', name, value, line);    
         }
 
         defineRelation(name, value, line) {
@@ -971,7 +984,9 @@ statement
     : import_statement    
     | const_statement
     | type_statement
-    | schema_statement    
+    | schema_statement   
+    | overrides_statement
+    | override_statement    
     | entity_statement        
     ;
 
@@ -1022,6 +1037,10 @@ schema_entities
 schema_entities_block
     : identifier_or_string NEWLINE -> [ { entity: $1 } ]
     | identifier_or_string NEWLINE schema_entities_block -> [ { entity: $1 } ].concat($3)
+    ;
+
+overrides_statement
+    : "overrides" identifier_or_string NEWLINE INDENT schema_statement_block DEDENT NEWLINE? -> state.defineOverrides($2, $5, @1.first_line)
     ;
 
 schema_views
@@ -1151,6 +1170,11 @@ type_modifier_validators
     | general_function_call -> state.normalizeValidator($1.name, $1.args)    
     | REGEXP -> state.normalizeValidator('matches', $1)    
     | "(" logical_expression ")" -> state.normalizeValidator('$eval', [ $2 ])
+    ;
+
+override_statement
+    : "override" entity_statement_header NEWLINE -> state.defineEntityOverride($1[0], $1[1], @1.first_line)
+    | "override" entity_statement_header NEWLINE INDENT entity_statement_block DEDENT NEWLINE? -> state.defineEntityOverride($1[0], Object.assign({}, $1[1], $4), @1.first_line)
     ;
 
 entity_statement
