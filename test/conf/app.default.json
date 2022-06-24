@@ -1,0 +1,37 @@
+{
+    "timezone": "Australia/Sydney",
+    "dataSource": {
+        "mysql": {
+            "test": {
+                "connection": "mysql://root:root@localhost/gx-model-test",
+                "logStatement": true
+            }
+        }
+    },
+    "useDb": {        
+        "test": {
+            "dataSource": "mysql.test"
+        }
+    },    
+    "settings": {
+        "geml": {
+            "gemlPath": "geml",
+            "modelPath": "src/models",
+            "scriptPath": "scripts",
+            "manifestPath": "manifests",
+            "saveIntermediate": true,
+            "schemas": {
+                "test": {
+                    "dataSource": "mysql.test"
+                }
+            },
+            "dependencies": {
+                "commons": "./app_modules/gem-commons",                
+                "geo": "./app_modules/gem-geo",
+                "cms": "./app_modules/gem-cms",
+                "user": "./app_modules/gem-user",
+                "task": "./app_modules/gem-task"
+            }
+        }        
+    }
+}

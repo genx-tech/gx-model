@@ -1,0 +1,21 @@
+import types
+
+//----------------------------------------------------------------------------------------------------     
+
+type
+  docQueueStatus : enum values("pending", "generated", "failed") 
+
+//----------------------------------------------------------------------------------------------------       
+
+entity deferredQueue is hyperIdIndexed
+  with
+    createTimestamp
+  has
+    batchId : text maxLength(32)
+    job : text maxLength(200) 
+    dueAt : datetime        
+    dispatchedAt : datetime default(@@NOW)       
+    lockerId : text maxLength(32) emptyAsNull optional
+  index
+    [ job, batchId ] is unique
+    lockerId

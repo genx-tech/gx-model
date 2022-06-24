@@ -1,0 +1,1376 @@
+{
+    "name": "test",
+    "displayName": "Test",
+    "entities": {
+        "setting": {
+            "name": "setting",
+            "displayName": "Setting",
+            "comment": "Settings",
+            "baseClasses": [
+                "dataTypeDictionary"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "dataType": {
+                    "type": "enum",
+                    "values": [
+                        "text",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "csv",
+                        "object",
+                        "datetime",
+                        "array"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "dataType"
+                    ],
+                    "displayName": "Data Type"
+                },
+                "values": {
+                    "type": "array",
+                    "optional": true,
+                    "displayName": "Values"
+                },
+                "allowUserInput": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Allow User Input"
+                },
+                "formatter": {
+                    "type": "enum",
+                    "values": [
+                        "datetime",
+                        "currency",
+                        "dateOnly",
+                        "timeOnly",
+                        "bytes",
+                        "number",
+                        "percent"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "formatterType"
+                    ],
+                    "displayName": "Formatter"
+                },
+                "category": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Category"
+                },
+                "text": {
+                    "type": "text",
+                    "optional": true,
+                    "displayName": "Text"
+                },
+                "intValue": {
+                    "type": "integer",
+                    "optional": true,
+                    "displayName": "Int Value"
+                },
+                "numValue": {
+                    "type": "number",
+                    "optional": true,
+                    "displayName": "Num Value"
+                },
+                "object": {
+                    "type": "object",
+                    "optional": true,
+                    "displayName": "Object"
+                },
+                "flag": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Flag"
+                },
+                "timestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "displayName": "Timestamp"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "code"
+        },
+        "contact": {
+            "name": "contact",
+            "displayName": "Contact",
+            "baseClasses": [
+                "hyperIdIndexed"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "mobile": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isMobilePhone"
+                        }
+                    ],
+                    "subClass": [
+                        "mobile"
+                    ],
+                    "displayName": "Mobile"
+                },
+                "phone": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isPhone"
+                        }
+                    ],
+                    "subClass": [
+                        "phone"
+                    ],
+                    "displayName": "Phone"
+                },
+                "email": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isEmail"
+                        }
+                    ],
+                    "subClass": [
+                        "email"
+                    ],
+                    "displayName": "Email"
+                }
+            },
+            "key": "id"
+        },
+        "person": {
+            "name": "person",
+            "displayName": "Person",
+            "baseClasses": [
+                "hyperIdIndexed"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                },
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "firstName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "First Name"
+                },
+                "middleName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Middle Name"
+                },
+                "lastName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Last Name"
+                },
+                "legalName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "combinePersonName",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.firstName"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.middleName"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.lastName"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.locale"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Legal Name"
+                },
+                "dob": {
+                    "type": "datetime",
+                    "optional": true,
+                    "comment": "Date of birth",
+                    "displayName": "Dob"
+                },
+                "maritalStatus": {
+                    "type": "enum",
+                    "values": [
+                        "single",
+                        "married",
+                        "divorced",
+                        "widowed",
+                        "de facto"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "maritalStatus"
+                    ],
+                    "displayName": "Marital Status"
+                },
+                "gender": {
+                    "type": "enum",
+                    "values": [
+                        "male",
+                        "female",
+                        "non-disclosure"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "genderType"
+                    ],
+                    "displayName": "Gender"
+                },
+                "residencyStatus": {
+                    "type": "enum",
+                    "values": [
+                        "citizen",
+                        "pr",
+                        "overseas"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "residencyStatus"
+                    ],
+                    "displayName": "Residency Status"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At"
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "id"
+        },
+        "resource": {
+            "name": "resource",
+            "displayName": "Resource",
+            "baseClasses": [
+                "hyperIdIndexed"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "url": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Url"
+                },
+                "urlMobile": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Url Mobile"
+                },
+                "thumbnail": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Thumbnail"
+                },
+                "title": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Title"
+                },
+                "content": {
+                    "type": "text",
+                    "optional": true,
+                    "displayName": "Content"
+                },
+                "fileName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "File Name"
+                },
+                "fileSize": {
+                    "type": "integer",
+                    "optional": true,
+                    "displayName": "File Size"
+                },
+                "hash": {
+                    "type": "text",
+                    "maxLength": 256,
+                    "optional": true,
+                    "displayName": "Hash"
+                },
+                "external": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "External"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "source": {
+                    "type": "enum",
+                    "values": [
+                        "upload",
+                        "generated",
+                        "camera",
+                        "external",
+                        "copied",
+                        "preset"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "resourceSource"
+                    ],
+                    "displayName": "Source"
+                },
+                "accessFlag": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Access Flag"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At"
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At"
+                }
+            },
+            "key": "id"
+        },
+        "user": {
+            "name": "user",
+            "displayName": "User",
+            "comment": "User",
+            "baseClasses": [
+                "hyperIdIndexed"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                },
+                "logicalDeletion": {
+                    "field": "status",
+                    "value": "deleted"
+                },
+                "stateTracking": [
+                    {
+                        "field": "status",
+                        "stateMapping": {
+                            "unverified": "statusUnverifiedTimestamp",
+                            "active": "statusActiveTimestamp",
+                            "suspended": "statusSuspendedTimestamp",
+                            "deleted": "statusDeletedTimestamp"
+                        }
+                    }
+                ]
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "username": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "comment": "User name",
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "defaultUsername"
+                        }
+                    ],
+                    "subClass": [
+                        "idString"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Username"
+                },
+                "mobile": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "comment": "User mobile",
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isMobilePhone"
+                        }
+                    ],
+                    "subClass": [
+                        "mobile"
+                    ],
+                    "displayName": "Mobile"
+                },
+                "email": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "comment": "User email",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isEmail"
+                        }
+                    ],
+                    "subClass": [
+                        "email"
+                    ],
+                    "displayName": "Email"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "comment": "Nick name",
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "populate",
+                            "args": [
+                                "person.legalName"
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Name"
+                },
+                "password": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "comment": "User password",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "enforceStrongPassword"
+                        },
+                        {
+                            "oolType": "Processor",
+                            "name": "hashPassword",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.passwordSalt"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "password"
+                    ],
+                    "displayName": "Password"
+                },
+                "passwordSalt": {
+                    "type": "text",
+                    "fixedLength": 8,
+                    "auto": true,
+                    "comment": "User password salt",
+                    "displayName": "Password Salt"
+                },
+                "isEmailVerified": {
+                    "type": "boolean",
+                    "writeOnce": true,
+                    "optional": true,
+                    "comment": "Is user email verified?",
+                    "displayName": "Is Email Verified"
+                },
+                "emailVerifiedTime": {
+                    "type": "datetime",
+                    "writeOnce": true,
+                    "optional": true,
+                    "comment": "User email verified time",
+                    "displayName": "Email Verified Time"
+                },
+                "isMobileVerified": {
+                    "type": "boolean",
+                    "writeOnce": true,
+                    "optional": true,
+                    "comment": "Is user mobile verified?",
+                    "displayName": "Is Mobile Verified"
+                },
+                "mobileVerifiedTime": {
+                    "type": "datetime",
+                    "writeOnce": true,
+                    "optional": true,
+                    "comment": "User mobile verified time",
+                    "displayName": "Mobile Verified Time"
+                },
+                "avatar": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Avatar"
+                },
+                "status": {
+                    "type": "enum",
+                    "values": [
+                        "unverified",
+                        "active",
+                        "suspended",
+                        "deleted"
+                    ],
+                    "default": "unverified",
+                    "comment": "User status",
+                    "subClass": [
+                        "userStatus"
+                    ],
+                    "displayName": "Status"
+                },
+                "lastLoginTime": {
+                    "type": "datetime",
+                    "optional": true,
+                    "comment": "Last login time",
+                    "displayName": "Last Login Time"
+                },
+                "currentLoginTime": {
+                    "type": "datetime",
+                    "optional": true,
+                    "comment": "Current login time",
+                    "displayName": "Current Login Time"
+                },
+                "isHidden": {
+                    "type": "boolean",
+                    "optional": true,
+                    "comment": "Not allowed to login UI and be shown to other users",
+                    "displayName": "Is Hidden"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At"
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At"
+                },
+                "statusUnverifiedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Unverified Timestamp"
+                },
+                "statusActiveTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Active Timestamp"
+                },
+                "statusSuspendedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Suspended Timestamp"
+                },
+                "statusDeletedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Deleted Timestamp"
+                }
+            },
+            "key": "id"
+        },
+        "adminUser": {
+            "name": "adminUser",
+            "displayName": "Admin User",
+            "comment": "Admin users",
+            "types": {},
+            "fields": {
+                "preferredName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "populate",
+                            "args": [
+                                "user.name"
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Preferred Name"
+                }
+            },
+            "key": "user"
+        },
+        "company": {
+            "name": "company",
+            "displayName": "Company",
+            "comment": "Company",
+            "baseClasses": [
+                "hyperIdIndexed"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                },
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "logo": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "comment": "Rectangle",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Logo"
+                },
+                "avatar": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "comment": "Square",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Avatar"
+                },
+                "registrationNo": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Registration No"
+                },
+                "email": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isEmail"
+                        }
+                    ],
+                    "subClass": [
+                        "email"
+                    ],
+                    "displayName": "Email"
+                },
+                "phone": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isPhone"
+                        }
+                    ],
+                    "subClass": [
+                        "phone"
+                    ],
+                    "displayName": "Phone"
+                },
+                "mobile": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isMobilePhone"
+                        }
+                    ],
+                    "subClass": [
+                        "mobile"
+                    ],
+                    "displayName": "Mobile"
+                },
+                "fax": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isPhone"
+                        }
+                    ],
+                    "subClass": [
+                        "phone"
+                    ],
+                    "displayName": "Fax"
+                },
+                "website": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Website"
+                },
+                "abn": {
+                    "type": "text",
+                    "fixedLength": 11,
+                    "optional": true,
+                    "comment": "Australia Business Number",
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "removeSpace"
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isNumeric"
+                        }
+                    ],
+                    "subClass": [
+                        "abn"
+                    ],
+                    "displayName": "Abn"
+                },
+                "acn": {
+                    "type": "text",
+                    "fixedLength": 9,
+                    "optional": true,
+                    "comment": "Australia Company Number",
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "removeSpace"
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isNumeric"
+                        }
+                    ],
+                    "subClass": [
+                        "acn"
+                    ],
+                    "displayName": "Acn"
+                },
+                "taxIdNumber": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Tax Id Number"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At"
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "id"
+        },
+        "task": {
+            "name": "task",
+            "displayName": "Task",
+            "baseClasses": [
+                "hyperIdIndexed"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                },
+                "stateTracking": [
+                    {
+                        "field": "status",
+                        "stateMapping": {
+                            "new": "statusNewTimestamp",
+                            "pending": "statusPendingTimestamp",
+                            "assigned": "statusAssignedTimestamp",
+                            "ongoing": "statusOngoingTimestamp",
+                            "done": "statusDoneTimestamp",
+                            "expired": "statusExpiredTimestamp",
+                            "cancelled": "statusCancelledTimestamp",
+                            "rejected": "statusRejectedTimestamp"
+                        }
+                    }
+                ]
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "dueDate": {
+                    "type": "datetime",
+                    "dateOnly": true,
+                    "optional": true,
+                    "subClass": [
+                        "date"
+                    ],
+                    "displayName": "Due Date"
+                },
+                "status": {
+                    "type": "enum",
+                    "values": [
+                        "new",
+                        "pending",
+                        "assigned",
+                        "ongoing",
+                        "done",
+                        "expired",
+                        "cancelled",
+                        "rejected"
+                    ],
+                    "subClass": [
+                        "taskStatus"
+                    ],
+                    "displayName": "Status"
+                },
+                "isApproved": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is Approved"
+                },
+                "declinedReason": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Declined Reason"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "metadata": {
+                    "type": "object",
+                    "optional": true,
+                    "displayName": "Metadata"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At"
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At"
+                },
+                "statusNewTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status New Timestamp"
+                },
+                "statusPendingTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Pending Timestamp"
+                },
+                "statusAssignedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Assigned Timestamp"
+                },
+                "statusOngoingTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Ongoing Timestamp"
+                },
+                "statusDoneTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Done Timestamp"
+                },
+                "statusExpiredTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Expired Timestamp"
+                },
+                "statusCancelledTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Cancelled Timestamp"
+                },
+                "statusRejectedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Rejected Timestamp"
+                }
+            },
+            "key": "id"
+        }
+    },
+    "types": {},
+    "datasets": {},
+    "views": {}
+}

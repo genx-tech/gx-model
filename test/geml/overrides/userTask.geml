@@ -1,0 +1,7 @@
+import 'user:**'
+import 'task:**'
+
+override entity user
+  associations    
+    hasMany task being owner as createdTasks
+    hasMany task being assignedTo as assignedTasks

@@ -1,7 +1,7 @@
 "use strict";
 
 const path = require('path');
-const { _ } = require('@genx/july');
+const { _, arrayToObject } = require('@genx/july');
 const { fs, glob } = require('@genx/sys');
 const { Types } = require('@genx/data');
 
@@ -104,7 +104,12 @@ class Linker {
          * @member {object}
          * @private
          */
-        this._mapOfReferenceToModuleId = new Map();
+        this._mapOfReferenceToModuleId = {};
+
+        /**
+         * Set of entitties to be overrided
+         */
+         this.entityOverride = new Set();
     }
 
     /**
@@ -140,11 +145,16 @@ class Linker {
      * @param {string} entryFileName
      */
     link(entryFileName) {
-        //compile entry file        
+        // compile entry file        
         let entryModule = this.loadModule(entryFileName);
 
         if (!entryModule) {
             throw new Error(`Cannot resolve file "${entryFileName}".`);
+        }
+
+        // see if there is overrides rules
+        if (!_.isEmpty(entryModule.overrides?.entities)) {
+            this.entityOverride = new Set(entryModule.overrides.entities.map(item => item.entity)); 
         }
 
         if (_.isEmpty(entryModule.schema)) {
@@ -244,7 +254,7 @@ class Linker {
             if (value.oolType === GemlTypes.Lang.CONST_REF) {                
                 let refedValue = this.loadElement(gemlModule, GemlTypes.Element.CONST, value.name, true);
                 let uniqueId = this.getElementUniqueId(gemlModule, GemlTypes.Element.CONST, value.name);
-                let ownerModule = this.getModuleById(this._mapOfReferenceToModuleId.get(uniqueId));
+                let ownerModule = this.getModuleById(this._mapOfReferenceToModuleId[uniqueId]);
                 return this.translateOolValue(ownerModule, refedValue);
             } else if (value.oolType) {
                 throw new Error(`todo: translateOolValue with type: ${value.oolType}`)
@@ -284,13 +294,7 @@ class Linker {
     }
 
     loadEntity(refererModule, elementName, throwOnMissing = true) {
-        let entity = this.loadElement(refererModule, GemlTypes.Element.ENTITY, elementName, throwOnMissing);
-
-        if (entity && _.isEmpty(entity.fields) && _.isEmpty(entity.info.associations)) {
-            throw new Error(`Entity "${elementName}" has no any fields defined.`);
-        }
-
-        return entity;
+        return this.loadElement(refererModule, GemlTypes.Element.ENTITY, elementName, throwOnMissing);        
     }
 
     loadType(refererModule, elementName, throwOnMissing = true) {
@@ -361,18 +365,22 @@ class Linker {
             return (this._elementsCache[uniqueId] = this._elementsCache[elementSelfId]);
         }
        
-        this._mapOfReferenceToModuleId.set(uniqueId, targetModule.id);
+        this._mapOfReferenceToModuleId[uniqueId] = targetModule.id;
 
         // retrieve the compiled info
         let elementInfo = targetModule[elementType][elementName];
         let element;
+
+        if (elementType === GemlTypes.Element.ENTITY && this.entityOverride.has(elementName)) {    
+            this.loadElement()
+        }
 
         if (elementType in ELEMENT_CLASS_MAP) {
             // element need linking
             let ElementClass = ELEMENT_CLASS_MAP[elementType];            
 
             element = new ElementClass(this, elementName, targetModule, elementInfo);   
-            element.link();         
+            element.link();             
         } else {
             if (elementType === GemlTypes.Element.TYPE) {
                 element = {

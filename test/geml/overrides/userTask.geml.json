@@ -1,0 +1,58 @@
+{
+    "namespace": [
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/acl.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/admin.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/contact.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/organization.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/person.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/user.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-task/geml/agenda.geml",
+            "task"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-task/geml/task.geml",
+            "task"
+        ]
+    ],
+    "entityOverride": {
+        "user": {
+            "associations": [
+                {
+                    "type": "hasMany",
+                    "destEntity": "task",
+                    "remoteField": "owner",
+                    "srcField": "createdTasks",
+                    "fieldProps": {}
+                },
+                {
+                    "type": "hasMany",
+                    "destEntity": "task",
+                    "remoteField": "assignedTo",
+                    "srcField": "assignedTasks",
+                    "fieldProps": {}
+                }
+            ]
+        }
+    },
+    "id": "./overrides/userTask.geml",
+    "name": "userTask"
+}

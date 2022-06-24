@@ -1,0 +1,13 @@
+import types
+
+//----------------------------------------------------------------------------------------------------     
+
+entity bankAccount is hyperIdIndexed
+  with
+    createTimestamp
+    updateTimestamp
+  has
+    bankName : name optional
+    accountName: name optional
+    accountBsb: text optional
+    accountNumber: text optional    

@@ -24,5 +24,8 @@ Thumbs.db
 # test files #
 ######################
 test/temp
+test/src
+test/scripts
+test/manifests
 .nyc_output
 coverage

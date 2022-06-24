@@ -1,0 +1,104 @@
+{
+    "namespace": [
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-commons/geml/bankAccount.geml",
+            "commons"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-commons/geml/queue.geml",
+            "commons"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-commons/geml/system.geml",
+            "commons"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-commons/geml/types.geml",
+            "commons"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-geo/geml/address.geml",
+            "geo"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-geo/geml/country.geml",
+            "geo"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-cms/geml/resource.geml",
+            "cms"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/acl.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/admin.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/contact.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/organization.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/person.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-user/geml/user.geml",
+            "user"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-task/geml/agenda.geml",
+            "task"
+        ],
+        [
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-task/geml/task.geml",
+            "task"
+        ],
+        "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/geml/overrides/userTask.geml"
+    ],
+    "overrides": {
+        "entities": [
+            {
+                "entity": "user"
+            }
+        ]
+    },
+    "schema": {
+        "test": {
+            "entities": [
+                {
+                    "entity": "setting"
+                },
+                {
+                    "entity": "contact"
+                },
+                {
+                    "entity": "person"
+                },
+                {
+                    "entity": "resource"
+                },
+                {
+                    "entity": "user"
+                },
+                {
+                    "entity": "adminUser"
+                },
+                {
+                    "entity": "company"
+                },
+                {
+                    "entity": "task"
+                }
+            ]
+        }
+    },
+    "id": "./test.geml",
+    "name": "test"
+}

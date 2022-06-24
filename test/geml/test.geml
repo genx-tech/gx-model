@@ -1,0 +1,22 @@
+import 'commons:**'
+import 'geo:**'
+import 'cms:**'
+import 'user:**'
+import 'task:**'
+
+import './overrides/*'
+
+overrides
+  entities
+    user
+
+schema 'test'
+  entities
+    setting        
+    contact
+    person
+    resource    
+    user
+    adminUser
+    company
+    task

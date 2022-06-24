@@ -470,8 +470,10 @@
             this.define('schema', name, value, line);    
         }
 
-        defineOverrides(name, value, line) {
-            this.define('overrides', name, value, line);    
+        defineOverrides(object, line) {
+            for (let key in object) {
+                this.define('overrides', key, object[key], line);    
+            }            
         }
 
         defineRelation(name, value, line) {
@@ -1040,7 +1042,7 @@ schema_entities_block
     ;
 
 overrides_statement
-    : "overrides" NEWLINE INDENT schema_statement_block DEDENT NEWLINE? -> state.defineOverrides($2, $4, @1.first_line)
+    : "overrides" NEWLINE INDENT schema_statement_block DEDENT NEWLINE? -> state.defineOverrides($4, @4.first_line)
     ;
 
 schema_views
@@ -1173,8 +1175,8 @@ type_modifier_validators
     ;
 
 override_statement
-    : "override" entity_statement_header NEWLINE -> state.defineEntityOverride($1[0], $1[1], @1.first_line)
-    | "override" entity_statement_header NEWLINE INDENT entity_statement_block DEDENT NEWLINE? -> state.defineEntityOverride($1[0], Object.assign({}, $1[1], $4), @1.first_line)
+    : "override" entity_statement_header NEWLINE -> state.defineEntityOverride($2[0], $2[1], @1.first_line)
+    | "override" entity_statement_header NEWLINE INDENT entity_statement_block DEDENT NEWLINE? -> state.defineEntityOverride($2[0], Object.assign({}, $2[1], $5), @1.first_line)
     ;
 
 entity_statement
