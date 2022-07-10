@@ -60,7 +60,7 @@
             "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-task/geml/task.geml",
             "task"
         ],
-        "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/geml/overrides/userTask.geml"
+        "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/geml/customize/userTask.geml"
     ],
     "overrides": {
         "entities": [

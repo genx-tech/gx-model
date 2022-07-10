@@ -35,6 +35,12 @@
     ],
     "entityOverride": {
         "user": {
+            "fields": {
+                "extraField": {
+                    "name": "extraField",
+                    "type": "name"
+                }
+            },
             "associations": [
                 {
                     "type": "hasMany",
@@ -50,9 +56,21 @@
                     "srcField": "assignedTasks",
                     "fieldProps": {}
                 }
-            ]
+            ],
+            "indexes": [
+                {
+                    "fields": "extraField"
+                }
+            ],
+            "inputs": {
+                "withExtra": [
+                    {
+                        "name": "extraField"
+                    }
+                ]
+            }
         }
     },
-    "id": "./overrides/userTask.geml",
+    "id": "./customize/userTask.geml",
     "name": "userTask"
 }

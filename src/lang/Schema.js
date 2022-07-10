@@ -34,11 +34,10 @@ class Schema extends Clonable {
 
     /**     
      * @param {Linker} linker
-     * @param {string} name
-     * @param {object} gemlModule
+     * @param {string} name     
      * @param {object} info
      */
-    constructor(linker, name, gemlModule, info) {
+    constructor(linker, name, info) {
         super();
 
         /**
@@ -57,13 +56,13 @@ class Schema extends Clonable {
          * Owner geml module
          * @member {object}
          */
-        this.gemlModule = gemlModule;
+        this.gemlModule = this.linker.entryModule;
 
         /**
          * Raw metadata
          * @member {object}
          */
-        this.info = info;        
+        this.info = info;       
     }
 
     /**
@@ -243,7 +242,7 @@ class Schema extends Clonable {
     clone() {
         super.clone();
         
-        let schema = new Schema(this.linker, this.name, this.gemlModule, this.info);
+        let schema = new Schema(this.linker, this.name, this.info);
         
         deepCloneField(this, schema, 'displayName');
         deepCloneField(this, schema, 'comment');        

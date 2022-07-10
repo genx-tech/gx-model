@@ -20,6 +20,38 @@ const { Types: { FunctionalQualifiers } } = require('@genx/data');
  * @class Entity
  */
 class Entity extends Clonable {
+    static overrideEntityMeta(sourceInfo, overrideInfo) {
+        if (overrideInfo.features) {
+            sourceInfo.features = [
+                ...(sourceInfo.features ?? []),
+                ...overrideInfo.features
+            ];
+        }
+
+        if (overrideInfo.fields) {
+            sourceInfo.fields = {
+                ...sourceInfo.fields,
+                ...overrideInfo.fields
+            };
+        }        
+
+        if (overrideInfo.associations) {
+            sourceInfo.associations = [...(sourceInfo.associations ?? []), ...overrideInfo.associations ];
+        }
+
+        if (overrideInfo.indexes) {
+            sourceInfo.indexes = [...(sourceInfo.indexes ?? []), ...overrideInfo.indexes ];
+        }
+
+        if (overrideInfo.inputs) {
+            sourceInfo.inputs = {
+                ...sourceInfo.inputs,
+                ...overrideInfo.inputs
+            };
+        }  
+    }
+
+
     /**
      * Fields of the entity, map of <fieldName, fieldObject>
      * @member {object.<string, Field>}

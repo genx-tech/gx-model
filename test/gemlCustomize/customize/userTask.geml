@@ -1,0 +1,14 @@
+import 'user:**'
+import 'task:**'
+
+override entity user
+  has
+    extraField: name 
+  associations    
+    hasMany task being owner as createdTasks
+    hasMany task being assignedTo as assignedTasks
+  index
+    extraField
+  input
+    withExtra
+      extraField

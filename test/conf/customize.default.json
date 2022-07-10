@@ -15,7 +15,7 @@
     },    
     "settings": {
         "geml": {
-            "gemlPath": "geml",
+            "gemlPath": "gemlCustomize",
             "modelPath": "src/models",
             "scriptPath": "scripts",
             "manifestPath": "manifests",

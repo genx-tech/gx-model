@@ -20,17 +20,18 @@ module.exports = async (app, context) => {
 
     throwIfFileNotExist("gemlPath", context.gemlPath);
 
-    let linker = new Linker(app, context);
+    const schemaObjects = Linker.buildSchemaObjects(app, context);
 
-    let schemaFiles = Linker.getGemlFiles(context.gemlPath, context.useJsonSource);
-    schemaFiles.forEach(schemaFile => linker.link(schemaFile));  
+    if (_.isEmpty(context.schemas)) {
+        throw new Error(`Missing schema data source setting. Please run "${app.name} connect" to configure data source first.`);
+    }
 
     let schemaToConnector = getSchemaConnectors(app, context.schemas);
 
     return eachAsync_(context.schemas, async (deploymentSetting, schemaName) => {      
         app.log('verbose', `Processing schema "${schemaName}" ...`);   
         
-        let schema = linker.schemas[schemaName];
+        let schema = schemaObjects[schemaName];
 
         if (!schema) {
             throw new Error(`Schema "${schemaName}" not found in model source."`);
@@ -41,11 +42,11 @@ module.exports = async (app, context) => {
         const skipGeneration = true;
 
         let DbModeler = require(`../modeler/database/${connector.driver}/Modeler`);
-        let dbModeler = new DbModeler(context, linker, connector, deploymentSetting.extraOptions);
+        let dbModeler = new DbModeler(context, schema.linker, connector, deploymentSetting.extraOptions);
         let refinedSchema = dbModeler.modeling(schema, schemaToConnector, skipGeneration);
 
         const GraphQLModeler = require('../modeler/GraphQL');
-        let graphQLModeler = new GraphQLModeler(context, linker, connector);
+        let graphQLModeler = new GraphQLModeler(context, schema.linker, connector);
 
         return graphQLModeler.modeling_(refinedSchema);
     });            

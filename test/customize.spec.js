@@ -12,7 +12,6 @@ const SCRIPT_DIR = path.resolve(WORK_DIR, './scripts');
 const MANIFEST_DIR = path.resolve(WORK_DIR, './manifests');
 
 testSuite(
-    __filename,
     function (suite) {
         suite.testCase("build", async function () {
             await suite.startWorker_(
@@ -23,11 +22,13 @@ testSuite(
                     await fs.remove(SCRIPT_DIR);
                     await fs.remove(MANIFEST_DIR);
 
-                    await appInitiator.run("build");                    
+                    await appInitiator.run("build");     
+                    
+                    
                 },  
                 {
                     workingPath: WORK_DIR,
-                    configName: "app",
+                    configName: "customize",
                     configPath: "./conf",
                     appModulesPath: "./app_modules",
                     logger: {

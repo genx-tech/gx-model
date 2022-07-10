@@ -15,12 +15,12 @@
     };
 
     //top level keywords
-    const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity', 'overrides', 'override']);
+    const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity', 'customize', 'override']);
 
     //allowed keywords of different state
     const SUB_KEYWORDS = { 
         // level 1
-        'overrides': new Set(['entities']),
+        'customize': new Set(['entities']),
         'override': new Set(['entity']),
         'schema': new Set(['entities', 'views']),
         'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'input', 'interface', 'code', 'triggers' ]),
@@ -1042,7 +1042,7 @@ schema_entities_block
     ;
 
 overrides_statement
-    : "overrides" NEWLINE INDENT schema_statement_block DEDENT NEWLINE? -> state.defineOverrides($4, @4.first_line)
+    : "customize" NEWLINE INDENT schema_statement_block DEDENT NEWLINE? -> state.defineOverrides($4, @4.first_line)
     ;
 
 schema_views

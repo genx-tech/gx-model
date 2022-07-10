@@ -1,7 +1,5 @@
 const path = require('path');
-const { _, eachAsync_ } = require('@genx/july');
 const { fs } = require('@genx/sys');
-const { throwIfFileNotExist, getSchemaConnectors } = require('../utils/helpers');
 const copyFileFromTemplate_ = require('../utils/copyFileFromTemplate_');
 const npmInstall_ = require('../utils/npmInstall_');
 

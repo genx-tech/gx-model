@@ -18,12 +18,9 @@ const Linker = require('../lang/Linker');
 module.exports = async (app, context) => {
     app.log('verbose', `${app.name} build`);
 
-    throwIfFileNotExist("gemlPath", context.gemlPath);
+    throwIfFileNotExist("gemlPath", context.gemlPath);    
 
-    let linker = new Linker(app, context);
-
-    let schemaFiles = Linker.getGemlFiles(context.gemlPath, context.useJsonSource);
-    schemaFiles.forEach(schemaFile => linker.link(schemaFile));  
+    const schemaObjects = Linker.buildSchemaObjects(app, context);
 
     if (_.isEmpty(context.schemas)) {
         throw new Error(`Missing schema data source setting. Please run "${app.name} connect" to configure data source first.`);
@@ -34,7 +31,7 @@ module.exports = async (app, context) => {
     return eachAsync_(context.schemas, async (deploymentSetting, schemaName) => {      
         app.log('verbose', `Processing schema "${schemaName}" ...`);   
         
-        let schema = linker.schemas[schemaName];
+        let schema = schemaObjects[schemaName];
 
         if (!schema) {
             throw new Error(`Schema "${schemaName}" not found in model source."`);
@@ -43,11 +40,11 @@ module.exports = async (app, context) => {
         let connector = schemaToConnector[schemaName];
 
         let DbModeler = require(`../modeler/database/${connector.driver}/Modeler`);
-        let dbModeler = new DbModeler(context, linker, connector, deploymentSetting.extraOptions);
+        let dbModeler = new DbModeler(context, schema.linker, connector, deploymentSetting.extraOptions);
         let refinedSchema = dbModeler.modeling(schema, schemaToConnector);
 
         const DaoModeler = require('../modeler/Dao');
-        let daoModeler = new DaoModeler(context, linker, connector);
+        let daoModeler = new DaoModeler(context, schema.linker, connector);
 
         return daoModeler.modeling_(refinedSchema);
     });            

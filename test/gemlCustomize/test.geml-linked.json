@@ -835,6 +835,15 @@
                     "comment": "Not allowed to login UI and be shown to other users",
                     "displayName": "Is Hidden"
                 },
+                "extraField": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Extra Field"
+                },
                 "createdAt": {
                     "type": "datetime",
                     "auto": true,

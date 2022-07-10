@@ -4,9 +4,9 @@ import 'cms:**'
 import 'user:**'
 import 'task:**'
 
-import './overrides/*'
+import './customize/*'
 
-overrides
+customize
   entities
     user
 
