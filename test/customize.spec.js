@@ -16,7 +16,7 @@ testSuite(
         suite.testCase("build", async function () {
             await suite.startWorker_(
                 async (app) => {
-                    const appInitiator = getAppInitiator(app);
+                    const appInitiator = getAppInitiator(app, 'conf/customize.default.json');
 
                     await fs.remove(SOURCE_DIR);
                     await fs.remove(SCRIPT_DIR);
@@ -28,7 +28,7 @@ testSuite(
                 },  
                 {
                     workingPath: WORK_DIR,
-                    configName: "customize",
+                    configName: "test",
                     configPath: "./conf",
                     appModulesPath: "./app_modules",
                     logger: {

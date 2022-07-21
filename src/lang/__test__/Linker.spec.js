@@ -6,7 +6,7 @@ const Linker = require('../Linker');
 
 const SOURCE_PATH = path.resolve(__dirname, '../../../test/data/unit/linker');
 
-describe('unit:lang:Linker', function () {    
+describe.only('unit:lang:Linker', function () {    
     let linker;
 
     let logger = winston.createLogger({

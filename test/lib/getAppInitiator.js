@@ -1,8 +1,8 @@
 const AppInitiator = require("../../src/AppInitiator");
 
-module.exports = (app) => {
+module.exports = (app, configFile) => {
     let options = {
-        'config': 'conf/app.default.json'
+        'config': configFile
     };
     
     const appInitiator = new AppInitiator({
