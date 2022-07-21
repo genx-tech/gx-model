@@ -26,7 +26,7 @@
                 }
             },
             "dependencies": {
-                "commons": "./app_modules/gem-commons",                
+                "commons": "@genx/gem-commons",                
                 "geo": "./app_modules/gem-geo",
                 "cms": "./app_modules/gem-cms",
                 "user": "./app_modules/gem-user",

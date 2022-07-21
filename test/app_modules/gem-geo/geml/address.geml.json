@@ -1,7 +1,7 @@
 {
     "namespace": [
         [
-            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-commons/geml/types.geml",
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/node_modules/@genx/gem-commons/geml/types.geml",
             "commons"
         ],
         "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-geo/geml/country.geml"

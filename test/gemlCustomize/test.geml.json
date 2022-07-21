@@ -1,19 +1,19 @@
 {
     "namespace": [
         [
-            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-commons/geml/bankAccount.geml",
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/node_modules/@genx/gem-commons/geml/bankAccount.geml",
             "commons"
         ],
         [
-            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-commons/geml/queue.geml",
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/node_modules/@genx/gem-commons/geml/queue.geml",
             "commons"
         ],
         [
-            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-commons/geml/system.geml",
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/node_modules/@genx/gem-commons/geml/system.geml",
             "commons"
         ],
         [
-            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/test/app_modules/gem-commons/geml/types.geml",
+            "/Users/rockie/Documents/GitHub/genx-suite/packages/model/node_modules/@genx/gem-commons/geml/types.geml",
             "commons"
         ],
         [

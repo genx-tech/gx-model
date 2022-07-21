@@ -1,6 +1,6 @@
 {
     "name": "@genx/model",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "Meta programming DSL specially for automating database structure creation and data access.",
     "main": "lib/index.js",
     "bin": {
@@ -45,6 +45,7 @@
         "@babel/register": "^7.15.3",
         "@genx/babelnode": "^7.14.9",
         "@genx/data": "^2.0.2",
+        "@genx/gem-commons": "^0.0.1",
         "@genx/server": "^2.0.2",
         "@genx/test": "^2.1.2",
         "babel-plugin-source-map-support": "^2.1.3",

@@ -1,10 +1,25 @@
 const path = require("path");
-const { _ } = require("@genx/july");
+const { _, text } = require("@genx/july");
 const { fs } = require("@genx/sys");
 const { ServiceContainer } = require("@genx/app");
 const {
     Validators: { validateObjectBySchema },
 } = require("@genx/data");
+
+const moduleApi = require('module');
+
+const checkModule = (fromPath, name) => {
+    try {
+        const requireFrom = moduleApi.createRequire(
+            text.ensureEndsWith(fromPath, path.sep)
+        );
+
+        const basePath = requireFrom.resolve.paths(name).find(basePath => fs.existsSync(path.join(basePath, name)));
+        return path.join(basePath, name);
+    } catch (err) {
+        return false;
+    }
+};
 
 class AppInitiator {
     constructor(context) {
@@ -132,21 +147,24 @@ class AppInitiator {
 
             if (!_.isEmpty(gemlConfig.dependencies)) {
                 gemlConfig.dependencies = _.mapValues(gemlConfig.dependencies, (pkgPath) => {
-                    const pkgRoot = this.container.toAbsolutePath(pkgPath);
+                    let pkgRoot = this.container.toAbsolutePath(pkgPath);
                     if (!fs.pathExistsSync(pkgRoot)) {
-                        throw new Error(`Dependency package "${pkgRoot}" not found.`);
+                        pkgRoot = checkModule(this.container.workingPath, pkgPath);
+                        if (!pkgRoot) {
+                            throw new Error(`Dependency package "${pkgPath}" not found.`);
+                        }
                     }
 
-                    const pkgDefaultConfig = path.resolve(pkgRoot, 'conf/app.default.config');
+                    const pkgDefaultConfig = path.resolve(pkgRoot, "conf/app.default.config");
 
                     let pkgGemlPath;
 
                     if (fs.existsSync(pkgDefaultConfig)) {
                         const pkgConfig = fs.readJsonSync(pkgDefaultConfig);
-                        pkgGemlPath = pkgConfig.settings?.geml?.gemlPath;    
+                        pkgGemlPath = pkgConfig.settings?.geml?.gemlPath;
                     }
 
-                    return path.join(pkgRoot, pkgGemlPath || 'geml');                    
+                    return path.join(pkgRoot, pkgGemlPath || "geml");
                 });
             }
         } else {
