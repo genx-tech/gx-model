@@ -127,7 +127,7 @@ class AppInitiator {
             gemlPath = this.container.toAbsolutePath(gemlPath);
             modelPath = this.container.toAbsolutePath(modelPath);
             scriptPath = this.container.toAbsolutePath(scriptPath);
-            manifestPath = this.container.toAbsolutePath(manifestPath);
+            manifestPath = manifestPath && this.container.toAbsolutePath(manifestPath);
 
             gemlConfig = {
                 ...config,

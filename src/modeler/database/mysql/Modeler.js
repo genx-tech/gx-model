@@ -79,6 +79,7 @@ class MySQLModeler {
         this._events.emit("afterRelationshipBuilding");
 
         //build SQL scripts
+        //todo: let sqlFilesDir = path.join("mysql", schema.name);
         let sqlFilesDir = path.join("mysql", this.connector.database);
         let dbFilePath = path.join(sqlFilesDir, "entities.sql");
         let fkFilePath = path.join(sqlFilesDir, "relations.sql");
