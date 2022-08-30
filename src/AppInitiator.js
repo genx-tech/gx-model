@@ -62,13 +62,21 @@ class AppInitiator {
 
             if (configName.endsWith(".default")) {
                 envAware = true;
-                configName = configName.substr(0, configName.length - 8);
+                configName = configName.substring(0, configName.length - 8);
+            }
+
+            const featuresPath = this.app.commandLine.option("features-path");
+
+            let allowFeatures = this.app.commandLine.option("allow");
+            if (allowFeatures && !Array.isArray(allowFeatures)) {
+                allowFeatures = [allowFeatures];
             }
 
             this.container = new ServiceContainer(this.app.name, {
                 workingPath: this.cwd,
                 configPath,
                 configName,
+                featuresPath,
                 disableEnvAwareConfig: !envAware,
                 allowedFeatures: [
                     "configByHostname",
@@ -80,6 +88,8 @@ class AppInitiator {
                     "version",
                     "dataSource",
                     "env",
+                    "featureRegistry",
+                    ...(allowFeatures ?? [])
                 ],
             });
 

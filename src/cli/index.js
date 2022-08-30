@@ -96,6 +96,15 @@ function main() {
                             desc: "Config path",
                             alias: ["conf", "config"],
                         },
+                        allow: {
+                            desc: "Allow features",
+                            alias: ["allow-feature"],
+                            type: 'list'
+                        },
+                        fp: {
+                            desc: "Feature path",
+                            alias: ["feature-path", "features-path"]
+                        }
                     },
                     silentMode: (cli) => cli.argv["silent"] || cli.argv["version"] || cli.argv["help"],
                     nonValidationMode: (cli) => cli.argv["version"] || cli.argv["help"],

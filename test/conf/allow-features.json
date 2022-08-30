@@ -1,0 +1,38 @@
+{
+    "timezone": "Australia/Sydney",
+    "featureRegistry": {
+        "ttlMemCache": [ "@genx/app-feat-commons", "ttlMemCache" ]
+    },
+    "dataSource": {
+        "mysql": {
+            "test": {
+                "connection": "mysql://root:root@localhost/gx-model-test",
+                "logStatement": true
+            }
+        }
+    },
+    "useDb": {        
+        "test": {
+            "dataSource": "mysql.test"
+        }
+    },
+    "ttlMemCache": {
+        "stdTTL": 900,
+        "checkperiod": 1200
+    },
+    "localFeature": { "key": "test" },
+    "localFeature2": { "key": "hello" },
+    "settings": {
+        "geml": {
+            "gemlPath": "gemlCustomize",
+            "modelPath": "src/models",
+            "scriptPath": "scripts",
+            "saveIntermediate": true,
+            "schemas": {
+                "test": {
+                    "dataSource": "mysql.test"
+                }
+            }
+        }        
+    }
+}
