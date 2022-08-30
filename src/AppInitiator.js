@@ -66,6 +66,7 @@ class AppInitiator {
             }
 
             const featuresPath = this.app.commandLine.option("features-path");
+            const modelsPath = this.app.commandLine.option("models-path");
 
             let allowFeatures = this.app.commandLine.option("allow");
             if (allowFeatures && !Array.isArray(allowFeatures)) {
@@ -77,6 +78,7 @@ class AppInitiator {
                 configPath,
                 configName,
                 featuresPath,
+                modelsPath,
                 disableEnvAwareConfig: !envAware,
                 allowedFeatures: [
                     "configByHostname",
