@@ -6,15 +6,13 @@ const {
     Validators: { validateObjectBySchema },
 } = require("@genx/data");
 
-const moduleApi = require('module');
+const moduleApi = require("module");
 
 const checkModule = (fromPath, name) => {
     try {
-        const requireFrom = moduleApi.createRequire(
-            text.ensureEndsWith(fromPath, path.sep)
-        );
+        const requireFrom = moduleApi.createRequire(text.ensureEndsWith(fromPath, path.sep));
 
-        const basePath = requireFrom.resolve.paths(name).find(basePath => fs.existsSync(path.join(basePath, name)));
+        const basePath = requireFrom.resolve.paths(name).find((basePath) => fs.existsSync(path.join(basePath, name)));
         return path.join(basePath, name);
     } catch (err) {
         return false;
@@ -66,7 +64,6 @@ class AppInitiator {
             }
 
             const featuresPath = this.app.commandLine.option("features-path");
-            const modelsPath = this.app.commandLine.option("models-path");
 
             let allowFeatures = this.app.commandLine.option("allow");
             if (allowFeatures && !Array.isArray(allowFeatures)) {
@@ -78,7 +75,6 @@ class AppInitiator {
                 configPath,
                 configName,
                 featuresPath,
-                modelsPath,
                 disableEnvAwareConfig: !envAware,
                 allowedFeatures: [
                     "configByHostname",
@@ -91,11 +87,62 @@ class AppInitiator {
                     "dataSource",
                     "env",
                     "featureRegistry",
-                    ...(allowFeatures ?? [])
+                    ...(allowFeatures ?? []),
                 ],
             });
 
             this.container.replaceLogger(this.app.logger);
+
+            // useDb should be run at init level after settings loaded
+            this.container.on("after:Initial", (asyncHandlers) => {
+                asyncHandlers.push((async () => {
+                    let config = this.container.settings.geml;
+                    if (_.isEmpty(config)) {
+                        throw new Error("Empty geml config!");
+                    }
+
+                    let { gemlPath, modelPath, scriptPath, manifestPath, useJsonSource, saveIntermediate } =
+                        validateObjectBySchema(config, {
+                            gemlPath: { type: "text", default: "geml" },
+                            modelPath: { type: "text", default: "src/models" },
+                            scriptPath: { type: "text", default: "src/scripts" },
+                            manifestPath: { type: "text", optional: true },
+                            useJsonSource: { type: "boolean", optional: true, default: false },
+                            saveIntermediate: { type: "boolean", optional: true, default: false },
+                            schemas: {
+                                type: "object",
+                                optional: true,
+                            },
+                            dependencies: {
+                                type: "object",
+                                optional: true,
+                            },
+                        });
+
+                    this.container.options.modelPath = modelPath;
+
+                    gemlPath = this.container.toAbsolutePath(gemlPath);
+                    modelPath = this.container.toAbsolutePath(modelPath);
+                    scriptPath = this.container.toAbsolutePath(scriptPath);
+                    manifestPath = manifestPath && this.container.toAbsolutePath(manifestPath);
+
+                    gemlConfig = {
+                        ...config,
+                        gemlPath,
+                        modelPath,
+                        scriptPath,
+                        manifestPath,
+                        useJsonSource,
+                        saveIntermediate,
+                        configFullPath,
+                    };
+
+                    if (!_.isEmpty(gemlConfig.schemas)) {
+                        const { load_: useDb } = require("@genx/app/lib/features/useDb");
+                        await useDb(this.container, gemlConfig.schemas);
+                    }
+                })());
+            });
 
             await this.container.start_();
 
@@ -110,52 +157,6 @@ class AppInitiator {
             this.container.option = (name) => {
                 return this.app.commandLine.option(name);
             };
-
-            let config = this.container.settings.geml;
-            if (_.isEmpty(config)) {
-                throw new Error("Empty geml config!");
-            }
-
-            let { gemlPath, modelPath, scriptPath, manifestPath, useJsonSource, saveIntermediate } =
-                validateObjectBySchema(config, {
-                    gemlPath: { type: "text", default: "geml" },
-                    modelPath: { type: "text", default: "src/models" },
-                    scriptPath: { type: "text", default: "src/scripts" },
-                    manifestPath: { type: "text", optional: true },
-                    useJsonSource: { type: "boolean", optional: true, default: false },
-                    saveIntermediate: { type: "boolean", optional: true, default: false },
-                    schemas: {
-                        type: "object",
-                        optional: true,
-                    },
-                    dependencies: {
-                        type: "object",
-                        optional: true,
-                    },
-                });
-
-            this.container.options.modelPath = modelPath;
-
-            gemlPath = this.container.toAbsolutePath(gemlPath);
-            modelPath = this.container.toAbsolutePath(modelPath);
-            scriptPath = this.container.toAbsolutePath(scriptPath);
-            manifestPath = manifestPath && this.container.toAbsolutePath(manifestPath);
-
-            gemlConfig = {
-                ...config,
-                gemlPath,
-                modelPath,
-                scriptPath,
-                manifestPath,
-                useJsonSource,
-                saveIntermediate,
-                configFullPath,
-            };
-
-            if (!_.isEmpty(gemlConfig.schemas)) {
-                const { load_: useDb } = require("@genx/app/lib/features/useDb");
-                await useDb(this.container, gemlConfig.schemas);
-            }
 
             if (!_.isEmpty(gemlConfig.dependencies)) {
                 gemlConfig.dependencies = _.mapValues(gemlConfig.dependencies, (pkgPath) => {
@@ -188,8 +189,8 @@ class AppInitiator {
         try {
             await cmdMethod_(this.container, gemlConfig);
         } catch (error) {
-            throw error;
-            //this.app.log('error', error.message);
+            //throw error;
+            this.app.log("error", error.message);
             process.exit(1);
         }
     }
