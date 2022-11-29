@@ -20,7 +20,7 @@ class MySQLMigration {
         this.scriptPath = context.scriptPath;        
         this.db = db;
 
-        this.dbScriptPath = path.join(this.scriptPath, this.db.driver, this.db.connector.database);
+        this.dbScriptPath = path.join(this.scriptPath, this.db.driver, this.db.schemaName);
     }
 
     async reset_() {
@@ -52,7 +52,7 @@ class MySQLMigration {
         return eachAsync_(sqlFiles, async (file) => {
             let sqlFile = path.join(this.dbScriptPath, file);
             if (!fs.existsSync(sqlFile)) {
-                throw new Error(`Database script "${sqlFile}" not found. Try run "oolong build" first.`);
+                throw new Error(`Database script "${sqlFile}" not found.`);
             }
 
             let sql = _.trim(fs.readFileSync(sqlFile, { encoding: 'utf8' }));

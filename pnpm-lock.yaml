@@ -19,12 +19,15 @@ specifiers:
   '@genx/test': ^2.1.2
   babel-plugin-source-map-support: ^2.1.3
   escodegen: ^2.0.0
+  esprima: ^4.0.1
   exceljs: ^1.7.0
   fast-deep-equal: ^3.1.3
+  glob: ^8.0.3
   http-status-codes: ^1.3.0
   immutable: ^4.0.0-rc.12
   inquirer: ^8.2.4
   jison: ^0.4.18
+  lodash: ^4.17.21
   luxon: ^3.0.3
   minimist: ^1.2.6
   mocha: ^9.1.1
@@ -41,15 +44,18 @@ specifiers:
 
 dependencies:
   '@genx/algorithm': 2.0.0
-  '@genx/app': 2.0.4
+  '@genx/app': 2.0.4_glob@8.0.3+lodash@4.17.21
   '@genx/july': 1.1.1
-  '@genx/sys': 0.1.6
+  '@genx/sys': 0.1.6_glob@8.0.3
   escodegen: 2.0.0
+  esprima: 4.0.1
   exceljs: 1.15.0
   fast-deep-equal: 3.1.3
+  glob: 8.0.3
   http-status-codes: 1.4.0
   immutable: 4.1.0
   inquirer: 8.2.4
+  lodash: 4.17.21
   luxon: 3.0.3
   minimist: 1.2.6
   number-to-letter: 1.0.1
@@ -63,12 +69,12 @@ devDependencies:
   '@babel/plugin-proposal-decorators': 7.18.6_@babel+core@7.18.6
   '@babel/preset-env': 7.18.6_@babel+core@7.18.6
   '@babel/register': 7.18.6_@babel+core@7.18.6
-  '@genx/app-feat-commons': 0.0.1
+  '@genx/app-feat-commons': 0.0.1_glob@8.0.3+lodash@4.17.21
   '@genx/babelnode': 7.14.9_@babel+core@7.18.6
-  '@genx/data': 2.1.1
+  '@genx/data': 2.1.1_glob@8.0.3
   '@genx/gem-commons': 0.0.1
-  '@genx/server': 2.0.2_swig-templates@2.0.3
-  '@genx/test': 2.1.2_@genx+app@2.0.4
+  '@genx/server': 2.0.2_z6qsss6penmssshaf3tubfyyp4
+  '@genx/test': 2.1.2_@genx+app@2.0.4+glob@8.0.3
   babel-plugin-source-map-support: 2.2.0
   jison: 0.4.18
   mocha: 9.2.2
@@ -1303,25 +1309,25 @@ packages:
       '@genx/july': 1.1.1
     dev: false
 
-  /@genx/app-feat-commons/0.0.1:
+  /@genx/app-feat-commons/0.0.1_glob@8.0.3+lodash@4.17.21:
     resolution: {integrity: sha512-caqCEvVmeKugtpPl7eDGAjM+aFJwf1SPSmUzmjSVlZKhR7HuSQICIjL2AazP++Sg36grX3Q3rM5i0OU6WvB08g==}
     dependencies:
-      '@genx/app': github.com/genx-tech/gx-app/f49c08f6f2802ec4480ab89c1baf498752692648
+      '@genx/app': github.com/genx-tech/gx-app/f49c08f6f2802ec4480ab89c1baf498752692648_glob@8.0.3+lodash@4.17.21
       '@genx/error': 1.1.2
     transitivePeerDependencies:
       - glob
       - lodash
     dev: true
 
-  /@genx/app/2.0.4:
+  /@genx/app/2.0.4_glob@8.0.3+lodash@4.17.21:
     resolution: {integrity: sha512-xVmOJnHE8s5t4zb2OVXQPqRoY3+K0aPlDQGkOhmWXil8SxouuM7wlHzUoJeizR/cfjwtsG+vx5Of4b5TprJpNg==}
     dependencies:
-      '@genx/config': 1.0.3
+      '@genx/config': 1.0.3_glob@8.0.3
       '@genx/error': 1.1.2
       '@genx/july': 1.1.1
       luxon: 1.28.0
       winston: github.com/kitmi/winston/443abdb73852ac44ae35849bedd3691132d0a237
-      winstonflight: 1.0.5_winston@3.3.3
+      winstonflight: 1.0.5_f6kvk5esyfwmohwvbli6medpoi
     transitivePeerDependencies:
       - glob
       - lodash
@@ -1342,21 +1348,21 @@ packages:
       v8flags: 3.2.0
     dev: true
 
-  /@genx/config/1.0.3:
+  /@genx/config/1.0.3_glob@8.0.3:
     resolution: {integrity: sha512-1m1AVVda/ljgYPSwHq61tLGh2QjIuVsTQZ532sb8cSrECw/m++tNICQ5Enk/ahuBKHu23Im2cXzdWZg84hfxGQ==}
     dependencies:
       '@genx/july': 1.1.1
-      '@genx/sys': 0.1.6
+      '@genx/sys': 0.1.6_glob@8.0.3
     transitivePeerDependencies:
       - glob
 
-  /@genx/data/2.1.1:
+  /@genx/data/2.1.1_glob@8.0.3:
     resolution: {integrity: sha512-OF62KEVChdA7mkh00v6wSZTETkBTrZIn96Sc004cxxksUEKvr3gDdaOWpwdw1I4z7izyrjJdkJAI5QNR2xzwDA==}
     dependencies:
       '@genx/error': 1.1.2
       '@genx/jes': 1.2.2
       '@genx/july': 1.1.1
-      '@genx/sys': 0.1.6
+      '@genx/sys': 0.1.6_glob@8.0.3
       luxon: 1.28.0
       number-to-letter: 1.0.1
       randomstring: 1.2.2
@@ -1392,13 +1398,13 @@ packages:
     dependencies:
       lodash: 4.17.21
 
-  /@genx/server/2.0.2_swig-templates@2.0.3:
+  /@genx/server/2.0.2_z6qsss6penmssshaf3tubfyyp4:
     resolution: {integrity: sha512-E5m1dEchM55Xj0AyVjD7pvsnDW8ZzEoJUQegKWxGgGsArdrEKbnA6ui48+6vjshZnr+5/QzUjp01BVPomIOEpA==}
     dependencies:
-      '@genx/app': 2.0.4
+      '@genx/app': 2.0.4_glob@8.0.3+lodash@4.17.21
       '@genx/error': 1.1.2
       '@genx/july': 0.3.3
-      '@genx/sys': 0.1.6
+      '@genx/sys': 0.1.6_glob@8.0.3
       '@koa/cors': 2.2.3
       '@koa/router': 10.1.1
       koa: 2.13.4
@@ -1414,7 +1420,7 @@ packages:
       koa-session: 5.13.1
       koa-session-memory: 1.0.4
       koa-static: 5.0.0
-      koa-views: 6.3.1_swig-templates@2.0.3
+      koa-views: 6.3.1_3fmes2m4dgf3fqzf46qwevl5p4
       validator: 12.2.0
     transitivePeerDependencies:
       - arc-templates
@@ -1474,24 +1480,24 @@ packages:
       - whiskers
     dev: true
 
-  /@genx/sys/0.1.6:
+  /@genx/sys/0.1.6_glob@8.0.3:
     resolution: {integrity: sha512-luDw1H4bH435tLphtOeqFjfo69FLGh4zg7f3ihIapzca7UjdauAF/TsdIbjrQmvfsCld5oWjYqJqDugeovtW9w==}
     dependencies:
       '@genx/july': 1.1.1
       fs-extra: 10.1.0
-      glob-promise: 4.2.2
+      glob-promise: 4.2.2_glob@8.0.3
       systemjs: 0.19.47
     transitivePeerDependencies:
       - glob
 
-  /@genx/test/2.1.2_@genx+app@2.0.4:
+  /@genx/test/2.1.2_@genx+app@2.0.4+glob@8.0.3:
     resolution: {integrity: sha512-W1HLO0LSg9uhH2J6EmCebFhIFQMyuOAOSkBdQ5JPnsWFnfBmDKKbooFw6Ybkey9qnVgGMj0bi8hvzXF0cjKBhw==}
     peerDependencies:
       '@genx/app': '>=2.0.0'
     dependencies:
-      '@genx/app': 2.0.4
+      '@genx/app': 2.0.4_glob@8.0.3+lodash@4.17.21
       '@genx/july': 1.1.1
-      '@genx/sys': 0.1.6
+      '@genx/sys': 0.1.6_glob@8.0.3
       allure-commandline: 2.17.2
       allure-js-commons: 2.0.0-beta.16
       allure-mocha: 2.0.0-beta.16_mocha@9.0.0
@@ -1922,6 +1928,11 @@ packages:
     dependencies:
       balanced-match: 1.0.2
       concat-map: 0.0.1
+
+  /brace-expansion/2.0.1:
+    resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
+    dependencies:
+      balanced-match: 1.0.2
 
   /braces/3.0.2:
     resolution: {integrity: sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==}
@@ -2437,175 +2448,6 @@ packages:
     dependencies:
       bluebird: 3.7.2
       lodash: 4.17.21
-      swig-templates: 2.0.3
-    dev: true
-
-  /consolidate/0.15.1_swig-templates@2.0.3:
-    resolution: {integrity: sha512-DW46nrsMJgy9kqAbPt5rKaCr7uFtpo4mSUvLHIUbJEjm0vo+aY5QLwBUq3FK4tRnJr/X0Psc0C4jf/h+HtXSMw==}
-    engines: {node: '>= 0.10.0'}
-    peerDependencies:
-      arc-templates: ^0.5.3
-      atpl: '>=0.7.6'
-      babel-core: ^6.26.3
-      bracket-template: ^1.1.5
-      coffee-script: ^1.12.7
-      dot: ^1.1.3
-      dust: ^0.3.0
-      dustjs-helpers: ^1.7.4
-      dustjs-linkedin: ^2.7.5
-      eco: ^1.1.0-rc-3
-      ect: ^0.5.9
-      ejs: ^3.1.5
-      haml-coffee: ^1.14.1
-      hamlet: ^0.3.3
-      hamljs: ^0.6.2
-      handlebars: ^4.7.6
-      hogan.js: ^3.0.2
-      htmling: ^0.0.8
-      jade: ^1.11.0
-      jazz: ^0.0.18
-      jqtpl: ~1.1.0
-      just: ^0.1.8
-      liquid-node: ^3.0.1
-      liquor: ^0.0.5
-      lodash: ^4.17.20
-      marko: ^3.14.4
-      mote: ^0.2.0
-      mustache: ^3.0.0
-      nunjucks: ^3.2.2
-      plates: ~0.4.11
-      pug: ^3.0.0
-      qejs: ^3.0.5
-      ractive: ^1.3.12
-      razor-tmpl: ^1.3.1
-      react: ^16.13.1
-      react-dom: ^16.13.1
-      slm: ^2.0.0
-      squirrelly: ^5.1.0
-      swig: ^1.4.2
-      swig-templates: ^2.0.3
-      teacup: ^2.0.0
-      templayed: '>=0.2.3'
-      then-jade: '*'
-      then-pug: '*'
-      tinyliquid: ^0.2.34
-      toffee: ^0.3.6
-      twig: ^1.15.2
-      twing: ^5.0.2
-      underscore: ^1.11.0
-      vash: ^0.13.0
-      velocityjs: ^2.0.1
-      walrus: ^0.10.1
-      whiskers: ^0.4.0
-    peerDependenciesMeta:
-      arc-templates:
-        optional: true
-      atpl:
-        optional: true
-      babel-core:
-        optional: true
-      bracket-template:
-        optional: true
-      coffee-script:
-        optional: true
-      dot:
-        optional: true
-      dust:
-        optional: true
-      dustjs-helpers:
-        optional: true
-      dustjs-linkedin:
-        optional: true
-      eco:
-        optional: true
-      ect:
-        optional: true
-      ejs:
-        optional: true
-      haml-coffee:
-        optional: true
-      hamlet:
-        optional: true
-      hamljs:
-        optional: true
-      handlebars:
-        optional: true
-      hogan.js:
-        optional: true
-      htmling:
-        optional: true
-      jade:
-        optional: true
-      jazz:
-        optional: true
-      jqtpl:
-        optional: true
-      just:
-        optional: true
-      liquid-node:
-        optional: true
-      liquor:
-        optional: true
-      lodash:
-        optional: true
-      marko:
-        optional: true
-      mote:
-        optional: true
-      mustache:
-        optional: true
-      nunjucks:
-        optional: true
-      plates:
-        optional: true
-      pug:
-        optional: true
-      qejs:
-        optional: true
-      ractive:
-        optional: true
-      razor-tmpl:
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      slm:
-        optional: true
-      squirrelly:
-        optional: true
-      swig:
-        optional: true
-      swig-templates:
-        optional: true
-      teacup:
-        optional: true
-      templayed:
-        optional: true
-      then-jade:
-        optional: true
-      then-pug:
-        optional: true
-      tinyliquid:
-        optional: true
-      toffee:
-        optional: true
-      twig:
-        optional: true
-      twing:
-        optional: true
-      underscore:
-        optional: true
-      vash:
-        optional: true
-      velocityjs:
-        optional: true
-      walrus:
-        optional: true
-      whiskers:
-        optional: true
-    dependencies:
-      bluebird: 3.7.2
       swig-templates: 2.0.3
     dev: true
 
@@ -3264,13 +3106,14 @@ packages:
       is-glob: 4.0.3
     dev: true
 
-  /glob-promise/4.2.2:
+  /glob-promise/4.2.2_glob@8.0.3:
     resolution: {integrity: sha512-xcUzJ8NWN5bktoTIX7eOclO1Npxd/dyVqUJxlLIDasT4C7KZyqlPIwkdJ0Ypiy3p2ZKahTjK4M9uC3sNSfNMzw==}
     engines: {node: '>=12'}
     peerDependencies:
       glob: ^7.1.6
     dependencies:
       '@types/glob': 7.2.0
+      glob: 8.0.3
 
   /glob/7.1.7:
     resolution: {integrity: sha512-OvD9ENzPLbegENnYP5UUfJIirTg4+XwMWGaQfQTY0JenxNvvIKP3U3/tAQSPIu/lHxXYSZmpXlUHeqAIdKzBLQ==}
@@ -3303,6 +3146,16 @@ packages:
       minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
+
+  /glob/8.0.3:
+    resolution: {integrity: sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      fs.realpath: 1.0.0
+      inflight: 1.0.6
+      inherits: 2.0.4
+      minimatch: 5.1.0
+      once: 1.4.0
 
   /globals/11.12.0:
     resolution: {integrity: sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==}
@@ -4075,10 +3928,10 @@ packages:
       - supports-color
     dev: true
 
-  /koa-views/6.3.1_swig-templates@2.0.3:
+  /koa-views/6.3.1_3fmes2m4dgf3fqzf46qwevl5p4:
     resolution: {integrity: sha512-weIaPs2cCHWT2qK8qHRmwlZ29xRCvUVy1v/z12AGavVV5j4QIU0W/Y7OVBBu1sTkcO9dDJ25ajGYHGZ/aY43IQ==}
     dependencies:
-      consolidate: 0.15.1_swig-templates@2.0.3
+      consolidate: 0.15.1_3fmes2m4dgf3fqzf46qwevl5p4
       debug: 4.3.4
       get-paths: 0.0.7
       koa-send: 5.0.1
@@ -4381,6 +4234,12 @@ packages:
     dependencies:
       brace-expansion: 1.1.11
     dev: true
+
+  /minimatch/5.1.0:
+    resolution: {integrity: sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==}
+    engines: {node: '>=10'}
+    dependencies:
+      brace-expansion: 2.0.1
 
   /minimist/0.0.10:
     resolution: {integrity: sha512-iotkTvxc+TwOm5Ieim8VnSNvCDjCK9S8G3scJ50ZthspSxa7jx50jkhYduuAtAjvfDUwSgOwf8+If99AlOEhyw==}
@@ -5861,12 +5720,13 @@ packages:
       readable-stream: 3.6.0
       triple-beam: 1.3.0
 
-  /winstonflight/1.0.5_winston@3.3.3:
+  /winstonflight/1.0.5_f6kvk5esyfwmohwvbli6medpoi:
     resolution: {integrity: sha512-jc45ieZ0oXohOmQLyeGSHG9DCCllL8eVP7JeczZ0RItEcjm/QSQ6iUdazvGsbWBwFEVy0muP2xnxnoYo6JJ9/g==}
     peerDependencies:
       lodash: 4.x
       winston: 3.x
     dependencies:
+      lodash: 4.17.21
       winston: github.com/kitmi/winston/443abdb73852ac44ae35849bedd3691132d0a237
 
   /word-wrap/1.2.3:
@@ -6016,19 +5876,20 @@ packages:
       readable-stream: 3.6.0
     dev: false
 
-  github.com/genx-tech/gx-app/f49c08f6f2802ec4480ab89c1baf498752692648:
+  github.com/genx-tech/gx-app/f49c08f6f2802ec4480ab89c1baf498752692648_glob@8.0.3+lodash@4.17.21:
     resolution: {tarball: https://codeload.github.com/genx-tech/gx-app/tar.gz/f49c08f6f2802ec4480ab89c1baf498752692648}
+    id: github.com/genx-tech/gx-app/f49c08f6f2802ec4480ab89c1baf498752692648
     name: '@genx/app'
     version: 2.0.4
     prepare: true
     requiresBuild: true
     dependencies:
-      '@genx/config': 1.0.3
+      '@genx/config': 1.0.3_glob@8.0.3
       '@genx/error': 1.1.2
       '@genx/july': 1.1.1
       luxon: 1.28.0
       winston: github.com/kitmi/winston/443abdb73852ac44ae35849bedd3691132d0a237
-      winstonflight: 1.0.5_winston@3.3.3
+      winstonflight: 1.0.5_f6kvk5esyfwmohwvbli6medpoi
     transitivePeerDependencies:
       - glob
       - lodash

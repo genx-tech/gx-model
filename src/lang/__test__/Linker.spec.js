@@ -6,7 +6,7 @@ const Linker = require('../Linker');
 
 const SOURCE_PATH = path.resolve(__dirname, '../../../test/data/unit/linker');
 
-describe.only('unit:lang:Linker', function () {    
+describe('unit:lang:Linker', function () {    
     let linker;
 
     let logger = winston.createLogger({
@@ -31,6 +31,7 @@ describe.only('unit:lang:Linker', function () {
                 "namespace": [
                     path.join(SOURCE_PATH, 'entities', 'organization.geml'),
                     path.join(SOURCE_PATH, 'entities', 'product.geml'),
+                    path.join(SOURCE_PATH, 'entities', 'types.geml'),
                     path.join(SOURCE_PATH, 'entities', 'user.geml')
                 ],
                 "schema": {
@@ -54,44 +55,43 @@ describe.only('unit:lang:Linker', function () {
             let expected =
             {
                 "namespace": [
-                    path.resolve(__dirname, '../../../src/lang/builtins/types.geml'),
-                    path.resolve(__dirname, '../../../src/lang/builtins/dictionary.geml')
+                    path.join(SOURCE_PATH, 'entities', 'types.geml'),
                 ],
-                "entity": {
-                    "product": {
-                        "features": [
-                            "autoId",
+                entity: {
+                    product: {
+                      features: [
+                        'autoId',
+                        { name: 'atLeastOneNotNull', args: [ [ 'name', 'email' ] ] }
+                      ],
+                      fields: {
+                        name: { name: 'name', type: 'name' },
+                        email: { name: 'email', type: 'email' },
+                        desc: { name: 'desc', type: 'desc', comment: 'Description' },
+                        attr: {
+                          name: 'attr',
+                          type: 'nonEmptyText',
+                          modifiers: [
                             {
-                                "name": "atLeastOneNotNull",
-                                "args": [
-                                    [ "name", "email" ]
-                                ]
-                            }
-                        ],
-                        "fields": {
-                            "name": {
-                                "name": "name",
-                                "type": "text",
-                                "maxLength": [ 40 ]
+                              oolType: 'Activator',
+                              name: 'defaultGenerator',
+                              args: [ { oolType: 'ObjectReference', name: 'latest.email' } ]
                             },
-                            "email": {
-                                "name": "email",
-                                "type": "email"
-                            },
-                            "desc": {
-                                "name": "desc",
-                                "type": "text",
-                                "maxLength": [ 2000 ],
-                                "optional": true,
-                                "comment": "Description"
+                            { oolType: 'Processor', name: 'processBeforeValidation' },
+                            { oolType: 'Validator', name: 'isSomething' },
+                            {
+                              oolType: 'Processor',
+                              name: 'someProcess',
+                              args: [ 'text' ]
                             }
+                          ]
                         }
+                      }
                     }
-                },
-                "id": "./entities/product.geml",
-                "name": "product"
+                  },
+                  id: './entities/product.geml',
+                  name: 'product'
             };
-            should.exists(mod);            
+            should.exists(mod);                        
             mod.should.be.eql(expected);
         });
     });

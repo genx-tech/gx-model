@@ -1,4 +1,4 @@
-import '<builtins>/types'
+import types
 
 type
   password : text maxLength(200)  

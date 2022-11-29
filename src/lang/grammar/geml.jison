@@ -385,7 +385,7 @@
         }
 
         normalizePipedValue(value, modifiers) {
-            return Object.assign({ oolType: 'PipedValue', value }, modifiers);
+            return modifiers ? Object.assign({ oolType: 'PipedValue', value }, modifiers) : value;
         }
 
         normalizeFunctionCall(func) {
@@ -531,7 +531,7 @@
 %lex
 
 %options easy_keyword_rules
-%options flex
+%options flex case-insensitive
 
 uppercase               [A-Z]
 lowercase               [a-z]
@@ -1388,6 +1388,7 @@ input_block_item_base
 
 input_block_item_with_spec
     : input_block_item_base 'with' feature_inject -> { ...$1, spec: $3 }
+    | input_block_item_base 'with' feature_inject 'optional' -> { ...$1, spec: $3, optional: true }
     ;    
 
 data_statement
@@ -1670,8 +1671,7 @@ modifiable_field
 
 /* An argument with a series of modifiers to be used in a function call. */
 modifiable_value
-    : gfc_param0
-    | gfc_param0 type_modifiers -> state.normalizePipedValue($1, { modifiers: $2 })
+    : gfc_param0 type_modifiers_or_not -> state.normalizePipedValue($1, $2)
     ;
 
 /* A parameter declared with a series of modifiers to be used in a function signature. */
@@ -1679,6 +1679,7 @@ modifiable_param
     : modifiable_field
     ; 
 
+/* identifier or simple function call */
 feature_inject
     : identifier
     | narrow_function_call
@@ -1699,6 +1700,7 @@ nfc_param_list0
     | ',' nfc_param nfc_param_list0 -> [ $2 ].concat($3)
     ;    
 
+/* simple function call param */
 nfc_param
     : literal
     | identifier -> state.normalizeConstReference($1)
