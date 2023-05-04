@@ -21,3 +21,17 @@ entity <entityName>
       :<fieldName>  with 
       
 ```
+
+## View definition
+
+Syntax:
+```
+view <viewName>
+  on <entityName>
+  with 
+    <association1>
+    <association2>
+    ...
+  
+
+```

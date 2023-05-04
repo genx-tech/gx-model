@@ -2,7 +2,7 @@
 
 /* JS declaration */
 %{    
-    const DBG_MODE = process && !!process.env.OOL_DBG;
+    const DBG_MODE = process && !!process.env.GEML_DBG;
 
     //used to calculate the amount by bytes unit
     const UNITS = new Map([['K', 1024], ['M', 1048576], ['G', 1073741824], ['T', 1099511627776]]);
@@ -15,7 +15,7 @@
     };
 
     //top level keywords
-    const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity', 'customize', 'override']);
+    const TOP_LEVEL_KEYWORDS = new Set(['import', 'type', 'const', 'schema', 'entity', 'view', 'customize', 'override']);
 
     //allowed keywords of different state
     const SUB_KEYWORDS = { 
@@ -23,18 +23,15 @@
         'customize': new Set(['entities']),
         'override': new Set(['entity']),
         'schema': new Set(['entities', 'views']),
-        'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'input', 'interface', 'code', 'triggers' ]),
-        'dataset': new Set(['is']),
+        'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'input', /*'interface', 'code'*/, 'triggers' ])
     
         // level 2
         'entity.associations': new Set(['hasOne', 'hasMany', 'refersTo', 'belongsTo']),
         'entity.index': new Set(['is', 'unique']),        
-        'entity.interface': new Set(['accept', 'find', 'findOne', 'return']),
+        //'entity.interface': new Set(['accept', 'find', 'findOne', 'return']),
         'entity.triggers': new Set(['onCreate', 'onCreateOrUpdate', 'onUpdate', 'onDelete']),          
         'entity.data': new Set(['in']),
         'entity.input': new Set(['extends']),     
-
-        'dataset.body': new Set(['with']),
 
         // level 3
         'entity.associations.item': new Set(['connectedBy', 'being', 'with', 'as', 'of']),        
@@ -102,8 +99,6 @@
         'entity.triggers.onUpdate': 'entity.triggers.onChange',
         'entity.triggers.onDelete': 'entity.triggers.onChange',
         'entity.triggers.onChange.when': 'entity.triggers.onChange.when',        
-
-        'dataset.is': 'dataset.body'
     };
 
     //exit number of states on dedent if exists in below table
@@ -482,10 +477,6 @@
 
         defineView(name, value, line) {
             this.define('view', name, value, line);
-        }
-
-        defineDataset(name, value, line) {
-            this.define('dataset', name, value, line);
         }
     }
 
@@ -987,7 +978,7 @@ statement
     | const_statement
     | type_statement
     | schema_statement   
-    | overrides_statement
+    | customize_statement
     | override_statement    
     | entity_statement        
     ;
@@ -1041,7 +1032,7 @@ schema_entities_block
     | identifier_or_string NEWLINE schema_entities_block -> [ { entity: $1 } ].concat($3)
     ;
 
-overrides_statement
+customize_statement
     : "customize" NEWLINE INDENT schema_statement_block DEDENT NEWLINE? -> state.defineOverrides($4, @4.first_line)
     ;
 

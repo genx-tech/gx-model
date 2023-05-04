@@ -9,7 +9,7 @@ exports.Commands = {
     'migrate': 'Create database structure.',            
     'import': 'Import data set.',
     'export': 'Export data from database.',
-    'reverse': 'Reverse engineering from a databse.'
+    'pull': 'Pull schema from a databse.'
 };
 
 /**
@@ -114,19 +114,20 @@ exports.getCommandOptions = (cli, command) => {
             };      
             cmdOptions['override'] = {
                 desc: 'Override same day output',
-                alias: [ 'f' ],
+                alias: [ 'O' ],
                 bool: true
             };            
             break;
 
-        case 'reverse':        
+        case 'pull':        
             cmdOptions['schema'] = {
-                desc: 'The schema to reverse',
+                desc: 'The schema to pull from database',
                 required: true        
             };
+
             cmdOptions['override'] = {
-                desc: 'Override same day output',
-                alias: [ 'f' ],
+                desc: 'Override existing output',
+                alias: [ 'O' ],
                 bool: true
             };
             break;

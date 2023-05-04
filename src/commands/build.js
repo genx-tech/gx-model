@@ -1,3 +1,5 @@
+const path = require('path');
+const { fs } = require("@genx/sys");
 const { _, eachAsync_ } = require('@genx/july');
 const { throwIfFileNotExist, getSchemaConnectors } = require('../utils/helpers');
 const Linker = require('../lang/Linker');
@@ -42,6 +44,11 @@ module.exports = async (app, context) => {
         let DbModeler = require(`../modeler/database/${connector.driver}/Modeler`);
         let dbModeler = new DbModeler(context, schema.linker, connector, deploymentSetting.extraOptions);
         let refinedSchema = dbModeler.modeling(schema, schemaToConnector);
+
+        if (context.saveIntermediate) {
+            let jsFile = path.resolve(context.gemlPath, schemaName + ".model.json");
+            fs.writeFileSync(jsFile, JSON.stringify(refinedSchema.toJSON(), null, 4));
+        }
 
         const DaoModeler = require('../modeler/Dao');
         let daoModeler = new DaoModeler(context, schema.linker, connector);

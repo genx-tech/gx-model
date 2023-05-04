@@ -3,6 +3,7 @@
 module.exports = {
     only: [  
         //"allow-features"    
+        "customize"
     ],
     skip: [
 

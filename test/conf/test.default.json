@@ -5,12 +5,33 @@
             "test": {
                 "connection": "mysql://root:root@localhost/gx-model-test",
                 "logStatement": true
+            },
+            "mt4": {
+                "connection": "mysql://root:root@localhost/ffs_demo",
+                "logStatement": true
             }
         }
     },
     "useDb": {        
         "test": {
             "dataSource": "mysql.test"
+        },
+        "mt4db": {
+            "dataSource": "mysql.mt4"
+        }
+    },
+    "settings": {
+        "geml": {
+            "gemlPath": "geml",
+            "modelPath": "src/models",
+            "scriptPath": "scripts",
+            "manifestPath": "manifests",
+            "saveIntermediate": false,
+            "schemas": {
+                "mt4db": {
+                    "dataSource": "mysql.mt4"
+                }
+            }
         }
     }
 }

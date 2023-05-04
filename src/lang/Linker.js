@@ -1,7 +1,7 @@
 "use strict";
 
 const path = require("path");
-const { _, arrayToObject } = require("@genx/july");
+const { _ } = require("@genx/july");
 const { fs, glob } = require("@genx/sys");
 const { Types } = require("@genx/data");
 
@@ -412,7 +412,7 @@ class Linker {
 
             Entity.overrideEntityMeta(elementInfo, overrideElement);
 
-            console.dir(elementInfo, { depth: 10 });
+            //console.dir(elementInfo, { depth: 10 });
         }
 
         if (elementType in ELEMENT_CLASS_MAP) {

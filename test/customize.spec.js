@@ -2,6 +2,7 @@
 
 const testSuite = require("@genx/test");
 const { fs } = require('@genx/sys');
+const { _ } = require('@genx/july');
 
 const path = require("path");
 const getAppInitiator = require("./lib/getAppInitiator");
@@ -22,9 +23,7 @@ testSuite(
                     await fs.remove(SCRIPT_DIR);
                     await fs.remove(MANIFEST_DIR);
 
-                    await appInitiator.run("build");     
-                    
-                    
+                    await appInitiator.run("build");                                           
                 },  
                 {
                     workingPath: WORK_DIR,
@@ -37,6 +36,33 @@ testSuite(
                     verbose: true,
                 }
             );
+
+            const linked = fs.readJsonSync(path.join(WORK_DIR, './gemlCustomize/test.model.json'), 'utf8');
+            const { user } = linked.entities;
+
+            should.exist(user.fields.extraField);
+            should.exist(user.associations);
+
+            [
+                {
+                    "type": "hasMany",
+                    "destEntity": "task",
+                    "remoteField": "owner",
+                    "srcField": "createdTasks",
+                    "fieldProps": {}
+                },
+                {
+                    "type": "hasMany",
+                    "destEntity": "task",
+                    "remoteField": "assignedTo",
+                    "srcField": "assignedTasks",
+                    "fieldProps": {}
+                }
+            ].every(expected => {
+                _.find(user.associations, assoc => _.isEqual(assoc, expected)) != null
+            });
+
+
         });
     },
     { verbose: true }

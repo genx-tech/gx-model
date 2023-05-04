@@ -476,7 +476,7 @@ class Entity extends Clonable {
             this.features[name].push(feature);
         } else {
             if (name in this.features) {
-                throw new Error(`Duplicate feature found: ${name}. An entity can only have one "${name}" feature only.`);
+                throw new Error(`Duplicate feature found: ${name}. An entity can only have one "${name}" feature only. Entity: ${this.name}`);
             }
 
             this.features[name] = feature;

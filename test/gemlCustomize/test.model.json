@@ -1,0 +1,4318 @@
+{
+    "name": "test",
+    "displayName": "Test",
+    "entities": {
+        "setting": {
+            "name": "setting",
+            "displayName": "Setting",
+            "comment": "Settings",
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "dataType": {
+                    "type": "enum",
+                    "values": [
+                        "text",
+                        "integer",
+                        "number",
+                        "boolean",
+                        "csv",
+                        "object",
+                        "datetime",
+                        "array"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "dataType"
+                    ],
+                    "displayName": "Data Type"
+                },
+                "values": {
+                    "type": "array",
+                    "optional": true,
+                    "displayName": "Values"
+                },
+                "allowUserInput": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Allow User Input"
+                },
+                "formatter": {
+                    "type": "enum",
+                    "values": [
+                        "datetime",
+                        "currency",
+                        "dateOnly",
+                        "timeOnly",
+                        "bytes",
+                        "number",
+                        "percent"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "formatterType"
+                    ],
+                    "displayName": "Formatter"
+                },
+                "category": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Category"
+                },
+                "text": {
+                    "type": "text",
+                    "optional": true,
+                    "displayName": "Text"
+                },
+                "intValue": {
+                    "type": "integer",
+                    "optional": true,
+                    "displayName": "Int Value"
+                },
+                "numValue": {
+                    "type": "number",
+                    "optional": true,
+                    "displayName": "Num Value"
+                },
+                "object": {
+                    "type": "object",
+                    "optional": true,
+                    "displayName": "Object"
+                },
+                "flag": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Flag"
+                },
+                "timestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "displayName": "Timestamp"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                },
+                "unit": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Unit",
+                    "optional": true
+                }
+            },
+            "associations": {
+                "unit": {
+                    "type": "refersTo",
+                    "entity": "uomUnit",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "unit": {
+                            "oorType": "ColumnReference",
+                            "name": "unit.code"
+                        }
+                    }
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "contact": {
+            "name": "contact",
+            "displayName": "Contact",
+            "features": {
+                "autoId": {
+                    "field": "id"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "mobile": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isMobilePhone"
+                        }
+                    ],
+                    "subClass": [
+                        "mobile"
+                    ],
+                    "displayName": "Mobile"
+                },
+                "phone": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isPhone"
+                        }
+                    ],
+                    "subClass": [
+                        "phone"
+                    ],
+                    "displayName": "Phone"
+                },
+                "email": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isEmail"
+                        }
+                    ],
+                    "subClass": [
+                        "email"
+                    ],
+                    "displayName": "Email"
+                },
+                "address": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Address",
+                    "optional": true,
+                    "comment": "Residential address"
+                },
+                "postalAddress": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Postal Address",
+                    "optional": true
+                },
+                "billingAddress": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Billing Address",
+                    "optional": true
+                }
+            },
+            "associations": {
+                "address": {
+                    "type": "refersTo",
+                    "entity": "address",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "address": {
+                            "oorType": "ColumnReference",
+                            "name": "address.id"
+                        }
+                    }
+                },
+                "postalAddress": {
+                    "type": "refersTo",
+                    "entity": "address",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "postalAddress": {
+                            "oorType": "ColumnReference",
+                            "name": "postalAddress.id"
+                        }
+                    }
+                },
+                "billingAddress": {
+                    "type": "refersTo",
+                    "entity": "address",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "billingAddress": {
+                            "oorType": "ColumnReference",
+                            "name": "billingAddress.id"
+                        }
+                    }
+                }
+            },
+            "key": "id"
+        },
+        "person": {
+            "name": "person",
+            "displayName": "Person",
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                },
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "firstName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "First Name"
+                },
+                "middleName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Middle Name"
+                },
+                "lastName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Last Name"
+                },
+                "legalName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "combinePersonName",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.firstName"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.middleName"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.lastName"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.locale"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Legal Name"
+                },
+                "dob": {
+                    "type": "datetime",
+                    "optional": true,
+                    "comment": "Date of birth",
+                    "displayName": "Dob"
+                },
+                "maritalStatus": {
+                    "type": "enum",
+                    "values": [
+                        "single",
+                        "married",
+                        "divorced",
+                        "widowed",
+                        "de facto"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "maritalStatus"
+                    ],
+                    "displayName": "Marital Status"
+                },
+                "gender": {
+                    "type": "enum",
+                    "values": [
+                        "male",
+                        "female",
+                        "non-disclosure"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "genderType"
+                    ],
+                    "displayName": "Gender"
+                },
+                "residencyStatus": {
+                    "type": "enum",
+                    "values": [
+                        "citizen",
+                        "pr",
+                        "overseas"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "residencyStatus"
+                    ],
+                    "displayName": "Residency Status"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At",
+                    "isUpdateTimestamp": true,
+                    "updateByDb": true
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                },
+                "title": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Title",
+                    "optional": true
+                },
+                "locale": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Locale",
+                    "optional": true,
+                    "default": "zh-TW"
+                },
+                "contact": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Contact",
+                    "optional": true
+                }
+            },
+            "associations": {
+                "title": {
+                    "type": "refersTo",
+                    "entity": "personTitle",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "title": {
+                            "oorType": "ColumnReference",
+                            "name": "title.code"
+                        }
+                    }
+                },
+                "locale": {
+                    "type": "refersTo",
+                    "entity": "locale",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "locale": {
+                            "oorType": "ColumnReference",
+                            "name": "locale.code"
+                        }
+                    }
+                },
+                "contact": {
+                    "type": "refersTo",
+                    "entity": "contact",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "contact": {
+                            "oorType": "ColumnReference",
+                            "name": "contact.id"
+                        }
+                    }
+                },
+                "users": {
+                    "entity": "personUser",
+                    "key": "id",
+                    "on": {
+                        "id": {
+                            "oorType": "ColumnReference",
+                            "name": "users.person"
+                        }
+                    },
+                    "field": "person",
+                    "assoc": "user"
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "lastName"
+                    ]
+                },
+                {
+                    "fields": [
+                        "legalName"
+                    ]
+                }
+            ]
+        },
+        "resource": {
+            "name": "resource",
+            "displayName": "Resource",
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "url": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Url"
+                },
+                "urlMobile": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Url Mobile"
+                },
+                "thumbnail": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Thumbnail"
+                },
+                "title": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Title"
+                },
+                "content": {
+                    "type": "text",
+                    "optional": true,
+                    "displayName": "Content"
+                },
+                "fileName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "File Name"
+                },
+                "fileSize": {
+                    "type": "integer",
+                    "optional": true,
+                    "displayName": "File Size"
+                },
+                "hash": {
+                    "type": "text",
+                    "maxLength": 256,
+                    "optional": true,
+                    "displayName": "Hash"
+                },
+                "external": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "External"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "source": {
+                    "type": "enum",
+                    "values": [
+                        "upload",
+                        "generated",
+                        "camera",
+                        "external",
+                        "copied",
+                        "preset"
+                    ],
+                    "optional": true,
+                    "subClass": [
+                        "resourceSource"
+                    ],
+                    "displayName": "Source"
+                },
+                "accessFlag": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Access Flag"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At",
+                    "isUpdateTimestamp": true,
+                    "updateByDb": true
+                },
+                "group": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Group",
+                    "optional": true
+                },
+                "createdBy": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Created By",
+                    "optional": true
+                },
+                "mimeType": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Mime Type",
+                    "optional": true
+                },
+                "category": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Category"
+                }
+            },
+            "associations": {
+                "group": {
+                    "type": "belongsTo",
+                    "entity": "resourceGroup",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "group": {
+                            "oorType": "ColumnReference",
+                            "name": "group.id"
+                        }
+                    }
+                },
+                "createdBy": {
+                    "type": "belongsTo",
+                    "entity": "user",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "createdBy": {
+                            "oorType": "ColumnReference",
+                            "name": "createdBy.id"
+                        }
+                    }
+                },
+                "mimeType": {
+                    "type": "refersTo",
+                    "entity": "mimeType",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "mimeType": {
+                            "oorType": "ColumnReference",
+                            "name": "mimeType.code"
+                        }
+                    }
+                },
+                "category": {
+                    "type": "refersTo",
+                    "entity": "resourceCategory",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "category": {
+                            "oorType": "ColumnReference",
+                            "name": "category.code"
+                        }
+                    }
+                },
+                "tags": {
+                    "entity": "resourceTagging",
+                    "key": "id",
+                    "on": {
+                        "id": {
+                            "oorType": "ColumnReference",
+                            "name": "tags.resource"
+                        }
+                    },
+                    "field": "resource",
+                    "list": true,
+                    "assoc": "tag"
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "url"
+                    ]
+                },
+                {
+                    "fields": [
+                        "category",
+                        "group",
+                        "indexOrder"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "user": {
+            "name": "user",
+            "displayName": "User",
+            "comment": "User",
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                },
+                "logicalDeletion": {
+                    "field": "status",
+                    "value": "deleted"
+                },
+                "stateTracking": [
+                    {
+                        "field": "status",
+                        "stateMapping": {
+                            "unverified": "statusUnverifiedTimestamp",
+                            "active": "statusActiveTimestamp",
+                            "suspended": "statusSuspendedTimestamp",
+                            "deleted": "statusDeletedTimestamp"
+                        }
+                    }
+                ]
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "username": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "comment": "User name",
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "defaultUsername"
+                        }
+                    ],
+                    "subClass": [
+                        "idString"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Username"
+                },
+                "mobile": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "comment": "User mobile",
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isMobilePhone"
+                        }
+                    ],
+                    "subClass": [
+                        "mobile"
+                    ],
+                    "displayName": "Mobile"
+                },
+                "email": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "comment": "User email",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isEmail"
+                        }
+                    ],
+                    "subClass": [
+                        "email"
+                    ],
+                    "displayName": "Email"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "comment": "Nick name",
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "populate",
+                            "args": [
+                                "person.legalName"
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Name"
+                },
+                "password": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "comment": "User password",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "enforceStrongPassword"
+                        },
+                        {
+                            "oolType": "Processor",
+                            "name": "hashPassword",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.passwordSalt"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "password"
+                    ],
+                    "displayName": "Password"
+                },
+                "passwordSalt": {
+                    "type": "text",
+                    "fixedLength": 8,
+                    "auto": true,
+                    "comment": "User password salt",
+                    "displayName": "Password Salt"
+                },
+                "isEmailVerified": {
+                    "type": "boolean",
+                    "writeOnce": true,
+                    "optional": true,
+                    "comment": "Is user email verified?",
+                    "displayName": "Is Email Verified"
+                },
+                "emailVerifiedTime": {
+                    "type": "datetime",
+                    "writeOnce": true,
+                    "optional": true,
+                    "comment": "User email verified time",
+                    "displayName": "Email Verified Time"
+                },
+                "isMobileVerified": {
+                    "type": "boolean",
+                    "writeOnce": true,
+                    "optional": true,
+                    "comment": "Is user mobile verified?",
+                    "displayName": "Is Mobile Verified"
+                },
+                "mobileVerifiedTime": {
+                    "type": "datetime",
+                    "writeOnce": true,
+                    "optional": true,
+                    "comment": "User mobile verified time",
+                    "displayName": "Mobile Verified Time"
+                },
+                "avatar": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Avatar"
+                },
+                "status": {
+                    "type": "enum",
+                    "values": [
+                        "unverified",
+                        "active",
+                        "suspended",
+                        "deleted"
+                    ],
+                    "default": "unverified",
+                    "comment": "User status",
+                    "subClass": [
+                        "userStatus"
+                    ],
+                    "displayName": "Status"
+                },
+                "lastLoginTime": {
+                    "type": "datetime",
+                    "optional": true,
+                    "comment": "Last login time",
+                    "displayName": "Last Login Time"
+                },
+                "currentLoginTime": {
+                    "type": "datetime",
+                    "optional": true,
+                    "comment": "Current login time",
+                    "displayName": "Current Login Time"
+                },
+                "isHidden": {
+                    "type": "boolean",
+                    "optional": true,
+                    "comment": "Not allowed to login UI and be shown to other users",
+                    "displayName": "Is Hidden"
+                },
+                "extraField": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Extra Field"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At",
+                    "isUpdateTimestamp": true,
+                    "updateByDb": true
+                },
+                "statusUnverifiedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Unverified Timestamp"
+                },
+                "statusActiveTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Active Timestamp"
+                },
+                "statusSuspendedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Suspended Timestamp"
+                },
+                "statusDeletedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Deleted Timestamp"
+                },
+                "person": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Person",
+                    "optional": true
+                },
+                "resourceGroup": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Resource Group",
+                    "optional": true
+                }
+            },
+            "associations": {
+                "person": {
+                    "type": "refersTo",
+                    "entity": "person",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "person": {
+                            "oorType": "ColumnReference",
+                            "name": "person.id"
+                        }
+                    }
+                },
+                "resourceGroup": {
+                    "type": "refersTo",
+                    "entity": "resourceGroup",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "resourceGroup": {
+                            "oorType": "ColumnReference",
+                            "name": "resourceGroup.id"
+                        }
+                    }
+                },
+                "roles": {
+                    "entity": "userRole",
+                    "key": "id",
+                    "on": {
+                        "id": {
+                            "oorType": "ColumnReference",
+                            "name": "roles.user"
+                        }
+                    },
+                    "field": "user",
+                    "list": true
+                },
+                "preferences": {
+                    "entity": "userPreference",
+                    "key": "id",
+                    "on": {
+                        "id": {
+                            "oorType": "ColumnReference",
+                            "name": "preferences.user"
+                        }
+                    },
+                    "field": "user",
+                    "list": true
+                },
+                "createdTasks": {
+                    "entity": "task",
+                    "key": "id",
+                    "on": {
+                        "id": {
+                            "oorType": "ColumnReference",
+                            "name": "createdTasks.owner"
+                        }
+                    },
+                    "field": "owner",
+                    "list": true
+                },
+                "assignedTasks": {
+                    "entity": "task",
+                    "key": "id",
+                    "on": {
+                        "id": {
+                            "oorType": "ColumnReference",
+                            "name": "assignedTasks.assignedTo"
+                        }
+                    },
+                    "field": "assignedTo",
+                    "list": true
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "username"
+                    ],
+                    "unique": true
+                },
+                {
+                    "fields": [
+                        "mobile",
+                        "status"
+                    ],
+                    "unique": true
+                },
+                {
+                    "fields": [
+                        "email",
+                        "status"
+                    ],
+                    "unique": true
+                },
+                {
+                    "fields": [
+                        "resourceGroup"
+                    ],
+                    "unique": true
+                },
+                {
+                    "fields": [
+                        "extraField"
+                    ]
+                }
+            ]
+        },
+        "adminUser": {
+            "name": "adminUser",
+            "displayName": "Admin User",
+            "comment": "Admin users",
+            "types": {},
+            "fields": {
+                "preferredName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "populate",
+                            "args": [
+                                "user.name"
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Preferred Name"
+                },
+                "user": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "User",
+                    "constraintOnDelete": "CASCADE"
+                },
+                "person": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Person",
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "populate",
+                            "args": [
+                                "user.person"
+                            ]
+                        }
+                    ],
+                    "hasActivator": true
+                }
+            },
+            "associations": {
+                "user": {
+                    "type": "refersTo",
+                    "entity": "user",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "user": {
+                            "oorType": "ColumnReference",
+                            "name": "user.id"
+                        }
+                    }
+                },
+                "person": {
+                    "type": "refersTo",
+                    "entity": "person",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "person": {
+                            "oorType": "ColumnReference",
+                            "name": "person.id"
+                        }
+                    }
+                }
+            },
+            "key": "user"
+        },
+        "company": {
+            "name": "company",
+            "displayName": "Company",
+            "comment": "Company",
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                },
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "logo": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "comment": "Rectangle",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Logo"
+                },
+                "avatar": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "comment": "Square",
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Avatar"
+                },
+                "registrationNo": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Registration No"
+                },
+                "email": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isEmail"
+                        }
+                    ],
+                    "subClass": [
+                        "email"
+                    ],
+                    "displayName": "Email"
+                },
+                "phone": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isPhone"
+                        }
+                    ],
+                    "subClass": [
+                        "phone"
+                    ],
+                    "displayName": "Phone"
+                },
+                "mobile": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isMobilePhone"
+                        }
+                    ],
+                    "subClass": [
+                        "mobile"
+                    ],
+                    "displayName": "Mobile"
+                },
+                "fax": {
+                    "type": "text",
+                    "maxLength": 20,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "normalizePhone",
+                            "args": [
+                                "+886"
+                            ]
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isPhone"
+                        }
+                    ],
+                    "subClass": [
+                        "phone"
+                    ],
+                    "displayName": "Fax"
+                },
+                "website": {
+                    "type": "text",
+                    "maxLength": 750,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Validator",
+                            "name": "isURL",
+                            "args": [
+                                {
+                                    "require_tld": false
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "url"
+                    ],
+                    "displayName": "Website"
+                },
+                "abn": {
+                    "type": "text",
+                    "fixedLength": 11,
+                    "optional": true,
+                    "comment": "Australia Business Number",
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "removeSpace"
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isNumeric"
+                        }
+                    ],
+                    "subClass": [
+                        "abn"
+                    ],
+                    "displayName": "Abn"
+                },
+                "acn": {
+                    "type": "text",
+                    "fixedLength": 9,
+                    "optional": true,
+                    "comment": "Australia Company Number",
+                    "modifiers": [
+                        {
+                            "oolType": "Processor",
+                            "name": "removeSpace"
+                        },
+                        {
+                            "oolType": "Validator",
+                            "name": "isNumeric"
+                        }
+                    ],
+                    "subClass": [
+                        "acn"
+                    ],
+                    "displayName": "Acn"
+                },
+                "taxIdNumber": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Tax Id Number"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At",
+                    "isUpdateTimestamp": true,
+                    "updateByDb": true
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                },
+                "role": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Role"
+                },
+                "address": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Address",
+                    "optional": true,
+                    "comment": "Business address"
+                },
+                "registeredAddress": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Registered Address",
+                    "optional": true,
+                    "comment": "Registered address"
+                },
+                "resourceGroup": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Resource Group",
+                    "optional": true
+                }
+            },
+            "associations": {
+                "role": {
+                    "type": "refersTo",
+                    "entity": "companyRole",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "role": {
+                            "oorType": "ColumnReference",
+                            "name": "role.code"
+                        }
+                    }
+                },
+                "address": {
+                    "type": "refersTo",
+                    "entity": "address",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "address": {
+                            "oorType": "ColumnReference",
+                            "name": "address.id"
+                        }
+                    }
+                },
+                "registeredAddress": {
+                    "type": "refersTo",
+                    "entity": "address",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "registeredAddress": {
+                            "oorType": "ColumnReference",
+                            "name": "registeredAddress.id"
+                        }
+                    }
+                },
+                "resourceGroup": {
+                    "type": "refersTo",
+                    "entity": "resourceGroup",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "resourceGroup": {
+                            "oorType": "ColumnReference",
+                            "name": "resourceGroup.id"
+                        }
+                    }
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ]
+                },
+                {
+                    "fields": [
+                        "registrationNo"
+                    ]
+                },
+                {
+                    "fields": [
+                        "resourceGroup"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "task": {
+            "name": "task",
+            "displayName": "Task",
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                },
+                "stateTracking": [
+                    {
+                        "field": "status",
+                        "stateMapping": {
+                            "new": "statusNewTimestamp",
+                            "pending": "statusPendingTimestamp",
+                            "assigned": "statusAssignedTimestamp",
+                            "ongoing": "statusOngoingTimestamp",
+                            "done": "statusDoneTimestamp",
+                            "expired": "statusExpiredTimestamp",
+                            "cancelled": "statusCancelledTimestamp",
+                            "rejected": "statusRejectedTimestamp"
+                        }
+                    }
+                ]
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "dueDate": {
+                    "type": "datetime",
+                    "dateOnly": true,
+                    "optional": true,
+                    "subClass": [
+                        "date"
+                    ],
+                    "displayName": "Due Date"
+                },
+                "status": {
+                    "type": "enum",
+                    "values": [
+                        "new",
+                        "pending",
+                        "assigned",
+                        "ongoing",
+                        "done",
+                        "expired",
+                        "cancelled",
+                        "rejected"
+                    ],
+                    "subClass": [
+                        "taskStatus"
+                    ],
+                    "displayName": "Status",
+                    "createByDb": true
+                },
+                "isApproved": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is Approved"
+                },
+                "declinedReason": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Declined Reason"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "metadata": {
+                    "type": "object",
+                    "optional": true,
+                    "displayName": "Metadata"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At",
+                    "isUpdateTimestamp": true,
+                    "updateByDb": true
+                },
+                "statusNewTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status New Timestamp"
+                },
+                "statusPendingTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Pending Timestamp"
+                },
+                "statusAssignedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Assigned Timestamp"
+                },
+                "statusOngoingTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Ongoing Timestamp"
+                },
+                "statusDoneTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Done Timestamp"
+                },
+                "statusExpiredTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Expired Timestamp"
+                },
+                "statusCancelledTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Cancelled Timestamp"
+                },
+                "statusRejectedTimestamp": {
+                    "type": "datetime",
+                    "optional": true,
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Status Rejected Timestamp"
+                },
+                "owner": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Owner",
+                    "optional": true
+                },
+                "assignedTo": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Assigned To",
+                    "optional": true
+                },
+                "type": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Type"
+                },
+                "resourceGroup": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Resource Group",
+                    "optional": true
+                },
+                "agendaItem": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Agenda Item",
+                    "optional": true
+                }
+            },
+            "associations": {
+                "owner": {
+                    "type": "belongsTo",
+                    "entity": "user",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "owner": {
+                            "oorType": "ColumnReference",
+                            "name": "owner.id"
+                        }
+                    }
+                },
+                "assignedTo": {
+                    "type": "belongsTo",
+                    "entity": "user",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "assignedTo": {
+                            "oorType": "ColumnReference",
+                            "name": "assignedTo.id"
+                        }
+                    }
+                },
+                "type": {
+                    "type": "refersTo",
+                    "entity": "taskType",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "type": {
+                            "oorType": "ColumnReference",
+                            "name": "type.code"
+                        }
+                    }
+                },
+                "resourceGroup": {
+                    "type": "refersTo",
+                    "entity": "resourceGroup",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "resourceGroup": {
+                            "oorType": "ColumnReference",
+                            "name": "resourceGroup.id"
+                        }
+                    }
+                },
+                "agendaItem": {
+                    "type": "refersTo",
+                    "entity": "agendaItem",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "agendaItem": {
+                            "oorType": "ColumnReference",
+                            "name": "agendaItem.id"
+                        }
+                    }
+                }
+            },
+            "key": "id"
+        },
+        "uomUnit": {
+            "name": "uomUnit",
+            "displayName": "Uom Unit",
+            "comment": "Unit of measure: attribute",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "address": {
+            "name": "address",
+            "displayName": "Address",
+            "comment": "Address information",
+            "baseClasses": [
+                "hyperIdIndexed"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "unitNo": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Unit No"
+                },
+                "lotNo": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Lot No"
+                },
+                "level": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Level"
+                },
+                "buildingNo": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Building No"
+                },
+                "building": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Building"
+                },
+                "streetNo": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Street No"
+                },
+                "alley": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Alley"
+                },
+                "lane": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Lane"
+                },
+                "section": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Section"
+                },
+                "streetName": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Street Name"
+                },
+                "streetType": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Street Type"
+                },
+                "neighborhood": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Neighborhood"
+                },
+                "village": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Village"
+                },
+                "city": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "City"
+                },
+                "postcode": {
+                    "type": "text",
+                    "maxLength": 6,
+                    "optional": true,
+                    "displayName": "Postcode"
+                },
+                "line1": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "buildLine1",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.village"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.neighborhood"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.streetType"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.streetName"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.section"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.lane"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.alley"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.streetNo"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.building"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.buildingNo"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.level"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.unitNo"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.locale"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Line 1"
+                },
+                "line2": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "buildLine2",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.line1"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.localityLine"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.locale"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Line 2"
+                },
+                "localityLine": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "buildLocalityLine",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.city"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.state"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.postcode"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.locale"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Locality Line"
+                },
+                "state": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "fromStateCode",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.stateCode"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "State"
+                },
+                "fullText": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "forceUpdate": true,
+                    "modifiers": [
+                        {
+                            "oolType": "Activator",
+                            "name": "buildFullAddress",
+                            "args": [
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.line1"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.line2"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.localityLine"
+                                },
+                                {
+                                    "oolType": "ObjectReference",
+                                    "name": "latest.locale"
+                                }
+                            ]
+                        }
+                    ],
+                    "subClass": [
+                        "name"
+                    ],
+                    "hasActivator": true,
+                    "displayName": "Full Text"
+                },
+                "latitude": {
+                    "type": "number",
+                    "optional": true,
+                    "displayName": "Latitude"
+                },
+                "longitude": {
+                    "type": "number",
+                    "optional": true,
+                    "displayName": "Longitude"
+                },
+                "approximate": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Approximate"
+                },
+                "requireGeocode": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Require Geocode"
+                },
+                "altCountryName": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Alt Country Name"
+                },
+                "stateCode": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "State Code",
+                    "optional": true
+                },
+                "country": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Country",
+                    "optional": true
+                },
+                "locale": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Locale",
+                    "optional": true,
+                    "default": "zh-TW"
+                }
+            },
+            "associations": {
+                "stateCode": {
+                    "type": "refersTo",
+                    "entity": "state",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "stateCode": {
+                            "oorType": "ColumnReference",
+                            "name": "stateCode.code"
+                        }
+                    }
+                },
+                "country": {
+                    "type": "refersTo",
+                    "entity": "country",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "country": {
+                            "oorType": "ColumnReference",
+                            "name": "country.code"
+                        }
+                    }
+                },
+                "locale": {
+                    "type": "refersTo",
+                    "entity": "locale",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "locale": {
+                            "oorType": "ColumnReference",
+                            "name": "locale.code"
+                        }
+                    }
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "fullText"
+                    ]
+                }
+            ]
+        },
+        "personTitle": {
+            "name": "personTitle",
+            "displayName": "Person Title",
+            "comment": "Person title",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "male": {
+                    "type": "boolean",
+                    "displayName": "Male"
+                },
+                "female": {
+                    "type": "boolean",
+                    "displayName": "Female"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "locale": {
+            "name": "locale",
+            "displayName": "Locale",
+            "comment": "Regional locale information",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                },
+                "country": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Country",
+                    "optional": true
+                }
+            },
+            "associations": {
+                "country": {
+                    "type": "belongsTo",
+                    "entity": "country",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "country": {
+                            "oorType": "ColumnReference",
+                            "name": "country.code"
+                        }
+                    }
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "personUser": {
+            "name": "personUser",
+            "displayName": "Person User",
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "integer",
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Id",
+                    "autoIncrementId": true,
+                    "createByDb": true
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "person": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Person"
+                },
+                "user": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "User"
+                }
+            },
+            "associations": {
+                "person": {
+                    "type": "refersTo",
+                    "entity": "person",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "person": {
+                            "oorType": "ColumnReference",
+                            "name": "person.id"
+                        }
+                    }
+                },
+                "user": {
+                    "type": "refersTo",
+                    "entity": "user",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "user": {
+                            "oorType": "ColumnReference",
+                            "name": "user.id"
+                        }
+                    }
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "person",
+                        "user"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "resourceGroup": {
+            "name": "resourceGroup",
+            "displayName": "Resource Group",
+            "baseClasses": [
+                "hyperIdIndexed"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "entityName": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Entity Name"
+                },
+                "entityId": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Entity Id"
+                }
+            },
+            "associations": {
+                "resources": {
+                    "entity": "resource",
+                    "key": "id",
+                    "on": {
+                        "id": {
+                            "oorType": "ColumnReference",
+                            "name": "resources.group"
+                        }
+                    },
+                    "field": "group",
+                    "list": true
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "entityId",
+                        "entityName"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "mimeType": {
+            "name": "mimeType",
+            "displayName": "Mime Type",
+            "comment": "MIME type",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "mime": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Mime"
+                },
+                "subType": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Sub Type"
+                },
+                "extName": {
+                    "type": "array",
+                    "optional": true,
+                    "displayName": "Ext Name"
+                },
+                "mediaType": {
+                    "type": "enum",
+                    "values": [
+                        "text",
+                        "image",
+                        "video",
+                        "audio",
+                        "document"
+                    ],
+                    "subClass": [
+                        "mediaType"
+                    ],
+                    "displayName": "Media Type",
+                    "createByDb": true
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                },
+                {
+                    "fields": [
+                        "mediaType"
+                    ]
+                }
+            ]
+        },
+        "resourceCategory": {
+            "name": "resourceCategory",
+            "displayName": "Resource Category",
+            "comment": "Resource category",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "resourceTag": {
+            "name": "resourceTag",
+            "displayName": "Resource Tag",
+            "comment": "Resource tags",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "associations": {
+                "resources": {
+                    "entity": "resourceTagging",
+                    "key": "id",
+                    "on": {
+                        "code": {
+                            "oorType": "ColumnReference",
+                            "name": "resources.tag"
+                        }
+                    },
+                    "field": "tag",
+                    "list": true,
+                    "assoc": "resource"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "resourceTagging": {
+            "name": "resourceTagging",
+            "displayName": "Resource Tagging",
+            "comment": "Resource tagging",
+            "baseClasses": [
+                "manyToMany"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "integer",
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Id",
+                    "autoIncrementId": true,
+                    "createByDb": true
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "resource": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Resource"
+                },
+                "tag": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Tag"
+                }
+            },
+            "associations": {
+                "resource": {
+                    "type": "refersTo",
+                    "entity": "resource",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "resource": {
+                            "oorType": "ColumnReference",
+                            "name": "resource.id"
+                        }
+                    }
+                },
+                "tag": {
+                    "type": "refersTo",
+                    "entity": "resourceTag",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "tag": {
+                            "oorType": "ColumnReference",
+                            "name": "tag.code"
+                        }
+                    }
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "resource",
+                        "tag"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "userRole": {
+            "name": "userRole",
+            "displayName": "User Role",
+            "comment": "User role",
+            "baseClasses": [
+                "manyToMany"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "integer",
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Id",
+                    "autoIncrementId": true,
+                    "createByDb": true
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "user": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "User"
+                },
+                "role": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Role"
+                }
+            },
+            "associations": {
+                "user": {
+                    "type": "belongsTo",
+                    "entity": "user",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "user": {
+                            "oorType": "ColumnReference",
+                            "name": "user.id"
+                        }
+                    }
+                },
+                "role": {
+                    "type": "refersTo",
+                    "entity": "userRoleType",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "role": {
+                            "oorType": "ColumnReference",
+                            "name": "role.code"
+                        }
+                    }
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "role",
+                        "user"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "userPreference": {
+            "name": "userPreference",
+            "displayName": "User Preference",
+            "comment": "User preference",
+            "features": {
+                "autoId": {
+                    "field": "id"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "integer",
+                    "auto": true,
+                    "writeOnce": true,
+                    "displayName": "Id",
+                    "autoIncrementId": true,
+                    "createByDb": true
+                },
+                "key": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Key"
+                },
+                "value": {
+                    "type": "object",
+                    "optional": true,
+                    "displayName": "Value"
+                },
+                "user": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "User"
+                }
+            },
+            "associations": {
+                "user": {
+                    "type": "belongsTo",
+                    "entity": "user",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "user": {
+                            "oorType": "ColumnReference",
+                            "name": "user.id"
+                        }
+                    }
+                }
+            },
+            "key": "id",
+            "indexes": [
+                {
+                    "fields": [
+                        "key",
+                        "user"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "companyRole": {
+            "name": "companyRole",
+            "displayName": "Company Role",
+            "comment": "Company roles",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "taskType": {
+            "name": "taskType",
+            "displayName": "Task Type",
+            "comment": "Task type",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "isAssignable": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is Assignable"
+                },
+                "isApproval": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is Approval"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "agendaItem": {
+            "name": "agendaItem",
+            "displayName": "Agenda Item",
+            "baseClasses": [
+                "hyperIdIndexed"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "date": {
+                    "type": "datetime",
+                    "dateOnly": true,
+                    "subClass": [
+                        "date"
+                    ],
+                    "displayName": "Date"
+                },
+                "startTime": {
+                    "type": "datetime",
+                    "timeOnly": true,
+                    "displayName": "Start Time"
+                },
+                "endTime": {
+                    "type": "datetime",
+                    "timeOnly": true,
+                    "displayName": "End Time"
+                },
+                "duration": {
+                    "type": "integer",
+                    "displayName": "Duration"
+                },
+                "title": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Title"
+                },
+                "note": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Note"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "metadata": {
+                    "type": "object",
+                    "optional": true,
+                    "displayName": "Metadata"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At",
+                    "isUpdateTimestamp": true,
+                    "updateByDb": true
+                },
+                "user": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "User"
+                },
+                "series": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Series",
+                    "optional": true
+                },
+                "venue": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Venue",
+                    "optional": true
+                }
+            },
+            "associations": {
+                "user": {
+                    "type": "belongsTo",
+                    "entity": "user",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "user": {
+                            "oorType": "ColumnReference",
+                            "name": "user.id"
+                        }
+                    }
+                },
+                "series": {
+                    "type": "belongsTo",
+                    "entity": "agendaSeries",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "series": {
+                            "oorType": "ColumnReference",
+                            "name": "series.id"
+                        }
+                    }
+                },
+                "venue": {
+                    "type": "belongsTo",
+                    "entity": "address",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "venue": {
+                            "oorType": "ColumnReference",
+                            "name": "venue.id"
+                        }
+                    }
+                }
+            },
+            "key": "id"
+        },
+        "state": {
+            "name": "state",
+            "displayName": "State",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "shortName": {
+                    "type": "text",
+                    "maxLength": 10,
+                    "displayName": "Short Name"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                },
+                "country": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Country"
+                }
+            },
+            "associations": {
+                "country": {
+                    "type": "belongsTo",
+                    "entity": "country",
+                    "key": "code",
+                    "field": "code",
+                    "on": {
+                        "country": {
+                            "oorType": "ColumnReference",
+                            "name": "country.code"
+                        }
+                    }
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                },
+                {
+                    "fields": [
+                        "country",
+                        "shortName"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "country": {
+            "name": "country",
+            "displayName": "Country",
+            "comment": "Country",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "union": {
+                    "type": "boolean",
+                    "default": false,
+                    "displayName": "Union"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "userRoleType": {
+            "name": "userRoleType",
+            "displayName": "User Role Type",
+            "comment": "User role type",
+            "baseClasses": [
+                "dictionaryByCode"
+            ],
+            "features": {
+                "logicalDeletion": {
+                    "field": "isDeleted",
+                    "value": true,
+                    "timestampField": "deletedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "code": {
+                    "type": "text",
+                    "maxLength": 64,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "idString"
+                    ],
+                    "displayName": "Code"
+                },
+                "name": {
+                    "type": "text",
+                    "maxLength": 200,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "name"
+                    ],
+                    "displayName": "Name"
+                },
+                "indexOrder": {
+                    "type": "integer",
+                    "default": 0,
+                    "displayName": "Index Order"
+                },
+                "desc": {
+                    "type": "text",
+                    "optional": true,
+                    "emptyAsNull": true,
+                    "subClass": [
+                        "desc"
+                    ],
+                    "displayName": "Desc"
+                },
+                "isSystem": {
+                    "type": "boolean",
+                    "optional": true,
+                    "displayName": "Is System"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "default": true,
+                    "displayName": "Is Active"
+                },
+                "usage": {
+                    "type": "text",
+                    "maxLength": 60,
+                    "emptyAsNull": true,
+                    "optional": true,
+                    "subClass": [
+                        "shortName"
+                    ],
+                    "displayName": "Usage"
+                },
+                "isSpecific": {
+                    "type": "boolean",
+                    "optional": true,
+                    "comment": "Specificially for sub-system",
+                    "displayName": "Is Specific"
+                },
+                "isDeleted": {
+                    "type": "boolean",
+                    "default": false,
+                    "readOnly": true,
+                    "displayName": "Is Deleted"
+                },
+                "deletedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "optional": true,
+                    "writeOnce": true,
+                    "auto": true,
+                    "displayName": "Deleted At"
+                }
+            },
+            "key": "code",
+            "indexes": [
+                {
+                    "fields": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ]
+        },
+        "agendaSeries": {
+            "name": "agendaSeries",
+            "displayName": "Agenda Series",
+            "baseClasses": [
+                "timeSeries"
+            ],
+            "features": {
+                "autoId": {
+                    "field": "id"
+                },
+                "createTimestamp": {
+                    "field": "createdAt"
+                },
+                "updateTimestamp": {
+                    "field": "updatedAt"
+                }
+            },
+            "types": {},
+            "fields": {
+                "id": {
+                    "type": "text",
+                    "auto": true,
+                    "writeOnce": true,
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Id"
+                },
+                "startDate": {
+                    "type": "datetime",
+                    "dateOnly": true,
+                    "optional": true,
+                    "subClass": [
+                        "date"
+                    ],
+                    "displayName": "Start Date"
+                },
+                "endDate": {
+                    "type": "datetime",
+                    "dateOnly": true,
+                    "optional": true,
+                    "subClass": [
+                        "date"
+                    ],
+                    "displayName": "End Date"
+                },
+                "dayOfWeek": {
+                    "type": "array",
+                    "csv": true,
+                    "optional": true,
+                    "displayName": "Day Of Week"
+                },
+                "repeatTerm": {
+                    "type": "enum",
+                    "values": [
+                        "none",
+                        "daily",
+                        "weekly",
+                        "fortnightly",
+                        "four-weekly",
+                        "monthly",
+                        "quarterly",
+                        "annually"
+                    ],
+                    "subClass": [
+                        "repeatTerm"
+                    ],
+                    "displayName": "Repeat Term",
+                    "createByDb": true
+                },
+                "repeatTimes": {
+                    "type": "integer",
+                    "optional": true,
+                    "displayName": "Repeat Times"
+                },
+                "startTime": {
+                    "type": "datetime",
+                    "timeOnly": true,
+                    "displayName": "Start Time"
+                },
+                "endTime": {
+                    "type": "datetime",
+                    "timeOnly": true,
+                    "displayName": "End Time"
+                },
+                "duration": {
+                    "type": "integer",
+                    "displayName": "Duration"
+                },
+                "expired": {
+                    "type": "boolean",
+                    "default": false,
+                    "displayName": "Expired"
+                },
+                "createdAt": {
+                    "type": "datetime",
+                    "auto": true,
+                    "readOnly": true,
+                    "writeOnce": true,
+                    "displayName": "Created At",
+                    "isCreateTimestamp": true,
+                    "createByDb": true
+                },
+                "updatedAt": {
+                    "type": "datetime",
+                    "readOnly": true,
+                    "forceUpdate": true,
+                    "optional": true,
+                    "displayName": "Updated At",
+                    "isUpdateTimestamp": true,
+                    "updateByDb": true
+                },
+                "user": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "User"
+                },
+                "firstItem": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "First Item"
+                },
+                "latestItem": {
+                    "type": "text",
+                    "maxLength": 40,
+                    "generator": "hyperid",
+                    "displayName": "Latest Item",
+                    "optional": true
+                }
+            },
+            "associations": {
+                "user": {
+                    "type": "belongsTo",
+                    "entity": "user",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "user": {
+                            "oorType": "ColumnReference",
+                            "name": "user.id"
+                        }
+                    }
+                },
+                "agendaItems": {
+                    "entity": "agendaItem",
+                    "key": "id",
+                    "on": {
+                        "id": {
+                            "oorType": "ColumnReference",
+                            "name": "agendaItems.series"
+                        }
+                    },
+                    "field": "series",
+                    "list": true
+                },
+                "firstItem": {
+                    "type": "refersTo",
+                    "entity": "agendaItem",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "firstItem": {
+                            "oorType": "ColumnReference",
+                            "name": "firstItem.id"
+                        }
+                    }
+                },
+                "latestItem": {
+                    "type": "refersTo",
+                    "entity": "agendaItem",
+                    "key": "id",
+                    "field": "id",
+                    "on": {
+                        "latestItem": {
+                            "oorType": "ColumnReference",
+                            "name": "latestItem.id"
+                        }
+                    }
+                }
+            },
+            "key": "id"
+        }
+    },
+    "types": {},
+    "datasets": {},
+    "views": {}
+}

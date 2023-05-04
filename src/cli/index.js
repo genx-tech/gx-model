@@ -11,9 +11,11 @@ const binItem = findKey(pkg.bin, (v) => v === "bin/geml.js");
 
 const afterCommandConfirmed = (cli) => {
     let cmd = cli.argv._[0];
+    
     let options = getCommandOptions(cli, cmd);
     cli.usage.options = { ...cli.usage.options, ...options };
     cli.parse(cli.usage.options);
+    cli.argv._ = [ cmd ];
 };
 
 const onVerboseMode = (cli) => {

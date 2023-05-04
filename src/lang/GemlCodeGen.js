@@ -154,7 +154,11 @@ class GemlCodeGen {
 
         let entityNameFullSnake = _.trim(_.snakeCase(entityName), '_');
         if (_.endsWith(entityNameFullSnake, colNameFirstWord)) {
-            result = entityNameFullSnake + '_' + colNameRest;
+            result = entityNameFullSnake;
+            
+            if (colNameRest) {
+                result += '_' + colNameRest;
+            }
         } else {
             result = entityNameFullSnake + '_' + colNameFullSnake;
         }
