@@ -23,7 +23,7 @@
         'customize': new Set(['entities']),
         'override': new Set(['entity']),
         'schema': new Set(['entities', 'views']),
-        'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'input', /*'interface', 'code'*/, 'triggers' ])
+        'entity': new Set([ 'is', 'extends', 'with', 'has', 'associations', 'key', 'index', 'data', 'input', /*'interface', 'code'*/, 'triggers' ]),
     
         // level 2
         'entity.associations': new Set(['hasOne', 'hasMany', 'refersTo', 'belongsTo']),
@@ -522,7 +522,7 @@
 %lex
 
 %options easy_keyword_rules
-%options flex case-insensitive
+%options flex
 
 uppercase               [A-Z]
 lowercase               [a-z]
@@ -1325,7 +1325,7 @@ association_qualifiers
 
 key_statement
     : "key" identifier_or_string NEWLINE -> { key: $2 }
- /* | "key" array_of_identifier_or_string NEWLINE -> { key: $2 } // remove combination key support, too much effort to infer the relationship */ 
+    | "key" array_of_identifier_or_string NEWLINE -> { key: $2 } 
     ;
 
 index_statement

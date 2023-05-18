@@ -8,8 +8,8 @@ dependencies:
     specifier: ^2.1.4
     version: 2.1.4(lodash@4.17.21)
   '@genx/july':
-    specifier: ^1.1.1
-    version: 1.1.1
+    specifier: ^1.2.1
+    version: 1.2.1
   '@genx/sys':
     specifier: ^0.1.8
     version: 0.1.8
@@ -1344,7 +1344,7 @@ packages:
     resolution: {integrity: sha512-YhYMR1ExMIR+CeWPAeYWWruAq8KeCV36vUSUPO3eYB458/Ir6GcmtSeLzxIw/Ie+p4nHGk8FtGCta7PNevmUvA==}
     dependencies:
       '@genx/error': 1.1.2
-      '@genx/july': 1.1.1
+      '@genx/july': 1.2.1
     dev: false
 
   /@genx/app-feat-commons@0.0.1(lodash@4.17.21):
@@ -1361,7 +1361,7 @@ packages:
     dependencies:
       '@genx/config': 1.1.1
       '@genx/error': 1.1.2
-      '@genx/july': 1.1.1
+      '@genx/july': 1.2.1
       '@genx/sys': 0.1.8
       luxon: 3.3.0
       winston: '@github.com/genx-tech/winston/archive/refs/tags/v3.8.1x.tar.gz'
@@ -1388,7 +1388,7 @@ packages:
   /@genx/config@1.1.1:
     resolution: {integrity: sha512-s6OX10wYvhmWTBF6txLAym5bHy+0ET654wvdBNrXAAGdZW5/+M3t3npfYS9CM43sVeNb8mqW6p04rHp7z9qr6w==}
     dependencies:
-      '@genx/july': 1.1.1
+      '@genx/july': 1.2.1
       '@genx/sys': 0.1.8
 
   /@genx/data@2.1.1:
@@ -1396,7 +1396,7 @@ packages:
     dependencies:
       '@genx/error': 1.1.2
       '@genx/jes': 1.2.2
-      '@genx/july': 1.1.1
+      '@genx/july': 1.2.1
       '@genx/sys': 0.1.8
       luxon: 1.28.0
       number-to-letter: 1.0.1
@@ -1426,8 +1426,8 @@ packages:
       lodash: 4.17.21
     dev: true
 
-  /@genx/july@1.1.1:
-    resolution: {integrity: sha512-Q6v810vrktqeBZbT8Kw25HeUbA6Hroz1FdN/0Sj/OWzHwAEYsoSsG3Qh14+pR9aThBQZm6QTvrBIoeh7scQ6XQ==}
+  /@genx/july@1.2.1:
+    resolution: {integrity: sha512-o9Frb3Uec1McFMHHFuY7t74e7cXXJudfU2zs8ESTffap6HId1I+1oDypye9XtTbe3Dcp2yYkrxqTFf6CMPPNlg==}
     dependencies:
       lodash: 4.17.21
 
@@ -1436,7 +1436,7 @@ packages:
     dependencies:
       '@genx/app': 2.1.4(lodash@4.17.21)
       '@genx/error': 1.1.2
-      '@genx/july': 1.1.1
+      '@genx/july': 1.2.1
       '@genx/sys': 0.1.8
       '@koa/router': 10.1.1
       koa: 2.13.4
@@ -1514,7 +1514,7 @@ packages:
   /@genx/sys@0.1.8:
     resolution: {integrity: sha512-264pYU7x9T6A88iJojcTg7Z04ugpLXkEtCeV6UL9arcbxuxeIOj0z5Tx1Y9N2NnmrYCqBMz9yYKdhya2rcaMtg==}
     dependencies:
-      '@genx/july': 1.1.1
+      '@genx/july': 1.2.1
       fs-extra: 11.1.1
       glob: 8.0.3
       glob-promise: 6.0.2(glob@8.0.3)
@@ -1525,7 +1525,7 @@ packages:
       '@genx/app': '>=2.0.0'
     dependencies:
       '@genx/app': 2.1.4(lodash@4.17.21)
-      '@genx/july': 1.1.1
+      '@genx/july': 1.2.1
       '@genx/sys': 0.1.8
       allure-commandline: 2.22.0
       allure-js-commons: 2.0.0-beta.16
@@ -5949,7 +5949,7 @@ packages:
     dependencies:
       '@genx/config': 1.1.1
       '@genx/error': 1.1.2
-      '@genx/july': 1.1.1
+      '@genx/july': 1.2.1
       luxon: 1.28.0
       winston: github.com/kitmi/winston/443abdb73852ac44ae35849bedd3691132d0a237
       winstonflight: 1.0.5(lodash@4.17.21)(winston@3.3.3)

@@ -1,0 +1,831 @@
+{
+    "mt4Config": {
+        "name": "mt4Config",
+        "displayName": "Mt 4 Config",
+        "comment": "Mt 4 Config",
+        "types": {},
+        "fields": {
+            "config": {
+                "type": "integer",
+                "code": "CONFIG",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Config",
+                "displayName": "Config"
+            },
+            "valueInt": {
+                "type": "integer",
+                "code": "VALUE_INT",
+                "digits": 10,
+                "bytes": 4,
+                "optional": true,
+                "comment": "Mt 4 Config Value Int",
+                "displayName": "Value Int"
+            },
+            "valueStr": {
+                "type": "text",
+                "code": "VALUE_STR",
+                "fixedLength": 255,
+                "optional": true,
+                "comment": "Mt 4 Config Value Str",
+                "displayName": "Value Str"
+            }
+        },
+        "key": "config"
+    },
+    "mt4Daily": {
+        "name": "mt4Daily",
+        "displayName": "Mt 4 Daily",
+        "comment": "Mt 4 Daily",
+        "types": {},
+        "fields": {
+            "login": {
+                "type": "integer",
+                "code": "LOGIN",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Daily Login",
+                "displayName": "Login"
+            },
+            "time": {
+                "type": "datetime",
+                "code": "TIME",
+                "comment": "Mt 4 Daily Time",
+                "displayName": "Time"
+            },
+            "group": {
+                "type": "text",
+                "code": "GROUP",
+                "fixedLength": 16,
+                "comment": "Mt 4 Daily Group",
+                "displayName": "Group"
+            },
+            "bank": {
+                "type": "text",
+                "code": "BANK",
+                "fixedLength": 64,
+                "comment": "Mt 4 Daily Bank",
+                "displayName": "Bank"
+            },
+            "balancePrev": {
+                "type": "number",
+                "code": "BALANCE_PREV",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Daily Balance Prev",
+                "displayName": "Balance Prev"
+            },
+            "balance": {
+                "type": "number",
+                "code": "BALANCE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Daily Balance",
+                "displayName": "Balance"
+            },
+            "deposit": {
+                "type": "number",
+                "code": "DEPOSIT",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Daily Deposit",
+                "displayName": "Deposit"
+            },
+            "credit": {
+                "type": "number",
+                "code": "CREDIT",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Daily Credit",
+                "displayName": "Credit"
+            },
+            "profitClosed": {
+                "type": "number",
+                "code": "PROFIT_CLOSED",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Daily Profit Closed",
+                "displayName": "Profit Closed"
+            },
+            "profit": {
+                "type": "number",
+                "code": "PROFIT",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Daily Profit",
+                "displayName": "Profit"
+            },
+            "equity": {
+                "type": "number",
+                "code": "EQUITY",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Daily Equity",
+                "displayName": "Equity"
+            },
+            "margin": {
+                "type": "number",
+                "code": "MARGIN",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Daily Margin",
+                "displayName": "Margin"
+            },
+            "marginFree": {
+                "type": "number",
+                "code": "MARGIN_FREE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Daily Margin Free",
+                "displayName": "Margin Free"
+            },
+            "modifyTime": {
+                "type": "datetime",
+                "code": "MODIFY_TIME",
+                "comment": "Mt 4 Daily Modify Time",
+                "displayName": "Modify Time"
+            }
+        },
+        "key": [
+            "login",
+            "time"
+        ]
+    },
+    "mt4Prices": {
+        "name": "mt4Prices",
+        "displayName": "Mt 4 Prices",
+        "comment": "Mt 4 Prices",
+        "types": {},
+        "fields": {
+            "symbol": {
+                "type": "text",
+                "code": "SYMBOL",
+                "fixedLength": 16,
+                "comment": "Mt 4 Prices Symbol",
+                "displayName": "Symbol"
+            },
+            "time": {
+                "type": "datetime",
+                "code": "TIME",
+                "comment": "Mt 4 Prices Time",
+                "displayName": "Time"
+            },
+            "bid": {
+                "type": "number",
+                "code": "BID",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Prices Bid",
+                "displayName": "Bid"
+            },
+            "ask": {
+                "type": "number",
+                "code": "ASK",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Prices Ask",
+                "displayName": "Ask"
+            },
+            "low": {
+                "type": "number",
+                "code": "LOW",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Prices Low",
+                "displayName": "Low"
+            },
+            "high": {
+                "type": "number",
+                "code": "HIGH",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Prices High",
+                "displayName": "High"
+            },
+            "direction": {
+                "type": "integer",
+                "code": "DIRECTION",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Prices Direction",
+                "displayName": "Direction"
+            },
+            "digits": {
+                "type": "integer",
+                "code": "DIGITS",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Prices Digits",
+                "displayName": "Digits"
+            },
+            "spread": {
+                "type": "integer",
+                "code": "SPREAD",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Prices Spread",
+                "displayName": "Spread"
+            },
+            "modifyTime": {
+                "type": "datetime",
+                "code": "MODIFY_TIME",
+                "comment": "Mt 4 Prices Modify Time",
+                "displayName": "Modify Time"
+            }
+        },
+        "key": "symbol"
+    },
+    "mt4Trades": {
+        "name": "mt4Trades",
+        "displayName": "Mt 4 Trades",
+        "comment": "Mt 4 Trades",
+        "types": {},
+        "fields": {
+            "ticket": {
+                "type": "integer",
+                "code": "TICKET",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Trades Ticket",
+                "displayName": "Ticket"
+            },
+            "login": {
+                "type": "integer",
+                "code": "LOGIN",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Trades Login",
+                "displayName": "Login"
+            },
+            "symbol": {
+                "type": "text",
+                "code": "SYMBOL",
+                "fixedLength": 16,
+                "comment": "Mt 4 Trades Symbol",
+                "displayName": "Symbol"
+            },
+            "digits": {
+                "type": "integer",
+                "code": "DIGITS",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Trades Digits",
+                "displayName": "Digits"
+            },
+            "cmd": {
+                "type": "integer",
+                "code": "CMD",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Trades Cmd",
+                "displayName": "Cmd"
+            },
+            "volume": {
+                "type": "integer",
+                "code": "VOLUME",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Trades Volume",
+                "displayName": "Volume"
+            },
+            "openTime": {
+                "type": "datetime",
+                "code": "OPEN_TIME",
+                "comment": "Mt 4 Trades Open Time",
+                "displayName": "Open Time"
+            },
+            "openPrice": {
+                "type": "number",
+                "code": "OPEN_PRICE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Open Price",
+                "displayName": "Open Price"
+            },
+            "sl": {
+                "type": "number",
+                "code": "SL",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Sl",
+                "displayName": "Sl"
+            },
+            "tp": {
+                "type": "number",
+                "code": "TP",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Tp",
+                "displayName": "Tp"
+            },
+            "closeTime": {
+                "type": "datetime",
+                "code": "CLOSE_TIME",
+                "comment": "Mt 4 Trades Close Time",
+                "displayName": "Close Time"
+            },
+            "expiration": {
+                "type": "datetime",
+                "code": "EXPIRATION",
+                "comment": "Mt 4 Trades Expiration",
+                "displayName": "Expiration"
+            },
+            "reason": {
+                "type": "integer",
+                "code": "REASON",
+                "digits": 10,
+                "bytes": 4,
+                "default": "0",
+                "comment": "Mt 4 Trades Reason",
+                "displayName": "Reason"
+            },
+            "convRate1": {
+                "type": "number",
+                "code": "CONV_RATE1",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Conv Rate 1",
+                "displayName": "Conv Rate 1"
+            },
+            "convRate2": {
+                "type": "number",
+                "code": "CONV_RATE2",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Conv Rate 2",
+                "displayName": "Conv Rate 2"
+            },
+            "commission": {
+                "type": "number",
+                "code": "COMMISSION",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Commission",
+                "displayName": "Commission"
+            },
+            "commissionAgent": {
+                "type": "number",
+                "code": "COMMISSION_AGENT",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Commission Agent",
+                "displayName": "Commission Agent"
+            },
+            "swaps": {
+                "type": "number",
+                "code": "SWAPS",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Swaps",
+                "displayName": "Swaps"
+            },
+            "closePrice": {
+                "type": "number",
+                "code": "CLOSE_PRICE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Close Price",
+                "displayName": "Close Price"
+            },
+            "profit": {
+                "type": "number",
+                "code": "PROFIT",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Profit",
+                "displayName": "Profit"
+            },
+            "taxes": {
+                "type": "number",
+                "code": "TAXES",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Taxes",
+                "displayName": "Taxes"
+            },
+            "comment": {
+                "type": "text",
+                "code": "COMMENT",
+                "fixedLength": 32,
+                "comment": "Mt 4 Trades Comment",
+                "displayName": "Comment"
+            },
+            "internalId": {
+                "type": "integer",
+                "code": "INTERNAL_ID",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Trades Internal Id",
+                "displayName": "Internal Id"
+            },
+            "marginRate": {
+                "type": "number",
+                "code": "MARGIN_RATE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Trades Margin Rate",
+                "displayName": "Margin Rate"
+            },
+            "timestamp": {
+                "type": "integer",
+                "code": "TIMESTAMP",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Trades Timestamp",
+                "displayName": "Timestamp"
+            },
+            "magic": {
+                "type": "integer",
+                "code": "MAGIC",
+                "digits": 10,
+                "bytes": 4,
+                "default": "0",
+                "comment": "Mt 4 Trades Magic",
+                "displayName": "Magic"
+            },
+            "gwVolume": {
+                "type": "integer",
+                "code": "GW_VOLUME",
+                "digits": 10,
+                "bytes": 4,
+                "default": "0",
+                "comment": "Mt 4 Trades Gw Volume",
+                "displayName": "Gw Volume"
+            },
+            "gwOpenPrice": {
+                "type": "integer",
+                "code": "GW_OPEN_PRICE",
+                "digits": 10,
+                "bytes": 4,
+                "default": "0",
+                "comment": "Mt 4 Trades Gw Open Price",
+                "displayName": "Gw Open Price"
+            },
+            "gwClosePrice": {
+                "type": "integer",
+                "code": "GW_CLOSE_PRICE",
+                "digits": 10,
+                "bytes": 4,
+                "default": "0",
+                "comment": "Mt 4 Trades Gw Close Price",
+                "displayName": "Gw Close Price"
+            },
+            "modifyTime": {
+                "type": "datetime",
+                "code": "MODIFY_TIME",
+                "comment": "Mt 4 Trades Modify Time",
+                "displayName": "Modify Time"
+            }
+        },
+        "key": "ticket",
+        "indexes": [
+            {
+                "fields": [
+                    "login"
+                ]
+            },
+            {
+                "fields": [
+                    "cmd"
+                ]
+            },
+            {
+                "fields": [
+                    "openTime"
+                ]
+            },
+            {
+                "fields": [
+                    "closeTime"
+                ]
+            },
+            {
+                "fields": [
+                    "timestamp"
+                ]
+            }
+        ]
+    },
+    "mt4Users": {
+        "name": "mt4Users",
+        "displayName": "Mt 4 Users",
+        "comment": "Mt 4 Users",
+        "types": {},
+        "fields": {
+            "login": {
+                "type": "integer",
+                "code": "LOGIN",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Users Login",
+                "displayName": "Login"
+            },
+            "group": {
+                "type": "text",
+                "code": "GROUP",
+                "fixedLength": 16,
+                "comment": "Mt 4 Users Group",
+                "displayName": "Group"
+            },
+            "enable": {
+                "type": "integer",
+                "code": "ENABLE",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Users Enable",
+                "displayName": "Enable"
+            },
+            "enableChangePass": {
+                "type": "integer",
+                "code": "ENABLE_CHANGE_PASS",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Users Enable Change Pass",
+                "displayName": "Enable Change Pass"
+            },
+            "enableReadonly": {
+                "type": "integer",
+                "code": "ENABLE_READONLY",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Users Enable Readonly",
+                "displayName": "Enable Readonly"
+            },
+            "enableOtp": {
+                "type": "integer",
+                "code": "ENABLE_OTP",
+                "digits": 10,
+                "bytes": 4,
+                "default": "0",
+                "comment": "Mt 4 Users Enable Otp",
+                "displayName": "Enable Otp"
+            },
+            "passwordPhone": {
+                "type": "text",
+                "code": "PASSWORD_PHONE",
+                "fixedLength": 32,
+                "comment": "Mt 4 Users Password Phone",
+                "displayName": "Password Phone"
+            },
+            "name": {
+                "type": "text",
+                "code": "NAME",
+                "fixedLength": 128,
+                "comment": "Mt 4 Users Name",
+                "displayName": "Name"
+            },
+            "country": {
+                "type": "text",
+                "code": "COUNTRY",
+                "fixedLength": 32,
+                "comment": "Mt 4 Users Country",
+                "displayName": "Country"
+            },
+            "city": {
+                "type": "text",
+                "code": "CITY",
+                "fixedLength": 32,
+                "comment": "Mt 4 Users City",
+                "displayName": "City"
+            },
+            "state": {
+                "type": "text",
+                "code": "STATE",
+                "fixedLength": 32,
+                "comment": "Mt 4 Users State",
+                "displayName": "State"
+            },
+            "zipcode": {
+                "type": "text",
+                "code": "ZIPCODE",
+                "fixedLength": 16,
+                "comment": "Mt 4 Users Zipcode",
+                "displayName": "Zipcode"
+            },
+            "address": {
+                "type": "text",
+                "code": "ADDRESS",
+                "fixedLength": 128,
+                "comment": "Mt 4 Users Address",
+                "displayName": "Address"
+            },
+            "leadSource": {
+                "type": "text",
+                "code": "LEAD_SOURCE",
+                "fixedLength": 32,
+                "comment": "Mt 4 Users Lead Source",
+                "displayName": "Lead Source"
+            },
+            "phone": {
+                "type": "text",
+                "code": "PHONE",
+                "fixedLength": 32,
+                "comment": "Mt 4 Users Phone",
+                "displayName": "Phone"
+            },
+            "email": {
+                "type": "text",
+                "code": "EMAIL",
+                "fixedLength": 48,
+                "comment": "Mt 4 Users Email",
+                "displayName": "Email"
+            },
+            "comment": {
+                "type": "text",
+                "code": "COMMENT",
+                "fixedLength": 64,
+                "comment": "Mt 4 Users Comment",
+                "displayName": "Comment"
+            },
+            "id": {
+                "type": "text",
+                "code": "ID",
+                "fixedLength": 32,
+                "comment": "Mt 4 Users Id",
+                "displayName": "Id"
+            },
+            "status": {
+                "type": "text",
+                "code": "STATUS",
+                "fixedLength": 16,
+                "comment": "Mt 4 Users Status",
+                "displayName": "Status"
+            },
+            "regdate": {
+                "type": "datetime",
+                "code": "REGDATE",
+                "comment": "Mt 4 Users Regdate",
+                "displayName": "Regdate"
+            },
+            "lastdate": {
+                "type": "datetime",
+                "code": "LASTDATE",
+                "comment": "Mt 4 Users Lastdate",
+                "displayName": "Lastdate"
+            },
+            "leverage": {
+                "type": "integer",
+                "code": "LEVERAGE",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Users Leverage",
+                "displayName": "Leverage"
+            },
+            "agentAccount": {
+                "type": "integer",
+                "code": "AGENT_ACCOUNT",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Users Agent Account",
+                "displayName": "Agent Account"
+            },
+            "timestamp": {
+                "type": "integer",
+                "code": "TIMESTAMP",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Users Timestamp",
+                "displayName": "Timestamp"
+            },
+            "balance": {
+                "type": "number",
+                "code": "BALANCE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Users Balance",
+                "displayName": "Balance"
+            },
+            "prevmonthbalance": {
+                "type": "number",
+                "code": "PREVMONTHBALANCE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Users Prevmonthbalance",
+                "displayName": "Prevmonthbalance"
+            },
+            "prevbalance": {
+                "type": "number",
+                "code": "PREVBALANCE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Users Prevbalance",
+                "displayName": "Prevbalance"
+            },
+            "credit": {
+                "type": "number",
+                "code": "CREDIT",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Users Credit",
+                "displayName": "Credit"
+            },
+            "interestrate": {
+                "type": "number",
+                "code": "INTERESTRATE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Users Interestrate",
+                "displayName": "Interestrate"
+            },
+            "taxes": {
+                "type": "number",
+                "code": "TAXES",
+                "bytes": 8,
+                "totalDigits": 22,
+                "comment": "Mt 4 Users Taxes",
+                "displayName": "Taxes"
+            },
+            "sendReports": {
+                "type": "integer",
+                "code": "SEND_REPORTS",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Users Send Reports",
+                "displayName": "Send Reports"
+            },
+            "mqid": {
+                "type": "integer",
+                "code": "MQID",
+                "digits": 10,
+                "bytes": 4,
+                "unsigned": true,
+                "default": "0",
+                "comment": "Mt 4 Users Mqid",
+                "displayName": "Mqid"
+            },
+            "userColor": {
+                "type": "integer",
+                "code": "USER_COLOR",
+                "digits": 10,
+                "bytes": 4,
+                "comment": "Mt 4 Users User Color",
+                "displayName": "User Color"
+            },
+            "equity": {
+                "type": "number",
+                "code": "EQUITY",
+                "bytes": 8,
+                "totalDigits": 22,
+                "default": "0",
+                "comment": "Mt 4 Users Equity",
+                "displayName": "Equity"
+            },
+            "margin": {
+                "type": "number",
+                "code": "MARGIN",
+                "bytes": 8,
+                "totalDigits": 22,
+                "default": "0",
+                "comment": "Mt 4 Users Margin",
+                "displayName": "Margin"
+            },
+            "marginLevel": {
+                "type": "number",
+                "code": "MARGIN_LEVEL",
+                "bytes": 8,
+                "totalDigits": 22,
+                "default": "0",
+                "comment": "Mt 4 Users Margin Level",
+                "displayName": "Margin Level"
+            },
+            "marginFree": {
+                "type": "number",
+                "code": "MARGIN_FREE",
+                "bytes": 8,
+                "totalDigits": 22,
+                "default": "0",
+                "comment": "Mt 4 Users Margin Free",
+                "displayName": "Margin Free"
+            },
+            "currency": {
+                "type": "text",
+                "code": "CURRENCY",
+                "fixedLength": 16,
+                "comment": "Mt 4 Users Currency",
+                "displayName": "Currency"
+            },
+            "apiData": {
+                "type": "binary",
+                "code": "API_DATA",
+                "maxLength": 65535,
+                "optional": true,
+                "comment": "Mt 4 Users Api Data",
+                "displayName": "Api Data"
+            },
+            "modifyTime": {
+                "type": "datetime",
+                "code": "MODIFY_TIME",
+                "comment": "Mt 4 Users Modify Time",
+                "displayName": "Modify Time"
+            }
+        },
+        "key": "login",
+        "indexes": [
+            {
+                "fields": [
+                    "timestamp"
+                ]
+            }
+        ]
+    }
+}

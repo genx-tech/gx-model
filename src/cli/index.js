@@ -26,7 +26,7 @@ const onVerboseMode = (cli) => {
 };
 
 function main() {
-    startCommand(
+    return startCommand(
         (app) => {
             let cmd = app.commandLine;
 
@@ -50,6 +50,7 @@ function main() {
             return appInitiator.run(command);
         },
         {
+            throwOnError: true,            
             commandName: binItem,
             config: {
                 version: pkg.version,

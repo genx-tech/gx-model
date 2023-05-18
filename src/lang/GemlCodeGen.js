@@ -175,8 +175,8 @@ class GemlCodeGen {
         _.forOwn(entities, (entity, enityName) => {
             this.appendLine(KW_ENTITY, enityName).indent();
 
-            if (entity.source) {
-                this.appendLine(KW_CODE, quote(entity.source));
+            if (entity.code) {
+                this.appendLine(KW_CODE, quote(entity.code));
             }
 
             this.appendLine(KW_COMMENT, quote(entity.comment || generateDisplayName(enityName)));
